@@ -81,6 +81,11 @@ $app->get('/:datasource', function ($datasource) use ($app)
 
 $app->get('/:datasource/:year', function ($datasource, $year) use ($app)
 {
+	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
+	{
+		$app->halt(400, 'Invalid year or series id');
+	}
+	
 	$response = array();
 	
 	foreach($GLOBALS['geotypes'] as $key => $id)
