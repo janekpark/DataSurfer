@@ -54,17 +54,8 @@ $datasources = [
 		]
 ];
 
-$yearCheck = function($request) 
-{
-// 	$year = $request["params"]["year"];
-	
-// 	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
-// 	{
-// 		$app->halt(400, 'Invalid year or series id');
-// 	}
-};
-
 $app = new \Slim\Slim();
+
 $app->notFound(function() use ($app)
 {
 	$app->halt(400, "Bad Request");
@@ -92,8 +83,13 @@ $app->get('/:datasource', function ($datasource) use ($app)
 	
 })->conditions(array('datasource' => 'census|forecast|estimate'));
 
-$app->get('/:datasource/:year', $yearCheck, function ($datasource, $year) use ($app)
+$app->get('/:datasource/:year', function ($datasource, $year) use ($app)
 {
+	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
+	{
+		$app->halt(400, 'Invalid year or series id');
+	}
+	
 	$response = array();
 	
 	foreach($GLOBALS['geotypes'] as $key => $id)
@@ -135,7 +131,7 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
         $datasource_id = $GLOBALS['datasources'][$datasource][$year];
         $params = [$datasource_id, $zone];
     
-        $sql = "SELECT s.long_name, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied".
+        $sql = "SELECT s.long_name as unit_type, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied".
         ",CASE WHEN SUM(units) = 0 THEN NULL ELSE SUM(units - occupied) / CAST(SUM(units) as float)	END as vacancy_rate ".
         "FROM fact.housing h JOIN dim.datasource d on h.datasource_id = d.datasource_id	JOIN dim.mgra m ON h.mgra_id = m.mgra_id ".
         "JOIN dim.structure_type s ON h.structure_type_id = s.structure_type_id ".
@@ -151,7 +147,7 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
     $datasource_id = $GLOBALS['datasources'][$datasource][$year];
     $params = [$datasource_id, $zone];
     
-    $sql = "SELECT e.long_name, SUM(population) FROM fact.age_sex_ethnicity ase ".
+    $sql = "SELECT e.long_name as ethnicity, SUM(population) FROM fact.age_sex_ethnicity ase ".
         "JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
         "JOIN dim.mgra m ON ase.mgra_id = m.mgra_id ".
         "JOIN dim.ethnicity e ON ase.ethnicity_id = e.ethnicity_id ".
@@ -203,7 +199,26 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 	
 })->conditions(array('datasource' => 'census|estimate'));
 
-//Forecast Export to Excel
+$app->get('/:datasource/:year/:geotype/export/pdf/:zone', function($datasource, $year, $geoType, $zone) use ($app)
+{
+	$file_name = join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf";
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
+	
+	$res['Content-Description'] = 'File Transfer';
+	$res['Content-Type'] = 'application/pdf';
+	$res['Content-Disposition'] ='attachment; filename='.$file_name;
+	$res['Content-Transfer-Encoding'] = 'binary';
+	$res['Expires'] = '0';
+	$res['Cache-Control'] = 'must-revalidate';
+	$res['Pragma'] = 'public';
+	
+	$res['Content-Length'] = filesize($file_path);
+	readfile($file_path);
+	
+	
+})->conditions(array('datasource' => 'census|estimate|forecast'));
+
+//Export to Excel
 $app->get('/:datasource/:year/:geotype/export/xlsx/:zones+', function ($datasource, $year, $geoType, $zones) use ($app)
 {
 	natcasesort($zones);
@@ -321,7 +336,7 @@ $app->get('/forecast/:series/:geotype/:zone/housing', function ($series, $geoTyp
 	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
 	$params = [$datasource_id, $zone];
 	
-	$sql = "SELECT s.long_name, h.year, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied ".
+	$sql = "SELECT s.long_name as unit_type, h.year, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied ".
     	",CASE	WHEN SUM(units) = 0 THEN NULL ELSE SUM(units - occupied) / CAST(SUM(units) as float) END as vacancy_rate ".
 		"FROM fact.housing h ".
 		"JOIN dim.datasource d on h.datasource_id = d.datasource_id ".
@@ -332,7 +347,7 @@ $app->get('/forecast/:series/:geotype/:zone/housing', function ($series, $geoTyp
 	
 	echo Query::getInstance()->getResultAsJson($sql, $params);
 			
-})->name('forecast_housing');
+})->conditions(array('series' => '12|13'));
 
 //Forecast - Ethnicity
 $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoType, $zone)
@@ -351,7 +366,7 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoT
 	  
 	echo Query::getInstance()->getResultAsJson($sql, $params);
 
-})->name('forecast_ethnicity');
+})->conditions(array('series' => '12|13'));
 
 //Forecast - Age
 $app->get('/forecast/:series/:geotype/:zone/age', function ($series, $geoType, $zone)
@@ -371,7 +386,7 @@ $app->get('/forecast/:series/:geotype/:zone/age', function ($series, $geoType, $
     
     echo Query::getInstance()->getResultAsJson($sql, $params);
     
-})->name('forecast_age');
+})->conditions(array('series' => '12|13'));
 
 $app->get('/forecast/:series/:geotype/:zone/income', function ($series, $geoType, $zone) use ($app)
 {
@@ -390,7 +405,7 @@ $app->get('/forecast/:series/:geotype/:zone/income', function ($series, $geoType
 	
 	echo Query::getInstance()->getResultAsJson($sql, $params);
 	
-})->name('forecast_income');
+})->conditions(array('series' => '12|13'));
 
 $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, $zone) use ($app)
 {
@@ -407,7 +422,7 @@ $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, 
 	
 	echo Query::getInstance()->getResultAsJson($sql, $params);
 	
-})->name('forecast_jobs');
+})->conditions(array('series' => '12|13'));
 
 /**
  * Step 4: Run the Slim application
