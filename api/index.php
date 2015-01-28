@@ -13,53 +13,67 @@ require 'Query.php';
 require 'PHPExcel.php';
 
 \Slim\Slim::registerAutoloader();
+
+//define column mappings
+$geotypes = [
+		"jurisdiction" => "city_name",
+		"region" => "region_name",
+		"zip" => "zip",
+		"msa" => "msa_name",
+		"sra" => "sra_name",
+		"ct2000" => "ct2000",
+		"tract" => "tract",
+		"elementary" => "elementary_name",
+		"secondary" => "high_school_name",
+		"unified" => "unified_name",
+		"college" => "community_college_name",
+		"sdcouncil" => "council",
+		"supervisorial" => "supervisorial",
+		"cpa" => "cpa_name"
+];
+
+$datasources = [
+		"forecast" =>
+		[
+		//        11 => 11,
+				12 => 6,
+				13 => 13
+		],
+		"estimate" =>
+		[
+				2010 => 2,
+				2011 => 3,
+				2012 => 4,
+				2013 => 10,
+		],
+		"census" =>
+		[
+		//        1990 =>
+				2000 => 12,
+				2010 => 5
+		]
+];
+
+$yearCheck = function($request) 
+{
+// 	$year = $request["params"]["year"];
+	
+// 	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
+// 	{
+// 		$app->halt(400, 'Invalid year or series id');
+// 	}
+};
+
 $app = new \Slim\Slim();
 $app->notFound(function() use ($app)
 {
 	$app->halt(400, "Bad Request");
 });
+
 $app->setName('datasurferapi');
 $app->response->headers->set('Content-Type', 'application/json');
 
-//define column mappings
-$geotypes = [
-    "jurisdiction" => "city_name",
-    "region" => "region_name",
-    "zip" => "zip",
-    "msa" => "msa_name",
-    "sra" => "sra_name",
-    "ct2000" => "ct2000",
-    "tract" => "tract",
-    "elementary" => "elementary_name",
-    "secondary" => "high_school_name",
-    "unified" => "unified_name",
-    "college" => "community_college_name",
-    "sdcouncil" => "council",
-    "supervisorial" => "supervisorial",
-    "cpa" => "cpa_name"
-];
 
-$datasources = [
-    "forecast" =>
-    [
-//        11 => 11,
-        12 => 6,
-        13 => 13
-    ],
-    "estimate" =>
-    [
-        2010 => 2,
-        2011 => 3,
-        2012 => 4,
-        2013 => 10,
-    ],
-    "census" =>
-    [
-//        1990 =>
-        2000 => 12,
-        2010 => 5
-    ]
-];
 
 $app->get('/', function () use ($app)
 {
@@ -79,13 +93,8 @@ $app->get('/:datasource', function ($datasource) use ($app)
 	
 })->conditions(array('datasource' => 'census|forecast|estimate'));
 
-$app->get('/:datasource/:year', function ($datasource, $year) use ($app)
+$app->get('/:datasource/:year', $yearCheck, function ($datasource, $year) use ($app)
 {
-	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
-	{
-		$app->halt(400, 'Invalid year or series id');
-	}
-	
 	$response = array();
 	
 	foreach($GLOBALS['geotypes'] as $key => $id)
