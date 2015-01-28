@@ -69,7 +69,6 @@ $app->notFound(function() use ($app)
 {
 	$app->halt(400, "Bad Request");
 });
-
 $app->setName('datasurferapi');
 $app->response->headers->set('Content-Type', 'application/json');
 
