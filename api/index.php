@@ -9,6 +9,7 @@
  */
 ini_set('display_errors', 1);
 require 'Slim/Slim.php';
+require 'Analytics.php';
 require 'Query.php';
 require 'PHPExcel.php';
 
@@ -21,7 +22,7 @@ $geotypes = [
 		"zip" => "zip",
 		"msa" => "msa_name",
 		"sra" => "sra_name",
-		"ct2000" => "ct2000",
+		//"ct2000" => "ct2000",
 		"tract" => "tract",
 		"elementary" => "elementary_name",
 		"secondary" => "high_school_name",
@@ -55,6 +56,7 @@ $datasources = [
 ];
 
 $app = new \Slim\Slim();
+$app->add(new \AnalyticsMiddleware());
 
 $app->notFound(function() use ($app)
 {
@@ -118,7 +120,7 @@ $app->get('/:datasource/:year/:geotype', function ($datasource, $series, $geoTyp
 	
 	$params = [$series_id];
 
-	$sql = "select ".$columnName." as ".$geoType." from dim.mgra where series_id = ? group by ".$columnName;
+	$sql = "select lower(".$columnName.") as ".$geoType." from dim.mgra where series_id = ? and ".$columnName." is not null  group by ".$columnName;
 	
 	echo Query::getInstance()->getResultAsJson($sql, $params);
 	
@@ -127,6 +129,15 @@ $app->get('/:datasource/:year/:geotype', function ($datasource, $series, $geoTyp
  //Census / Estimate - Housing
 $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $year, $geoType, $zone)
 {
+	$file_name = strtolower(join("_", array('housing', $datasource, $year, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
         $columnName = $GLOBALS['geotypes'][$geoType];
         $datasource_id = $GLOBALS['datasources'][$datasource][$year];
         $params = [$datasource_id, $zone];
@@ -136,72 +147,127 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
         "FROM fact.housing h JOIN dim.datasource d on h.datasource_id = d.datasource_id	JOIN dim.mgra m ON h.mgra_id = m.mgra_id ".
         "JOIN dim.structure_type s ON h.structure_type_id = s.structure_type_id ".
         "WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? GROUP BY s.long_name";
-    
-        echo Query::getInstance()->getResultAsJson($sql, $params);
+        
+        $json = Query::getInstance()->getResultAsJson($sql, $params);
+        
+        $f = fopen($file_path, 'w');
+        fwrite($f, $json);
+        fclose($f);
+        
+        echo $json;
+	}
+     
 })->conditions(array('datasource' => 'census|estimate'));
 
 //Census / Estimate - Ethnicity
 $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, $year, $geoType, $zone)
 {
-    $columnName = $GLOBALS['geotypes'][$geoType];
-    $datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    $params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('ethnicity', $datasource, $year, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+    	$columnName = $GLOBALS['geotypes'][$geoType];
+    	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+    	$params = [$datasource_id, $zone];
     
-    $sql = "SELECT e.long_name as ethnicity, SUM(population) FROM fact.age_sex_ethnicity ase ".
-        "JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
-        "JOIN dim.mgra m ON ase.mgra_id = m.mgra_id ".
-        "JOIN dim.ethnicity e ON ase.ethnicity_id = e.ethnicity_id ".
-        "WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-        "GROUP BY e.long_name";
+    	$sql = "SELECT e.long_name as ethnicity, SUM(population) FROM fact.age_sex_ethnicity ase ".
+        	"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
+        	"JOIN dim.mgra m ON ase.mgra_id = m.mgra_id ".
+        	"JOIN dim.ethnicity e ON ase.ethnicity_id = e.ethnicity_id ".
+        	"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
+        	"GROUP BY e.long_name";
     
-    echo Query::getInstance()->getResultAsJson($sql, $params);
+    	$json = Query::getInstance()->getResultAsJson($sql, $params); 
+		
+    	$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f); 
+		
+		echo $json;
+	}
 })->conditions(array('datasource' => 'census|estimate'));
 
 //Census / Estimate - Age
 $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year, $geoType, $zone)
 {
-    $columnName = $GLOBALS['geotypes'][$geoType];
-    $datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    $params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('age', $datasource, $year, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+    	$columnName = $GLOBALS['geotypes'][$geoType];
+   		$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+    	$params = [$datasource_id, $zone];
     
-    $sql = "SELECT s.sex, a.group_10yr, SUM(ase.population) as population ".
-        "FROM fact.age_sex_ethnicity ase ".
-        "JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
-        "JOIN dim.mgra m on ase.mgra_id = m.mgra_id	".
-        "JOIN dim.age_group a on ase.age_group_id = a.age_group_id ".
-        "JOIN dim.sex s on ase.sex_id = s.sex_id ".
-        "WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-        "GROUP BY s.sex, a.group_10yr";
+    	$sql = "SELECT s.sex, a.group_10yr, SUM(ase.population) as population ".
+        	"FROM fact.age_sex_ethnicity ase ".
+        	"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
+        	"JOIN dim.mgra m on ase.mgra_id = m.mgra_id	".
+        	"JOIN dim.age_group a on ase.age_group_id = a.age_group_id ".
+        	"JOIN dim.sex s on ase.sex_id = s.sex_id ".
+        	"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
+        	"GROUP BY s.sex, a.group_10yr";
     
-    echo Query::getInstance()->getResultAsJson($sql, $params);
+   		$json = Query::getInstance()->getResultAsJson($sql, $params); 
+		
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f); 
+		
+		echo $json;
+	}
 })->conditions(array('datasource' => 'census|estimate'));
 
 //Census / Estimate - Income
 $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $year, $geoType, $zone) use ($app)
 {
-	if($datasource == 'census' && $year == 2000)
-		$app->halt(501, 'Census 2000 data are not implemented yet!');
+	//if($datasource == 'census' && $year == 2000)
+	//	$app->halt(501, 'Census 2000 data are not implemented yet!');
 	
-	$columnName = $GLOBALS['geotypes'][$geoType];
-    $datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    $params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $file_name));
 	
-	$sql = "SELECT g.name as income_group ,sum(i.households) as households ".
-		"FROM fact.household_income i ".
-		"JOIN dim.income_group g ON i.income_group_id = g.income_group_id ".
-		"JOIN dim.datasource d ON i.datasource_id = d.datasource_id ".
-		"JOIN dim.mgra m ON i.mgra_id = m.mgra_id ".
-		"WHERE d.datasource_id = ? AND lower(m.".$columnName.") = ? ".
-		"GROUP BY i.income_group_id, g.name ".
-		"ORDER BY i.income_group_id";
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+		$columnName = $GLOBALS['geotypes'][$geoType];
+    	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+    	$params = [$datasource_id, $zone];
 	
-	echo Query::getInstance()->getResultAsJson($sql, $params);
+		$sql = "SELECT g.name as income_group ,sum(i.households) as households ".
+			"FROM fact.household_income i ".
+			"JOIN dim.income_group g ON i.income_group_id = g.income_group_id ".
+			"JOIN dim.datasource d ON i.datasource_id = d.datasource_id ".
+			"JOIN dim.mgra m ON i.mgra_id = m.mgra_id ".
+			"WHERE d.datasource_id = ? AND lower(m.".$columnName.") = ? ".
+			"GROUP BY i.income_group_id, g.name ".
+			"ORDER BY i.income_group_id";
 	
+		$json = Query::getInstance()->getResultAsJson($sql, $params); 
+		
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f); 
+		
+		echo $json;
+	}
 })->conditions(array('datasource' => 'census|estimate'));
 
 $app->get('/:datasource/:year/:geotype/export/pdf/:zone', function($datasource, $year, $geoType, $zone) use ($app)
 {
-	$file_name = join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf";
+	$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
 	
 	$res['Content-Description'] = 'File Transfer';
@@ -222,7 +288,8 @@ $app->get('/:datasource/:year/:geotype/export/pdf/:zone', function($datasource, 
 $app->get('/:datasource/:year/:geotype/export/xlsx/:zones+', function ($datasource, $year, $geoType, $zones) use ($app)
 {
 	natcasesort($zones);
-	$file_name = join("_", array($datasource, $year, $geoType)).join("_",$zones).".xlsx";
+	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).join("_",$zones).".xlsx");
+	
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
 
  	$res = $app->response();
@@ -332,95 +399,176 @@ $app->get('/:datasource/:year/:geotype/export/xlsx/:zones+', function ($datasour
 //Forecast - Housing
 $app->get('/forecast/:series/:geotype/:zone/housing', function ($series, $geoType, $zone)
 {
-	$columnName = $GLOBALS['geotypes'][$geoType];
-	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-	$params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('housing', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 	
-	$sql = "SELECT s.long_name as unit_type, h.year, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied ".
-    	",CASE	WHEN SUM(units) = 0 THEN NULL ELSE SUM(units - occupied) / CAST(SUM(units) as float) END as vacancy_rate ".
-		"FROM fact.housing h ".
-		"JOIN dim.datasource d on h.datasource_id = d.datasource_id ".
-		"JOIN dim.mgra m ON h.mgra_id = m.mgra_id ".
-		"JOIN dim.structure_type s ON h.structure_type_id = s.structure_type_id ". 
-		"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-		"GROUP BY h.year, s.long_name";
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+		$params = [$datasource_id, $zone];
 	
-	echo Query::getInstance()->getResultAsJson($sql, $params);
+		$sql = "SELECT s.long_name as unit_type, h.year, SUM(units) as units, SUM(occupied) as occupied, SUM(units - occupied) as unoccupied ".
+    		",CASE	WHEN SUM(units) = 0 THEN NULL ELSE SUM(units - occupied) / CAST(SUM(units) as float) END as vacancy_rate ".
+			"FROM fact.housing h ".
+			"JOIN dim.datasource d on h.datasource_id = d.datasource_id ".
+			"JOIN dim.mgra m ON h.mgra_id = m.mgra_id ".
+			"JOIN dim.structure_type s ON h.structure_type_id = s.structure_type_id ". 
+			"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
+			"GROUP BY h.year, s.long_name";
+	
+		$json = Query::getInstance()->getResultAsJson($sql, $params); 
+		
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f); 
+		
+		echo $json;
+	}
 			
 })->conditions(array('series' => '12|13'));
 
 //Forecast - Ethnicity
 $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoType, $zone)
 {
-	$columnName = $GLOBALS['geotypes'][$geoType];
-	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-	$params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('ethnicity', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+		$params = [$datasource_id, $zone];
 
-	$sql = "SELECT ase.year, e.long_name as ethnicity, sum(ase.population) as population ".
-		"FROM fact.age_sex_ethnicity ase ".
-		"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
-		"JOIN dim.mgra m on ase.mgra_id = m.mgra_id ".
-		"JOIN dim.ethnicity e on ase.ethnicity_id = e.ethnicity_id ".
-		"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-		"GROUP BY ase.year, e.long_name";
+		$sql = "SELECT ase.year, e.long_name as ethnicity, sum(ase.population) as population ".
+			"FROM fact.age_sex_ethnicity ase ".
+			"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
+			"JOIN dim.mgra m on ase.mgra_id = m.mgra_id ".
+			"JOIN dim.ethnicity e on ase.ethnicity_id = e.ethnicity_id ".
+			"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
+			"GROUP BY ase.year, e.long_name";
 	  
-	echo Query::getInstance()->getResultAsJson($sql, $params);
+		$json = Query::getInstance()->getResultAsJson($sql, $params); 
+		
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f); 
+		
+		echo $json;
+	}
 
 })->conditions(array('series' => '12|13'));
 
 //Forecast - Age
 $app->get('/forecast/:series/:geotype/:zone/age', function ($series, $geoType, $zone)
 {
-    $columnName = $GLOBALS['geotypes'][$geoType];
-    $datasource_id = $GLOBALS['datasources']['forecast'][$series];
-    $params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('age', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+    	$columnName = $GLOBALS['geotypes'][$geoType];
+    	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+    	$params = [$datasource_id, $zone];
     
-    $sql = "SELECT ase.year, s.sex, a.group_10yr, sum(ase.population) as population ".
-        "FROM fact.age_sex_ethnicity ase ".
-        "JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
-        "JOIN dim.mgra m on ase.mgra_id = m.mgra_id ".
-        "JOIN dim.age_group a on ase.age_group_id = a.age_group_id ".
-        "JOIN dim.sex s on ase.sex_id = s.sex_id ".
-        "WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-        "GROUP BY ase.year, s.sex, a.group_10yr";
+    	$sql = "SELECT ase.year, s.sex, a.group_10yr, sum(ase.population) as population ".
+        	"FROM fact.age_sex_ethnicity ase ".
+        	"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
+        	"JOIN dim.mgra m on ase.mgra_id = m.mgra_id ".
+        	"JOIN dim.age_group a on ase.age_group_id = a.age_group_id ".
+        	"JOIN dim.sex s on ase.sex_id = s.sex_id ".
+        	"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
+        	"GROUP BY ase.year, s.sex, a.group_10yr";
     
-    echo Query::getInstance()->getResultAsJson($sql, $params);
+    	$json = Query::getInstance()->getResultAsJson($sql, $params);
     
+	    $f = fopen($file_path, 'w');
+    	fwrite($f, $json);
+    	fclose($f);
+    
+    	echo $json;
+    }
 })->conditions(array('series' => '12|13'));
 
 $app->get('/forecast/:series/:geotype/:zone/income', function ($series, $geoType, $zone) use ($app)
 {
-	$columnName = $GLOBALS['geotypes'][$geoType];
-	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-	$params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('income', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 	
-	$sql = "SELECT i.yr as year, g.name as income_group ,sum(i.households) as households ".
-			"FROM fact.household_income i ".
-			"JOIN dim.income_group g ON i.income_group_id = g.income_group_id ".
-			"JOIN dim.datasource d ON i.datasource_id = d.datasource_id ".
-			"JOIN dim.mgra m ON i.mgra_id = m.mgra_id ".
-			"WHERE d.datasource_id = ? AND lower(m.".$columnName.") = ? ".
-			"GROUP BY i.yr, i.income_group_id, g.name ".
-			"ORDER BY i.yr, i.income_group_id";
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
 	
-	echo Query::getInstance()->getResultAsJson($sql, $params);
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+		$params = [$datasource_id, $zone];
+	
+		$sql = "SELECT i.yr as year, g.name as income_group ,sum(i.households) as households ".
+				"FROM fact.household_income i ".
+				"JOIN dim.income_group g ON i.income_group_id = g.income_group_id ".
+				"JOIN dim.datasource d ON i.datasource_id = d.datasource_id ".
+				"JOIN dim.mgra m ON i.mgra_id = m.mgra_id ".
+				"WHERE d.datasource_id = ? AND lower(m.".$columnName.") = ? ".
+				"GROUP BY i.yr, i.income_group_id, g.name ".
+				"ORDER BY i.yr, i.income_group_id";
+	
+		$json = Query::getInstance()->getResultAsJson($sql, $params);
+    
+	    $f = fopen($file_path, 'w');
+    	fwrite($f, $json);
+    	fclose($f);
+    
+    	echo $json;
+    }
 	
 })->conditions(array('series' => '12|13'));
 
 $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, $zone) use ($app)
 {
-	$columnName = $GLOBALS['geotypes'][$geoType];
-	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-	$params = [$datasource_id, $zone];
+	$file_name = strtolower(join("_", array('jobs', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 	
-	$sql = "select j.year, e.full_name as category, sum(j.jobs) as jobs ".
-		"FROM fact.jobs j ".
-		"JOIN dim.mgra m ON j.mgra_id = m.mgra_id ".
-		"JOIN dim.employment_type e ON j.employment_type_id = e.employment_type_id ".
-		"WHERE j.datasource_id = ?	AND e.civilian = 1 AND lower(m.".$columnName.") = ? ".
-		"GROUP BY j.year, e.full_name";
+	if (file_exists($file_path))
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
 	
-	echo Query::getInstance()->getResultAsJson($sql, $params);
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+		$params = [$datasource_id, $zone];
+	
+		$sql = "select j.year, e.full_name as category, sum(j.jobs) as jobs ".
+			"FROM fact.jobs j ".
+			"JOIN dim.mgra m ON j.mgra_id = m.mgra_id ".
+			"JOIN dim.employment_type e ON j.employment_type_id = e.employment_type_id ".
+			"WHERE j.datasource_id = ?	AND e.civilian = 1 AND lower(m.".$columnName.") = ? ".
+			"GROUP BY j.year, e.full_name";
+	
+		$json = Query::getInstance()->getResultAsJson($sql, $params);
+    
+		$f = fopen($file_path, 'w');
+    	fwrite($f, $json);
+    	fclose($f);
+    
+    	echo $json;
+	}
 	
 })->conditions(array('series' => '12|13'));
 
