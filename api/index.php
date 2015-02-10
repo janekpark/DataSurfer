@@ -265,31 +265,38 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 	}
 })->conditions(array('datasource' => 'census|estimate'));
 
-$app->get('/:datasource/:year/:geotype/export/pdf/:zone', function($datasource, $year, $geoType, $zone) use ($app)
+$app->get('/:datasource/:year/:geotype/:zone/export/pdf', function($datasource, $year, $geoType, $zone) use ($app)
 {
 	$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
 	
-	$res['Content-Description'] = 'File Transfer';
-	$res['Content-Type'] = 'application/pdf';
-	$res['Content-Disposition'] ='attachment; filename='.$file_name;
-	$res['Content-Transfer-Encoding'] = 'binary';
-	$res['Expires'] = '0';
-	$res['Cache-Control'] = 'must-revalidate';
-	$res['Pragma'] = 'public';
+	if (file_exists($file_path))
+	{
+		$res = $app->response();
+		$res['Content-Description'] = 'File Transfer';
+		$res['Content-Type'] = 'application/pdf';
+		$res['Content-Disposition'] ='attachment; filename='.$file_name;
+		$res['Content-Transfer-Encoding'] = 'binary';
+		$res['Expires'] = '0';
+		$res['Cache-Control'] = 'must-revalidate';
+		$res['Pragma'] = 'public';
 	
-	$res['Content-Length'] = filesize($file_path);
-	readfile($file_path);
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else 
+	{
+		$app->halt(400, 'Invalid PDF Export Request');
+	}
 	
 	
 })->conditions(array('datasource' => 'census|estimate|forecast'));
 
 //Export to Excel
-$app->get('/:datasource/:year/:geotype/export/xlsx/:zones+', function ($datasource, $year, $geoType, $zones) use ($app)
+$app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
 {
 	natcasesort($zones);
+
 	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).join("_",$zones).".xlsx");
-	
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
 
  	$res = $app->response();
