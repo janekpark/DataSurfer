@@ -165,22 +165,22 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
 	$file_name = strtolower(join("_", array('ethnicity', $datasource, $year, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year,$geoType, $file_name));
 	
-	if (file_exists($file_path))
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
+ 	if (file_exists($file_path))
+ 	{
+ 		$res['Content-Length'] = filesize($file_path);
+ 		readfile($file_path);
+ 	} else
+ 	{
     	$columnName = $GLOBALS['geotypes'][$geoType];
     	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
     	$params = [$datasource_id, $zone];
     
-    	$sql = "SELECT e.long_name as ethnicity, SUM(population) FROM fact.age_sex_ethnicity ase ".
+    	$sql = "SELECT e.short_name as ethnicity, SUM(population) as population FROM fact.age_sex_ethnicity ase ".
         	"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
         	"JOIN dim.mgra m ON ase.mgra_id = m.mgra_id ".
         	"JOIN dim.ethnicity e ON ase.ethnicity_id = e.ethnicity_id ".
         	"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-        	"GROUP BY e.long_name";
+        	"GROUP BY e.short_name";
     
     	$json = Query::getInstance()->getResultAsJson($sql, $params); 
 		
@@ -189,7 +189,7 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
 		fclose($f); 
 		
 		echo $json;
-	}
+ 	}
 })->conditions(array('datasource' => 'census|estimate'));
 
 //Census / Estimate - Age
@@ -230,9 +230,6 @@ $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year,
 //Census / Estimate - Income
 $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $year, $geoType, $zone) use ($app)
 {
-	//if($datasource == 'census' && $year == 2000)
-	//	$app->halt(501, 'Census 2000 data are not implemented yet!');
-	
 	$file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $file_name));
 	
@@ -265,30 +262,55 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 	}
 })->conditions(array('datasource' => 'census|estimate'));
 
-$app->get('/:datasource/:year/:geotype/:zone/export/pdf', function($datasource, $year, $geoType, $zone) use ($app)
+$app->get('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
 {
-	$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
-	
-	if (file_exists($file_path))
+	if (count($zones)>10)
 	{
-		$res = $app->response();
-		$res['Content-Description'] = 'File Transfer';
-		$res['Content-Type'] = 'application/pdf';
-		$res['Content-Disposition'] ='attachment; filename='.$file_name;
-		$res['Content-Transfer-Encoding'] = 'binary';
-		$res['Expires'] = '0';
-		$res['Cache-Control'] = 'must-revalidate';
-		$res['Pragma'] = 'public';
+		$app->halt(400, 'Invalid PDF Export Request: Too many zones.');
 	
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
+	}elseif (1 == count($zones))
+	{
+		$zone = $zones[0];
+		$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
+		$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
+		
+		if (file_exists($file_path))
+		{
+			$res = $app->response();
+			$res['Content-Description'] = 'File Transfer';
+			$res['Content-Type'] = 'application/pdf';
+			$res['Content-Disposition'] ='attachment; filename='.$file_name;
+			$res['Content-Transfer-Encoding'] = 'binary';
+			$res['Expires'] = '0';
+			$res['Cache-Control'] = 'must-revalidate';
+			$res['Pragma'] = 'public';
+		
+			$res['Content-Length'] = filesize($file_path);
+			readfile($file_path);
+		} else
+		{
+			$app->halt(400, 'Invalid PDF Export Request');
+		}
 	} else 
 	{
-		$app->halt(400, 'Invalid PDF Export Request');
+		natcasesort($zones);
+		$pdf = new PDFMerger;
+	
+		foreach ($zones as $zone)
+		{
+			$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
+			$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
+			if (file_exists($file_path))
+			{
+				$pdf->addPDF($file_path, 'all');
+			} else
+			{
+				$app->halt(400, 'Invalid PDF Export Request');
+			}
+		}
+		
+		$pdf->merge('download', strtolower(join("_", array('sandag', $datasource, $year, $geoType)).".pdf"));
 	}
-	
-	
 })->conditions(array('datasource' => 'census|estimate|forecast'));
 
 //Export to Excel
@@ -445,23 +467,23 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoT
 	$file_name = strtolower(join("_", array('ethnicity', 'forecast', $series, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 	
-	if (file_exists($file_path))
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
+ 	if (file_exists($file_path))
+ 	{
+ 		$res['Content-Length'] = filesize($file_path);
+ 		readfile($file_path);
+ 	} else
+ 	{
 		$columnName = $GLOBALS['geotypes'][$geoType];
 		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
 		$params = [$datasource_id, $zone];
 
-		$sql = "SELECT ase.year, e.long_name as ethnicity, sum(ase.population) as population ".
+		$sql = "SELECT ase.year, e.short_name as ethnicity, sum(ase.population) as population ".
 			"FROM fact.age_sex_ethnicity ase ".
 			"JOIN dim.datasource d on ase.datasource_id = d.datasource_id ".
 			"JOIN dim.mgra m on ase.mgra_id = m.mgra_id ".
 			"JOIN dim.ethnicity e on ase.ethnicity_id = e.ethnicity_id ".
 			"WHERE d.datasource_id = ? and lower(m.".$columnName.") = ? ".
-			"GROUP BY ase.year, e.long_name";
+			"GROUP BY ase.year, e.short_name";
 	  
 		$json = Query::getInstance()->getResultAsJson($sql, $params); 
 		
@@ -470,7 +492,7 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoT
 		fclose($f); 
 		
 		echo $json;
-	}
+ 	}
 
 })->conditions(array('series' => '12|13'));
 
