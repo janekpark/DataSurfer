@@ -55,7 +55,7 @@ $datasources = [
 		]
 ];
 
-$useCache = false;
+$useCache = true;
 
 $app = new \Slim\Slim();
 $app->add(new \AnalyticsMiddleware());
@@ -243,7 +243,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 
 $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geoType, $zone) use ($app)
 {
-	$file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
+	$file_name = strtolower(join("_", array('income_median', $datasource, $year, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $file_name));
 
 	if (file_exists($file_path) && $GLOBALS['useCache'])
@@ -270,11 +270,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasour
 
 $app->get('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
 {
-	if (count($zones)>10)
-	{
-		$app->halt(400, 'Invalid PDF Export Request: Too many zones.');
-	
-	}elseif (1 == count($zones))
+	if (1 == count($zones))
 	{
 		$zone = $zones[0];
 		$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
@@ -300,24 +296,45 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 	} else 
 	{
 		natcasesort($zones);
-		$pdf = new PDFMerger;
-	
+		
+		$zip = new ZipArchive();
+		$ts = round(microtime(true) * 1000);
+		$base_file_name = strtolower(join("_", array('sandag',$datasource, $year, $geoType))."_".join("_",$zones).".zip");
+		
+		$sys_file_name = './zip/'.$ts."_".$base_file_name;
+		
+		$zip->open($sys_file_name, ZIPARCHIVE::CREATE);
+		
 		foreach ($zones as $zone)
 		{
 			$file_name = strtolower(join("_", array('sandag', $datasource, $year, $geoType, $zone)).".pdf");
 			$file_path = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType, $file_name));
 			if (file_exists($file_path))
 			{
-				$pdf->addPDF($file_path, 'all');
+				$zip->addFile($file_path, $file_name);
 			} else
 			{
 				$app->halt(400, 'Invalid PDF Export Request');
 			}
 		}
 		
-		$pdf->merge('download', strtolower(join("_", array('sandag', $datasource, $year, $geoType)).".pdf"));
+		$zip->close();
+		
+		$res = $app->response();
+		$res['Content-Description'] = 'File Transfer';
+		$res['Content-Type'] = 'application/zip';
+		$res['Content-Disposition'] ='attachment; filename='.$base_file_name;
+		$res['Content-Transfer-Encoding'] = 'binary';
+		$res['Expires'] = '0';
+		$res['Cache-Control'] = 'must-revalidate';
+		$res['Pragma'] = 'public';
+		$res['Content-Length'] = filesize($sys_file_name);
+		
+		readfile($sys_file_name);
+		
+		unlink($sys_file_name);
 	}
-})->conditions(array('datasource' => 'census|estimate|forecast'));
+})->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
 //Export to Excel
 $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
@@ -429,7 +446,7 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 		$objWriter->save($file_path);
 		$objWriter->save('php://output');
 	}
-})->conditions(array('datasource' => 'census|estimate|forecast'));
+})->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
 //Forecast - Housing
 $app->get('/forecast/:series/:geotype/:zone/housing', function ($series, $geoType, $zone)
@@ -486,6 +503,36 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoT
 		
 		echo $json;
  	}
+
+})->conditions(array('series' => '12|13'));
+
+//Forecast - Ethnicity
+$app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series, $geoType, $zone)
+{
+	$file_name = strtolower(join("_", array('ethnicity_change', 'forecast', $series, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
+
+//	if (file_exists($file_path) && $GLOBALS['useCache'])
+	if (file_exists($file_path) && false)
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+		$params = [$datasource_id, $columnName, $zone];
+
+		$sql = "app.sp_forecast_ethnicity_change ?, ?, ?";
+
+		$json = Query::getInstance()->getResultAsJson($sql, $params);
+
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f);
+
+		echo $json;
+	}
 
 })->conditions(array('series' => '12|13'));
 
@@ -548,7 +595,7 @@ $app->get('/forecast/:series/:geotype/:zone/income', function ($series, $geoType
 
 $app->get('/forecast/:series/:geotype/:zone/income/median', function ($series, $geoType, $zone) use ($app)
 {
-	$file_name = strtolower(join("_", array('median_income', 'forecast', $series, $geoType, $zone)).".json");
+	$file_name = strtolower(join("_", array('income_median', 'forecast', $series, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 
 	if (file_exists($file_path) && $GLOBALS['useCache'])
@@ -607,12 +654,16 @@ $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, 
 $app->get('/:program/:series/:geotype/:zone/map', function ($program, $series, $geoType, $zone) use ($app)
 {
 	$res = $app->response();
-	$res['Content-Type'] = 'image/png';
+	$res['Content-Type'] = 'image/jpeg';
 	$res['Expires'] = '0';
 	$res['Cache-Control'] = 'must-revalidate';
 	$res['Pragma'] = 'public';
 	
-	$image = imagecreatefrompng('./map/city.png');
+	$file_name = strtolower(join("_", array('sandag', 'series', '13', $geoType, $zone)).".jpg");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","map", 'series13',$geoType, $file_name));
+	
+	//echo $file_path;
+	$image = imagecreatefromjpeg($file_path);
 	echo imagepng($image);
 	imagedestroy($image);
 	
