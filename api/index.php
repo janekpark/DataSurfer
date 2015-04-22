@@ -23,7 +23,7 @@ $geotypes = [
 		"msa" => "msa_name",
 		"sra" => "sra_name",
 		//"ct2000" => "ct2000",
-		"tract" => "tract",
+		"tract" => "tract_name",
 		"elementary" => "elementary_name",
 		"secondary" => "high_school_name",
 		"unified" => "unified_name",
@@ -46,6 +46,7 @@ $datasources = [
 				2011 => 3,
 				2012 => 4,
 				2013 => 10,
+				2014 => 14
 		],
 		"census" =>
 		[
@@ -58,7 +59,7 @@ $datasources = [
 $useCache = true;
 
 $app = new \Slim\Slim();
-$app->add(new \AnalyticsMiddleware());
+//$app->add(new \AnalyticsMiddleware());
 
 $app->notFound(function() use ($app)
 {
@@ -268,7 +269,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasour
 	}
 })->conditions(array('datasource' => 'census|estimate'));
 
-$app->get('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
+$app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
 {
 	if (1 == count($zones))
 	{
@@ -334,7 +335,7 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 		
 		unlink($sys_file_name);
 	}
-})->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
+})->via('GET', 'POST')->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
 //Export to Excel
 $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
@@ -651,7 +652,7 @@ $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, 
 	
 })->conditions(array('series' => '12|13'));
 
-$app->get('/:program/:series/:geotype/:zone/map', function ($program, $series, $geoType, $zone) use ($app)
+$app->get('/:program/:series/:geotype/:zone/map', function ($datasource, $series, $geoType, $zone) use ($app)
 {
 	$res = $app->response();
 	$res['Content-Type'] = 'image/jpeg';
@@ -659,13 +660,30 @@ $app->get('/:program/:series/:geotype/:zone/map', function ($program, $series, $
 	$res['Cache-Control'] = 'must-revalidate';
 	$res['Pragma'] = 'public';
 	
-	$file_name = strtolower(join("_", array('sandag', 'series', '13', $geoType, $zone)).".jpg");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","map", 'series13',$geoType, $file_name));
+	$series_id = '13';
 	
-	//echo $file_path;
-	$image = imagecreatefromjpeg($file_path);
-	echo imagepng($image);
-	imagedestroy($image);
+	if ($datasource == 'forecast') 
+	{
+		$series_id = $series;	
+	} elseif ($datasource == 'census')
+	{
+		if($series == 2000)
+		{
+			$series_id = 10;
+		}
+	}
+	
+	$file_name = strtolower(join("_", array('sandag', 'series'.$series_id, $geoType, $zone)).".jpg");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","map", 'series'.$series_id,$geoType, $file_name));
+	
+	if (file_exists($file_path))
+	{
+		$image = imagecreatefromjpeg($file_path);
+		echo imagepng($image);
+		imagedestroy($image);
+	} else {
+		$app->halt(400, 'Invalid PDF Export Request');
+	}
 	
 })->conditions(array('datasource' => 'census|forecast|estimate', 'series' => '(\d){2,4}'));
 
