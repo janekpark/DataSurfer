@@ -30,6 +30,11 @@ class AnalyticsMiddleware extends \Slim\Middleware
 		$referrer = $request->getReferrer();
 		$userAgent = $request->getUserAgent();
 
+		//echo $resourceUri;
+		//echo $ip;
+		//echo $referrer;
+		//echo $userAgent;
+		
 		$sql = 'INSERT INTO app.usage (accessed, ip, resource_uri, referrer, user_agent) VALUES (CURRENT_TIMESTAMP,?,?,?,?)';
 
 		$conn = sqlsrv_connect ( $this->db_server, $this->connectionInfo );
