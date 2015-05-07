@@ -1,0 +1,301 @@
+.nav-select ul 
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-select 
+{
+	width: 234px;
+	height:31px;
+	margin-bottom:10px;
+}
+
+.nav-select > ul > li 
+{
+	width: 100%;
+	float: left;
+	position: relative;
+}
+
+.nav-select > ul > li a ,
+.nav-select > ul > li a:hover,
+.nav-select > ul > li a:focus
+{
+	display: block;
+	color: #fff;
+	padding: 6px 15px;
+	text-decoration: none !important;
+	text-transform:uppercase;
+	font-size:.875em;
+	font-weight:normal;
+	text-align:left;
+}
+.nav-select > ul > li a .glyphicon-down
+{
+	background-size:contain;
+	position: absolute;
+	height:12px;
+	width:32px;
+	right: 0;
+	top:10px;
+}
+
+.banner-section .nav-select > ul > li a .glyphicon-down
+{	
+	height: 45px;
+    top: 0;
+	right:4px;
+    width: 45px;
+	background-size:cover;
+	background-image:url(../images/ui/icon-next-2.png);
+}
+.banner-section .nav-select > ul > li a,
+.banner-section .nav-select > ul > li a:hover,
+.banner-section .nav-select > ul > li a:focus
+{
+	font-size:.875em;
+	padding:0 17px;
+	letter-spacing:.1em;
+}
+.banner-section .nav-select > ul > li li a,
+.banner-section .nav-select > ul > li li a:hover,
+.banner-section .nav-select > ul > li li a:focus
+{
+	padding:6px 15px;
+}
+
+.nav-select > ul > li li a 
+{
+	background: #fff;
+	color:#959595 !important;
+}
+
+.nav-select > ul > li li a:hover 
+{ 
+	background: #F3F0EF;
+	color:#959595;
+}
+
+.nav-select > ul > li:hover a + ul 
+{ 
+	/*display: block;*/
+}
+
+.nav-select > ul > li > ul 
+{
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 100%;
+	display: none;
+	border-top:1px solid #959595;
+	border-bottom:1px solid #959595;	
+	z-index:2;	
+	max-height:223px;
+	overflow-y:auto;
+}
+.nav-select > ul > li > ul li
+{
+	border:1px solid #959595;
+	border-top:0 none;
+}
+.nav-select > ul > li > ul li:last-child
+{
+	border-bottom:0 none;
+}
+
+#scroller-wrapper {
+	position: absolute;
+	z-index: 1;
+	height:223px;
+	width: 100%;
+	overflow: hidden;
+	border:1px solid #959595 !important;
+	visibility:hidden;
+}
+
+#scroller {
+	position: absolute;
+	z-index: 1;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	width: 100%;
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	text-size-adjust: none;	
+}
+#scroller ul 
+{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+
+#scroller li {
+	border-bottom: 1px solid #959595;
+}
+.iScrollVerticalScrollbar
+{
+	width:9px !important;
+	opacity:1 !important;
+}
+.iScrollIndicator
+{
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important; 
+	border-radius: 0 !important; 
+	border:#E4E3E3 !important;
+	background:#E4E3E3 !important;
+}
+@media (max-width:1023px)
+{
+	.nav-select
+	{
+		width:100%;
+	}
+	.banner-section .nav-select > ul > li a, 
+	.banner-section .nav-select > ul > li a:hover, 
+	.banner-section .nav-select > ul > li a:focus
+	{
+		padding:0 20px;
+	}
+}
+@media (max-width:992px)
+{
+	.nav-select
+	{
+		width:234px;
+	}
+}
+@media (max-width:374px)
+{
+	.nav-select
+	{
+		width:100%;
+	}
+	.nav-select > ul > li a ,
+	.nav-select > ul > li a:hover,
+	.nav-select > ul > li a:focus,
+	.banner-section .nav-select > ul > li a,
+	.banner-section .nav-select > ul > li a:hover,
+	.banner-section .nav-select > ul > li a:focus
+	{
+		font-size:.75em;
+	}
+}
+
+.nav-chart
+{
+	width:40px;
+	position:absolute;
+	top:0;
+	right:0;
+	z-index:1;
+}
+.nav-device
+{
+	width:40px;
+	position:absolute;
+	top:0;
+	right:0;
+	z-index:1;
+	overflow:hidden;
+}
+.nav-device .ui-btn
+{
+	padding:0;
+	border:0 none;
+}
+.nav-device .ui-icon-carat-d:after
+{
+	background:none transparent;
+}
+.nav-chart .btn-chart,
+.nav-device .ui-btn span
+{
+	display:block;
+	width:40px;
+	height:40px;
+	background:url(../images/ui/icon-chart.png) #194378 center center no-repeat;
+	background-size:cover;
+}
+.nav-chart .btn-chart:hover,
+.nav-device .ui-btn span:hover
+{
+	background-color:#112F54;
+}
+.nav-chart ul > li > ul
+{
+	width:234px;
+	left:inherit;
+	right:0;
+}
+.nav-device.nav-detail .ui-btn > span{
+    text-indent: -9999px;
+}
+@media (max-width:767px)
+{
+	.nav-device,	
+	.nav-chart
+	{
+		width:44px;
+	}
+	.nav-chart .btn-chart,
+	.nav-device .ui-btn span
+	{
+		width:44px;
+		height:44px;
+		background-image:url(../images/ui/icon-chart-mobile.png);
+	}
+	.banner-section .nav-select > ul > li a, 
+	.banner-section .nav-select > ul > li a:hover, 
+	.banner-section .nav-select > ul > li a:focus
+	{
+		padding:0 17px;
+		font-size:.8em;
+	}
+}
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (   min--moz-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (     -o-min-device-pixel-ratio: 2/1)    and (min-width: 320px),
+only screen and (        min-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (                min-resolution: 192dpi) and (min-width: 320px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 320px) { 
+	.nav-chart .btn-chart,
+	.nav-device .ui-btn span
+	{
+		background-image:url(../images/ui/icon-chart-mobile@2x.png);
+	}
+	.banner-section .nav-select > ul > li a .glyphicon-down
+	{	
+		background-image:url(../images/ui/icon-next-2@2x.png);
+	}
+}
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (   min--moz-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (     -o-min-device-pixel-ratio: 2/1)    and (min-width: 768px),
+only screen and (        min-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (                min-resolution: 192dpi) and (min-width: 768px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 768px) { 
+	.nav-chart .btn-chart,
+	.nav-device .ui-btn span
+	{
+		background-image:url(../images/ui/icon-chart@2x.png);
+	}
+}

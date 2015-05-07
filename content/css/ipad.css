@@ -1,0 +1,648 @@
+@media (max-width:1023px)
+{	
+	.site-wrapper,
+	.site-wrapper > .site-content,
+	.loading-section
+	{
+		background-image:url(../images/ui/wrapper-ipad.png);		
+		background-size:100% auto;
+	}
+	.site-wrapper > .home-content
+	{
+		background-image:none;
+	}
+	.row
+	{
+		margin-right:-8px;
+		margin-left:-8px;
+	}
+
+	.col-xs-1, 
+	.col-sm-1, 
+	.col-md-1, 
+	.col-lg-1, 
+	.col-xs-2, 
+	.col-sm-2, 
+	.col-md-2, 
+	.col-lg-2, 
+	.col-xs-3, 
+	.col-sm-3, 
+	.col-md-3, 
+	.col-lg-3, 
+	.col-xs-4, 
+	.col-sm-4, 
+	.col-md-4, 
+	.col-lg-4, 
+	.col-xs-5, 
+	.col-sm-5, 
+	.col-md-5, 
+	.col-lg-5, 
+	.col-xs-6, 
+	.col-sm-6, 
+	.col-md-6, 
+	.col-lg-6,
+	.col-xs-7, 
+	.col-sm-7, 
+	.col-md-7, 
+	.col-lg-7, 
+	.col-xs-8, 
+	.col-sm-8, 
+	.col-md-8, 
+	.col-lg-8, 
+	.col-xs-9, 
+	.col-sm-9, 
+	.col-md-9, 
+	.col-lg-9, 
+	.col-xs-10, 
+	.col-sm-10, 
+	.col-md-10, 
+	.col-lg-10, 
+	.col-xs-11, 
+	.col-sm-11, 
+	.col-md-11, 
+	.col-lg-11, 
+	.col-xs-12, 
+	.col-sm-12, 
+	.col-md-12, 
+	.col-lg-12
+	{
+		padding-left:8px;
+		padding-right:8px;
+	}
+	.site-header
+	{
+		height:83px;
+	}
+	.site-header .hamburger
+	{
+		padding:14px 0;
+		margin-left:4px;
+	}
+	.site-header .logo
+	{
+		padding:27px 0;
+		margin-left:7px;
+	}
+	.site-container
+	{
+		width:auto;		
+	}
+	
+	.loading-section .site-container
+	{
+		width:100%;
+	}
+	.site-footer .site-container > .row
+	{
+		margin-left:0;
+		margin-right:0;
+	}
+	.site-footer .col-left
+	{
+		margin-top:20px;
+		margin-bottom:20px;
+	}
+	.home-section .col-left h1
+	{
+		margin-bottom:15px;
+	}
+	.home-section .col-left h1 strong
+	{
+		margin-left:4px;
+	}
+	.home-section .col-left p
+	{
+		letter-spacing:0.001em;
+		margin-left:5px;
+	}
+	.home-section
+	{
+		padding:0;
+	}
+	.home-section .col-left
+	{
+		width:100%;
+		min-height:inherit;
+		padding:0 7px;
+	}
+	.home-section .col-left ul
+	{
+		margin-left:-2px;
+		margin-right:-2px;
+	}
+	.home-section .col-left ul li{
+		margin-bottom:10px;
+	}	
+	.home-section .col-left .btn
+	{
+		height:68px;
+		line-height:68px;
+	}
+	.home-section .col-left .glyphicon-next
+	{
+		top:-1px;
+	}
+	.home-section .content-info
+	{
+		padding-top:98px;
+		height:361px;
+	}
+	.home-section .col-right
+	{
+		min-height:166px;
+		width:100%;
+	}
+	.home-section .col-right .photos-list
+	{
+		width:auto;
+		position:inherit;
+		left:0;
+		right:0;
+		top:0;
+	}
+	.home-section .col-right .photos-list li
+	{
+		margin-bottom:10px;
+		margin-top:0;
+		width:33.33%
+	}
+
+	.site-footer
+	{
+		min-height:264px;
+	}
+	.site-footer .col-right
+	{
+		margin-top:19px;
+	}
+	.site-footer .col-right .copyright
+	{		
+		margin-bottom:24px;
+	}
+	.site-footer .col-right .copyright a
+	{		
+		margin-bottom:16px;
+	}
+	.site-footer .col-right .created-by
+	{
+		margin-bottom:22px;
+		padding-top:20px;
+	}
+	/*.site-footer .col-right .created-by a
+	{
+		width:148px;
+		height:62px;
+		background-image:url(../images/ui/logo-footer-2-ipad.png);
+	}*/
+			
+	.ready-section
+	{
+		padding:77px 0;
+	}
+	.ready-section .site-container
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}	
+	.ready-section h2
+	{
+		margin-top:-5px;
+	}
+	.ready-section .btn
+	{
+		height:66px;
+		letter-spacing:.04em;
+	}
+	.ready-section .btn .glyphicon-next
+	{
+		top:-3px;
+	}
+	
+	.overview-section header
+	{
+		margin-top:-17px;
+	}
+	.overview-section header .btn
+	{
+		letter-spacing:.01em;
+	}
+	.overview-section header .btn .glyphicon-pre
+	{
+		left:2px;
+	}
+	.breadcrumb
+	{
+		padding-bottom:4px;
+		padding-top:11px;
+	}
+	.breadcrumb li:last-child
+	{
+		margin-top:-9px;
+		font-size:2.5em;
+	}
+	.overview-section .site-container
+	{
+		padding-left:19px;
+		padding-right:19px;
+	}
+	.overview-section header dd
+	{
+		margin-top:-7px;
+		font-size:2.5em;
+	}
+	.overview-section header hr
+	{
+		border:0 none;
+		border-top:1px solid #959595;
+	}	
+	.overview-section header p
+	{
+		margin-bottom:9px;
+	}
+	
+	.chart-item .chart-frame
+	{
+		height:248px;
+	}
+	.chart-details
+	{
+		padding-bottom:1px;
+	}
+	.chart-details .chart-item .chart-frame
+	{
+		height:508px;
+	}
+	.view-report-section .btn-section
+	{
+		padding-left:21px;
+		padding-right:21px;
+	}
+	.view-report-section .btn,
+	.ui-page-theme-a .view-report-section .ui-btn
+	{
+		padding-right:17px;
+	}
+	
+	.data-section 
+	{
+		padding-top:24px;
+	}
+	.data-section .site-container
+	{
+		padding-left:17px;
+		padding-right:17px;
+	}
+	.data-section header
+	{
+		margin-bottom:32px;
+	}
+	.data-section .data-info header h4
+	{
+		margin-bottom:-1px;
+	}	
+	.data-section .col-left .select-site
+	{
+		padding-left:2px;
+	}
+	.data-section .col-right .data-line
+	{
+		top:15px;
+	}	
+	.data-section .col-right .data-info header
+	{
+		margin-bottom:3px;
+	}
+	.data-section .col-right .data-info .data-fieldset h4
+	{
+		margin-top:7px;
+		margin-bottom:5px;
+	}
+	.data-selection .data-content
+	{
+		padding:11px 0;
+	}
+	.cb-selection
+	{
+		margin-top:9px;
+	}
+	
+	.banner-section .site-header .site-container
+	{
+		width:auto;
+		padding-left:12px;
+		padding-right:12px;
+	}
+	.site-content  .site-container
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	.how-content .banner-header
+	{
+		padding-top:11px;
+	}
+	.how-section .find-section
+	{
+		padding-bottom:21px;
+	}
+	.how-section .find-section .find-row
+	{
+		padding-bottom:11px;
+	}
+	.how-section .review-section
+	{
+		padding-bottom:41px;
+	}
+	.how-section .compare-section img
+	{
+		margin-top:4px;
+	}
+	.how-section .reports-section
+	{
+		padding-bottom:23px;
+	}
+	.how-content .banner-header  .site-container,
+	.site-how  .site-container
+	{
+		padding-left:18px;
+		padding-right:18px;
+	}
+	.site-contact  .site-container,
+	.site-glossary  .site-container,
+	.site-variables  .site-container,
+	.site-faq  .site-container
+	{
+		padding-left:20px;
+		padding-right:20px;
+	}
+	.banner-section > .site-container
+	{
+		padding:0;
+	}
+	.banner-content .col-right h5
+	{
+		font-size:.84375em;
+		letter-spacing:.06em;
+		margin-bottom:6px;
+	}
+	.banner-contact .banner-header .site-container
+	{
+		margin-left:0;
+		margin-right:0;
+		padding-left:18px;
+		padding-right:18px;
+	}
+	.banner-glossary .banner-header .site-container
+	{
+		margin-left:0;
+		margin-right:0;
+		padding-left:20px;
+		padding-right:20px;
+	}
+	.banner-faq .banner-header .site-container
+	{
+		margin-left:0;
+		margin-right:0;
+		padding-left:20px;
+		padding-right:20px;
+	}
+	.banner-variables .banner-header .site-container
+	{
+		margin-left:0;
+		margin-right:0;
+		padding-left:20px;
+		padding-right:20px;
+	}
+	.banner-faq .banner-header .site-container
+	{
+		margin-left:0;
+		margin-right:0;
+		padding-left:18px;
+		padding-right:18px;
+	}
+	.site-content .contact-content
+	{
+		padding-bottom:81px;
+	}
+	.contact-content .col-left.intro-section
+	{
+		padding-bottom:38px;
+	}
+	.contact-fieldset .contact-label
+	{
+		margin-top:-3px;
+	}
+	#completed p
+	{
+		line-height:190%;
+	}
+	.creative-content .col-left
+	{
+		padding-top:16px;
+	}
+	.creative-content .creative-section header
+	{
+		margin-bottom:15px;
+	}
+	.creative-content .col-left
+	{
+		padding-top:2px;
+	}
+	.banner-content .col-right
+	{
+		padding-bottom:26px;
+	}
+	.how-section .creative-content .creative-section
+	{
+		padding-bottom:2px;
+	}
+	.creative-section .creative-link .glyphicon-up
+	{
+		margin-left:10px;
+		margin-right:-2px;
+	}
+	
+	.left-nav
+	{
+		padding-right:18px;
+		padding-left:25px;
+	}
+	.left-nav .close
+	{
+		top:12px;
+		right:3px;
+	}
+	.selection-section
+	{
+		padding-top:43px;
+	}
+	.select-site
+	{
+		margin-bottom:9px;
+	}
+	.left-nav .btn, .left-nav .btn:hover
+	{
+		font-size:0.85em;
+		padding-top:11px;
+		padding-bottom:12px;
+		letter-spacing:.05em;
+	}
+	.bootstrap-select .btn, 
+	.bootstrap-select.btn-group.open .dropdown-toggle
+	{
+		font-size:0.85em;
+		padding-top:11px;
+		padding-bottom:12px;
+	}
+	.bootstrap-select .dropdown-menu li a
+	{
+		font-size:0.85em;
+	}
+	.left-nav .btn.btn-orange, 
+	.left-nav .btn.btn-orange:hover
+	{
+		padding-top:13px;
+		padding-bottom:13px;
+		letter-spacing:.04em;
+	}
+	.left-nav .btn.btn-white, 
+	.left-nav .btn.btn-white:hover
+	{
+		padding-top:12px;
+		padding-bottom:11px;
+		letter-spacing:.04em;
+	}
+	.report-section
+	{
+		padding-top:30px;
+	}
+	.reset-section
+	{
+		padding-top:34px;
+	}
+	.home-section .col-right .row
+	{
+		margin-left:-4px;
+		margin-right:-4px;
+	}
+}
+@media (min-width:992px) and (max-width:1023px)
+{	
+	.chart-list .col-xs-12
+	{
+		width:50% !important;
+	}
+	.site-footer .col-left .col-md-10
+	{
+		width:100%;
+	}
+	.site-footer .col-left .col-md-6
+	{
+		width:66.66666667%;
+	}
+	.site-footer .col-left .col-md-4
+	{
+		width:33.33333333%;
+	}
+	.site-footer .col-sm-offset-3 
+	{
+		margin-left:25%;
+	}
+	.site-footer .col-sm-3{
+		width:25%;
+	}
+	.site-footer .col-right .col-xs-6
+	{
+		width:100%;
+		margin-left:0;
+	}
+	.ui-page-theme-a .reset-section .ui-btn
+	{
+		padding-top:16px;
+		padding-bottom:16px;
+	}
+	.home-section .col-left p .visible-sm
+	{
+		display:block !important;
+	}
+	.home-section .col-left p .visible-md
+	{
+		display:none !important;
+	}	
+	.site-content .creative-content .col-sm-8,
+	.site-content .faq-content .col-sm-8
+	{
+		width:66.66666667%;
+	}
+	.site-content .creative-content .col-right.col-md-offset-2
+	{
+		margin-left:8.33333333%;
+	}
+	.site-content .creative-content .col-right.col-sm-4
+	{
+		width:33.33333333%;
+	}
+	.ready-section .col-sm-offset-1 
+	{
+		margin-left:8.33333333%;
+	}
+	.ready-section .col-sm-5
+	{
+		width:41.66666667%;
+	}
+	.view-report-section .col-sm-offset-3 
+	{
+		margin-left:25%;
+	}
+	.view-report-section .col-sm-6
+	{
+		width:50%;
+	}	
+}
+@media (max-width:991px)
+{	
+	.data-section .col-right .data-line
+	{
+		left:-8.5%;
+	}
+}
+@media (min-width:768px) and (max-width:1023px)
+{	
+	.selection-section .error
+	{
+		height:25px;
+	}
+	.selection-section
+	{
+		padding-bottom:32px;
+	}
+	.report-section
+	{
+		padding-top:25px;
+		padding-bottom:22px;
+	}
+	.ui-page-theme-a .report-section h5
+	{
+		margin-bottom:4px;
+	}
+	.reset-section
+	{
+		padding-top:30px;
+	}
+	.left-nav .select-site
+	{
+		margin-bottom:10px;
+	}
+	.ui-page-theme-a .left-nav .select-site .ui-btn, 
+	.ui-page-theme-a .left-nav .select-site .ui-btn.ui-state-disabled, 
+	.ui-page-theme-a .left-nav .select-site .ui-btn.ui-state-disabled:focus
+	{
+		padding-bottom:13px;
+	}
+	.ui-page-theme-a .data-section .col-right  .select-site .ui-btn, 
+	.ui-page-theme-a .data-section .col-right .select-site .ui-btn.ui-state-disabled, 
+	.ui-page-theme-a .data-section .col-right .select-site .ui-btn.ui-state-disabled:focus
+	{
+		letter-spacing:.05em;
+	}
+}

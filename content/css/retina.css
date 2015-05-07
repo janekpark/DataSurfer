@@ -1,0 +1,287 @@
+@media
+only screen and (-webkit-min-device-pixel-ratio: 1.25)      and (min-width: 320px),
+only screen and (   min--moz-device-pixel-ratio: 1.25)      and (min-width: 320px),
+only screen and (     -o-min-device-pixel-ratio: 1.25/1)    and (min-width: 320px),
+only screen and (        min-device-pixel-ratio: 1.25)      and (min-width: 320px),
+only screen and (                min-resolution: 120dpi) and (min-width: 320px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 320px) { 
+	.img-no-retina,
+	.img-no-retina.img-767,
+	.img-no-retina.img-768
+	{
+		display:none;
+	}
+	.img-retina
+	{
+		display:block;
+	}
+	.img-retina.img-767
+	{
+		display:block;
+	}
+	.img-retina.img-768
+	{
+		display:none;
+	}
+	.glyphicon-next,
+	.glyphicon-pre,
+	.glyphicon-up,
+	.glyphicon-down
+	{
+		background-image:url(../images/ui/icon-next@2x.png);
+	}
+	.ready-section .btn .glyphicon-next
+	{
+		right:-9px;
+		top:0;
+	}
+	.bootstrap-select.btn-group .btn .caret
+	{
+		background-image:url(../images/ui/icon-down-2@2x.png);
+	}
+	.cb-selection input[type=checkbox] + label
+	{
+	  background-image:url(../images/ui/cb-selection-mobile@2x.png);
+	}
+	.cb-selection input[type=checkbox]:checked + label
+	{
+	  background-image:url(../images/ui/cb-selection-checked-mobile@2x.png);
+	}	
+	.ui-page-theme-a .data-section .ui-checkbox .ui-btn
+	{
+		background-image:url(../images/ui/cb-selection-mobile@2x.png);
+	}
+	.ui-icon-check::after, 
+	html .ui-btn.ui-checkbox-on.ui-checkbox-on::after
+	{
+		background-image:url(../images/ui/cb-selection-checked-mobile@2x.png);
+	}
+	.left-nav .close
+	{
+		background-image:url(../images/ui/btn-close@2x.png);
+	}
+	.selection-section  .bootstrap-select .btn .caret
+	{
+		background-image:url(../images/ui/icon-down@2x.png);
+	}
+	.site-wrapper,
+	.site-wrapper > .site-content,
+	.loading-section
+	{
+		background-image:url(../images/ui/wrapper-mobile@2x.png);
+	}	
+	.site-header .hamburger span
+	{
+		background-image:url(../images/ui/icon-hamburger@2x.png);
+	}
+	.site-header .logo span
+	{
+		background-image:url(../images/ui/logo@2x.png);
+	}
+	.site-footer .col-left .socials-list .glyphicon-facebook
+	{
+		background-image:url(../images/ui/icon-facebook@2x.png);
+	}
+	.site-footer .col-left .socials-list .glyphicon-twitter
+	{
+		background-image:url(../images/ui/icon-twitter@2x.png);
+	}
+	.site-footer .col-left .socials-list .glyphicon-youtube
+	{
+		background-image:url(../images/ui/icon-youtube@2x.png);
+	}
+	.site-footer .col-right .copyright a
+	{
+		background-image:url(../images/ui/logo-footer@2x.png);
+	}
+	.site-footer .col-right .created-by a
+	{
+		background-image:url(../images/ui/logo-footer-2@2x.png);
+	}
+	.chart-item .chart-icon
+	{	
+		background-image:url(../images/ui/icon-details-mobile@2x.png);
+	}
+	.view-report-section .btn
+	{
+		background-image:url(../images/ui/icon-add@2x.png);
+	}
+	.banner-gradient
+	{
+		background-image:url(../images/ui/banner-gradient@2x.png);
+	}	
+	.banner-glossary .banner-gradient
+	{	
+		background-image:url(../images/ui/banner-gradient-contact@2x.png);
+	}
+	.contact-fieldset input.btn
+	{
+		background-image:url(../images/ui/icon-next-3@2x.png);
+	}
+	.creative-section .creative-link .glyphicon-up
+	{
+		background-image:url(../images/ui/icon-next-brown-hover@2x.png);
+	}
+	.ui-page-theme-a .banner-content #button_change .ui-btn
+	{
+		background-image:url(../images/ui/icon-next-2@2x.png);
+	}
+	.ui-page-theme-a .select-site .ui-btn span{
+		background-image:url(../images/ui/icon-down-white@2x.png);
+	}
+	.ui-page-theme-a .selection-section .select-site .ui-btn span{
+		background-image:url(../images/ui/icon-down-brown@2x.png);
+	}
+	.ui-page-theme-a .view-report-section .ui-btn
+	{
+		background-image:url(../images/ui/icon-add@2x.png);
+	}
+	.photo-1
+	{
+		background-image:url(../images/photo-1@2x.jpg);
+	}
+	.photo-2
+	{
+		background-image:url(../images/photo-2@2x.jpg);
+	}
+	.photo-3
+	{
+		background-image:url(../images/photo-3@2x.jpg);
+	}
+	.photo-4
+	{
+		background-image:url(../images/photo-4@2x.jpg);
+	}
+	.photo-5
+	{
+		background-image:url(../images/photo-5@2x.jpg);
+	}
+	.photo-6
+	{
+		background-image:url(../images/photo-6@2x.jpg);
+	}
+	.photo-7
+	{
+		background-image:url(../images/photo-7@2x.jpg);
+	}
+	.photo-8
+	{
+		background-image:url(../images/photo-8@2x.jpg);
+	}
+	.photo-9
+	{
+		background-image:url(../images/photo-9@2x.jpg);
+	}
+	.photo-10
+	{
+		background-image:url(../images/photo-10@2x.jpg);
+	}
+	.photo-11
+	{
+		background-image:url(../images/photo-11@2x.jpg);
+	}
+	.photo-12
+	{
+		background-image:url(../images/photo-12@2x.jpg);
+	}
+	.banner-img-variables
+	{
+		background-image:url(../images/img-variables@2x.jpg);
+	}
+	.banner-img-contact
+	{
+		background-image:url(../images/img-contact@2x.jpg);
+	}
+	.banner-img-faq
+	{
+		background-image:url(../images/img-faq@2x.jpg);
+	}
+	.banner-img-glossary
+	{
+		background-image:url(../images/img-glossary@2x.jpg);
+	}
+	.banner-content .btn .glyphicon-up
+	{
+		right:0;
+		top:0;
+	}
+}
+@media
+only screen and (-webkit-min-device-pixel-ratio: 1.25)      and (min-width: 768px),
+only screen and (   min--moz-device-pixel-ratio: 1.25)      and (min-width: 768px),
+only screen and (     -o-min-device-pixel-ratio: 1.25/1)    and (min-width: 768px),
+only screen and (        min-device-pixel-ratio: 1.25)      and (min-width: 768px),
+only screen and (                min-resolution: 120dpi) and (min-width: 768px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 768px){ 
+	.img-retina.img-767
+	{
+		display:none;
+	}
+	.img-retina.img-768
+	{
+		display:block;
+	}
+	.ready-section .btn .glyphicon-next
+	{
+		right:-7px;
+		top:-2px;
+	}
+	.site-wrapper,
+	.site-wrapper > .site-content,
+	.loading-section
+	{
+		background-image:url(../images/ui/wrapper-ipad@2x.png);
+	}
+	.chart-item .chart-icon
+	{
+		background-image:url(../images/ui/icon-details@2x.png);
+	}
+	/*.site-footer .col-right .created-by a
+	{
+		background-image:url(../images/ui/logo-footer-2-ipad@2x.png);
+	}*/
+	.cb-selection input[type=checkbox] + label
+	{
+	  background-image:url(../images/ui/cb-selection@2x.png);
+	}
+	.cb-selection input[type=checkbox]:checked + label
+	{
+	  background-image:url(../images/ui/cb-selection-checked@2x.png);
+	}
+	.ui-page-theme-a .data-section .ui-checkbox .ui-btn
+	{
+		background-image:url(../images/ui/cb-selection@2x.png);
+	}
+	.ui-icon-check::after, 
+	html .ui-btn.ui-checkbox-on.ui-checkbox-on::after
+	{
+		background-image:url(../images/ui/cb-selection-checked@2x.png);
+	}
+	.banner-content .btn .glyphicon-up
+	{
+		right:3px;
+		top:1px;
+	}
+}
+@media
+only screen and (-webkit-min-device-pixel-ratio: 1.25)      and (min-width: 1024px),
+only screen and (   min--moz-device-pixel-ratio: 1.25)      and (min-width: 1024px),
+only screen and (     -o-min-device-pixel-ratio: 1.25/1)    and (min-width: 1024px),
+only screen and (        min-device-pixel-ratio: 1.25)      and (min-width: 1024px),
+only screen and (                min-resolution: 120dpi) and (min-width: 1024px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 1024px){ 
+
+	.site-wrapper,
+	.loading-section
+	{
+		background-image:url(../images/ui/wrapper-desktop@2x.png);
+	}
+	.site-wrapper > .site-content
+	{
+		background-image:none;
+	}
+	.site-footer .col-right .created-by a
+	{
+		background-image:url(../images/ui/logo-footer-2@2x.png);
+	}
+}
