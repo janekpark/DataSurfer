@@ -23,7 +23,7 @@ $geography_type = isset($_SESSION['geography_type'])?$_SESSION['geography_type']
 $location = isset($_SESSION['location'])?$_SESSION['location']:null;
 $total_population = isset($_SESSION['total_population'])?$_SESSION['total_population']:null;
 $chart_type = isset($_SESSION['chart'])?$_SESSION['chart']:null;
-
+setcookie('PHPSESSID', session_id(), time()+60 * 60 * 24 * 30, '/');
 $url = API_URL;
 $url_san_income = "";
 if (isset($source_type)) {

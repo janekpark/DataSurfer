@@ -169,158 +169,155 @@ function loadYear(){
         });
     }
 }
+function link_income(){
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
 
+    var url = api_url;
+    $.ajax({
+        url:"/deepdiver.php",
+        type:"POST",
+        data:{total_population:$('#total_population').text(),chart:"5",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
+        beforeSend: function(){
+            if(isMobile.any()){
+                var window_width = $(window).width();
+                if(window_width < 768){
+                    if(pck_source_type!=='forecast'){
+                        reChart1();
+                        reChart2();
+                        reChart4();
+                    }else{
+                        reChartForecast1();
+                        reChartForecast2();
+                        reChartForecast4();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
+function link_age(){
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url:"/deepdiver.php",
+        type:"POST",
+        data:{total_population:$('#total_population').text(),chart:"4",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
+        beforeSend: function(){
+            if(isMobile.any()){
+                var window_width = $(window).width();
+                if(window_width < 768){
+                    if(pck_source_type!=='forecast'){
+                        reChart1();
+                        reChart2();
+                        reChart5();
+                    }else{
+                        reChartForecast1();
+                        reChartForecast2();
+                        reChartForecast5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
+function link_housing(){
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url:"/deepdiver.php",
+        type:"POST",
+        data:{total_population:$('#total_population').text(),chart:"2",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
+        beforeSend: function(){
+            if(isMobile.any()){
+                var window_width = $(window).width();
+                if(window_width < 768){
+                    if(pck_source_type!=='forecast'){
+                        reChart1();
+                        reChart4();
+                        reChart5();
+                    }else{
+                        reChartForecast1();
+                        reChartForecast4();
+                        reChartForecast5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+}
+function link_ethnicity(){
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url:"/deepdiver.php",
+        type:"POST",
+        data:{total_population:$('#total_population').text(),chart:"1",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
+        beforeSend: function(){
+            if(isMobile.any()){
+                var window_width = $(window).width();
+                if(window_width < 768){
+                    if(pck_source_type!=='forecast'){
+                        reChart2();
+                        reChart4();
+                        reChart5();
+                    }else{
+                        reChartForecast2();
+                        reChartForecast4();
+                        reChartForecast5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
 $(document).ready(function(){
     loadYear();
-    
-    $('#link_income').click(function(){
-        var pck_source_type = $('#pck_source_type').val();
-        var pck_year = $('#pck_year').val();
-        var pck_geography_type = $('#pck_geography_type').val();
-        var pck_location = $('#pck_location').val();
-        
-        var url = api_url;
-        $.ajax({
-            url:"/deepdiver.php",
-            type:"POST",
-            data:{total_population:$('#total_population').text(),chart:"5",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
-            success: function (res) {
-                var new_link = '/dataoverview/detailview';
-                //var new_link = "dataoverview/detailview/"+encodeURIComponent(pck_source_type)+"/"+encodeURIComponent(pck_year)+"/"+encodeURIComponent(pck_geography_type)+"/"+encodeURIComponent(pck_location)+"/5/"+encodeURIComponent($('#total_population').text());
-
-                if(isMobile.any()){
-                    var window_width = $(window).width();
-                    if(window_width < 768){
-                        if(pck_source_type!=='forecast'){
-                            reChart1();
-                            reChart2();
-                            reChart4();
-                        }else{
-                            reChartForecast1();
-                            reChartForecast2();
-                            reChartForecast4();
-                        }
-                    }
-                }
-                window.location = new_link;
-            },
-            error: function (request, status, error) {
-                console.log('Error call api');
-            }
-        });
-        
-    });
-    $('#link_age').click(function(){
-        var pck_source_type = $('#pck_source_type').val();
-        var pck_year = $('#pck_year').val();
-        var pck_geography_type = $('#pck_geography_type').val();
-        var pck_location = $('#pck_location').val();
-        
-        var url = api_url;
-        $.ajax({
-            url:"/deepdiver.php",
-            type:"POST",
-            data:{total_population:$('#total_population').text(),chart:"4",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
-            success: function (res) {
-                var new_link = '/dataoverview/detailview';
-                //var new_link = "dataoverview/detailview/"+encodeURIComponent(pck_source_type)+"/"+encodeURIComponent(pck_year)+"/"+encodeURIComponent(pck_geography_type)+"/"+encodeURIComponent(pck_location)+"/4/"+encodeURIComponent($('#total_population').text());
-
-                if(isMobile.any()){
-                    var window_width = $(window).width();
-                    if(window_width < 768){
-                        if(pck_source_type!=='forecast'){
-                            reChart1();
-                            reChart2();
-                            reChart5();
-                        }else{
-                            reChartForecast1();
-                            reChartForecast2();
-                            reChartForecast5();
-                        }
-                    }
-                }
-                window.location = new_link;
-            },
-            error: function (request, status, error) {
-                console.log('Error call api');
-            }
-        });
-        
-    });
-    $('#link_housing').click(function(){
-        
-        var pck_source_type = $('#pck_source_type').val();
-        var pck_year = $('#pck_year').val();
-        var pck_geography_type = $('#pck_geography_type').val();
-        var pck_location = $('#pck_location').val();
-        
-        var url = api_url;
-        $.ajax({
-            url:"/deepdiver.php",
-            type:"POST",
-            data:{total_population:$('#total_population').text(),chart:"2",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
-            success: function (res) {
-                var new_link = '/dataoverview/detailview';
-                //var new_link = "dataoverview/detailview/"+encodeURIComponent(pck_source_type)+"/"+encodeURIComponent(pck_year)+"/"+encodeURIComponent(pck_geography_type)+"/"+encodeURIComponent(pck_location)+"/2/"+encodeURIComponent($('#total_population').text());
-                if(isMobile.any()){
-                    var window_width = $(window).width();
-                    if(window_width < 768){
-                        if(pck_source_type!=='forecast'){
-                            reChart1();
-                            reChart4();
-                            reChart5();
-                        }else{
-                            reChartForecast1();
-                            reChartForecast4();
-                            reChartForecast5();
-                        }
-                    }
-                }
-                window.location = new_link;
-            },
-            error: function (request, status, error) {
-                console.log('Error call api');
-            }
-        });
-        
-        
-    });
-    $('#link_ethnicity').click(function(){
-        var pck_source_type = $('#pck_source_type').val();
-        var pck_year = $('#pck_year').val();
-        var pck_geography_type = $('#pck_geography_type').val();
-        var pck_location = $('#pck_location').val();
-        
-        var url = api_url;
-        $.ajax({
-            url:"/deepdiver.php",
-            type:"POST",
-            data:{total_population:$('#total_population').text(),chart:"1",ajax_run:"1",source_type:pck_source_type,year:pck_year,geography_type:pck_geography_type,location:pck_location},
-            success: function (res) {
-                //var new_link = "dataoverview/detailview/"+encodeURIComponent(pck_source_type)+"/"+encodeURIComponent(pck_year)+"/"+encodeURIComponent(pck_geography_type)+"/"+encodeURIComponent(pck_location)+"/1/"+encodeURIComponent($('#total_population').text());
-                if(isMobile.any()){
-                    var window_width = $(window).width();
-                    if(window_width < 768){
-                        if(pck_source_type!=='forecast'){
-                            reChart2();
-                            reChart4();
-                            reChart5();
-                        }else{
-                            reChartForecast2();
-                            reChartForecast4();
-                            reChartForecast5();
-                        }
-                    }
-                }
-                var new_link = '/dataoverview/detailview';
-                window.location = new_link;
-            },
-            error: function (request, status, error) {
-                console.log('Error call api');
-            }
-        });
-        
-    });
     $('#back_overview').click(function(){
         window.history.back();
     });

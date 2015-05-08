@@ -1884,17 +1884,7 @@ function loadDetailChartOne(){
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
     $('#chart-detail').removeClass('hide');
-    if(isMobile.any()){
-        $('#txtEmailReport').selectmenu('enable');
-        $('#txtEmailReport').selectmenu('refresh');
-        $('#txtDownloadReport').selectmenu('enable');
-        $('#txtDownloadReport').selectmenu('refresh');
-    }else{
-        $('#email_report').prop('disabled',false);
-        $('#email_report').selectpicker('refresh');
-        $('#download_report').prop('disabled',false);
-        $('#download_report').selectpicker('refresh');
-    }
+    
     var url = api_url;
     if(pck_source_type==="forecast"){
         $('#chart-detail').addClass("chart-frame-402");
@@ -1970,7 +1960,17 @@ function loadDetailChartOne(){
                     max_detail_forecast_ethnicity=maxVal;
                     
                     reDetailChartForecast1()
-                    
+                    if(isMobile.any()){
+                        $('#txtEmailReport').selectmenu('enable');
+                        $('#txtEmailReport').selectmenu('refresh');
+                        $('#txtDownloadReport').selectmenu('enable');
+                        $('#txtDownloadReport').selectmenu('refresh');
+                    }else{
+                        $('#email_report').prop('disabled',false);
+                        $('#email_report').selectpicker('refresh');
+                        $('#download_report').prop('disabled',false);
+                        $('#download_report').selectpicker('refresh');
+                    }
                 }
             },
             error: function(request, status, error) {
@@ -2083,6 +2083,17 @@ function loadDetailChartOne(){
                         $('#loading-section').addClass("hide");
                         
                         reDetailChart1();
+                        if(isMobile.any()){
+                            $('#txtEmailReport').selectmenu('enable');
+                            $('#txtEmailReport').selectmenu('refresh');
+                            $('#txtDownloadReport').selectmenu('enable');
+                            $('#txtDownloadReport').selectmenu('refresh');
+                        }else{
+                            $('#email_report').prop('disabled',false);
+                            $('#email_report').selectpicker('refresh');
+                            $('#download_report').prop('disabled',false);
+                            $('#download_report').selectpicker('refresh');
+                        }
                         $('#header_label').html('<p>Select a section of the chart to interact with the data.<br class="hidden-xs" /> Use the chart icon to download the chart image only.</p>');
                     }
                 }
@@ -2109,17 +2120,7 @@ function loadDetailChartTwo(){
     var pck_source_type = $('#pck_source_type').val();
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
-    if(isMobile.any()){
-        $('#txtEmailReport').selectmenu('enable');
-        $('#txtEmailReport').selectmenu('refresh');
-        $('#txtDownloadReport').selectmenu('enable');
-        $('#txtDownloadReport').selectmenu('refresh');
-    }else{
-        $('#email_report').prop('disabled',false);
-        $('#email_report').selectpicker('refresh');
-        $('#download_report').prop('disabled',false);
-        $('#download_report').selectpicker('refresh');
-    }
+    
     if(pck_source_type!=="forecast"){
         $('#chart-detail').addClass("chart-frame-248");
         $('#chart-detail_2').addClass("chart-frame-248");
@@ -2220,6 +2221,17 @@ function loadDetailChartTwo(){
                         para_detail_housing.tooltip.style.fontSize=font_size_detail_tool_tip;
                         
                         reDetailChart2();
+                        if(isMobile.any()){
+                            $('#txtEmailReport').selectmenu('enable');
+                            $('#txtEmailReport').selectmenu('refresh');
+                            $('#txtDownloadReport').selectmenu('enable');
+                            $('#txtDownloadReport').selectmenu('refresh');
+                        }else{
+                            $('#email_report').prop('disabled',false);
+                            $('#email_report').selectpicker('refresh');
+                            $('#download_report').prop('disabled',false);
+                            $('#download_report').selectpicker('refresh');
+                        }
                     }
                     return 1;
                 }
@@ -2288,8 +2300,17 @@ function loadDetailChartTwo(){
                     max_detail_forecast_housing = maxVal;
                     
                     reDetailChartForecast2()
-                    /*var chart_over_force_housing = new Highcharts.Chart(para_detail_forecast_housing,function(objChart){});
-                    createMenu('detail_2');*/
+                    if(isMobile.any()){
+                        $('#txtEmailReport').selectmenu('enable');
+                        $('#txtEmailReport').selectmenu('refresh');
+                        $('#txtDownloadReport').selectmenu('enable');
+                        $('#txtDownloadReport').selectmenu('refresh');
+                    }else{
+                        $('#email_report').prop('disabled',false);
+                        $('#email_report').selectpicker('refresh');
+                        $('#download_report').prop('disabled',false);
+                        $('#download_report').selectpicker('refresh');
+                    }
                 }
             },
             error: function(request, status, error) {
@@ -2314,17 +2335,7 @@ function loadDetailChartFour(){
     var pck_source_type = $('#pck_source_type').val();
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
-    if(isMobile.any()){
-        $('#txtEmailReport').selectmenu('enable');
-        $('#txtEmailReport').selectmenu('refresh');
-        $('#txtDownloadReport').selectmenu('enable');
-        $('#txtDownloadReport').selectmenu('refresh');
-    }else{
-        $('#email_report').prop('disabled',false);
-        $('#email_report').selectpicker('refresh');
-        $('#download_report').prop('disabled',false);
-        $('#download_report').selectpicker('refresh');
-    }
+    
     var url = api_url;
     if(pck_source_type!=="forecast"){
         $('#chart-detail').addClass("chart-frame-248");
@@ -2453,6 +2464,17 @@ function loadDetailChartFour(){
                         categories_over_age = categories;
                         max_over_age = max;
                         reDetailChart4();
+                        if(isMobile.any()){
+                            $('#txtEmailReport').selectmenu('enable');
+                            $('#txtEmailReport').selectmenu('refresh');
+                            $('#txtDownloadReport').selectmenu('enable');
+                            $('#txtDownloadReport').selectmenu('refresh');
+                        }else{
+                            $('#email_report').prop('disabled',false);
+                            $('#email_report').selectpicker('refresh');
+                            $('#download_report').prop('disabled',false);
+                            $('#download_report').selectpicker('refresh');
+                        }
                     }
                 }
                 return 1;
@@ -2590,6 +2612,17 @@ function loadDetailChartFour(){
                     arrDataForecastJob = relData;
                     max_detail_forecast_job = maxVal;
                     reDetailChartForecast4();
+                    if(isMobile.any()){
+                        $('#txtEmailReport').selectmenu('enable');
+                        $('#txtEmailReport').selectmenu('refresh');
+                        $('#txtDownloadReport').selectmenu('enable');
+                        $('#txtDownloadReport').selectmenu('refresh');
+                    }else{
+                        $('#email_report').prop('disabled',false);
+                        $('#email_report').selectpicker('refresh');
+                        $('#download_report').prop('disabled',false);
+                        $('#download_report').selectpicker('refresh');
+                    }
                 }
             },
             error: function(request, status, error) {
@@ -2617,17 +2650,7 @@ function loadDetailChartFive(){
     
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
-    if(isMobile.any()){
-        $('#txtEmailReport').selectmenu('enable');
-        $('#txtEmailReport').selectmenu('refresh');
-        $('#txtDownloadReport').selectmenu('enable');
-        $('#txtDownloadReport').selectmenu('refresh');
-    }else{
-        $('#email_report').prop('disabled',false);
-        $('#email_report').selectpicker('refresh');
-        $('#download_report').prop('disabled',false);
-        $('#download_report').selectpicker('refresh');
-    }
+    
     if(pck_source_type!=="forecast"){
         $('#chart-detail').addClass("chart-frame-248");
         $('#chart-detail_2').addClass("chart-frame-248");
@@ -2644,6 +2667,38 @@ function loadDetailChartFive(){
                 var sum_total_san = 0;
 
                 if (res.length > 0) {
+                    for (var i = 0; i < res.length; i++) {
+                        var obj = res[i];
+                        var str = obj.income_group;
+                        if (obj.income_group != "") {
+                            if (str.indexOf("Less than") >= 0) {
+                                res[i].index=0;
+                            }
+                            if (str.indexOf("or more") >= 0) {
+                                res[i].index = res.length-1;
+                            }
+                        }
+                    }
+                    for(var i=1;i<=res.length-2;i++){
+                        var max_res = 0;
+                        var ind=-1;
+                        for (var j = 0; j < res.length; j++) {
+                            var obj = res[j];
+                            var str = obj.income_group;
+                            if (typeof(obj.index)=='undefined'){
+                                var from = str.indexOf('$')+1;
+                                var to = str.indexOf(',');
+                                if(parseInt(str.substring(from, to)) > max_res){
+                                    max_res = str.substring(from, to);
+                                    ind = j;
+                                }
+                            } 
+                        }
+                        res[ind].index = (res.length-1)-i;
+                    }
+                    res.sort(function(a,b){
+                        return a.index - b.index;
+                    })
                     var location = $('#pck_location').val();
                     var locationLabel = location;
                     var sandiegoLabel = 'San Diego Region';
@@ -2753,6 +2808,17 @@ function loadDetailChartFive(){
                             sandiegoLabelIncome = sandiegoLabel;
 
                             reDetailChart5();
+                            if(isMobile.any()){
+                                $('#txtEmailReport').selectmenu('enable');
+                                $('#txtEmailReport').selectmenu('refresh');
+                                $('#txtDownloadReport').selectmenu('enable');
+                                $('#txtDownloadReport').selectmenu('refresh');
+                            }else{
+                                $('#email_report').prop('disabled',false);
+                                $('#email_report').selectpicker('refresh');
+                                $('#download_report').prop('disabled',false);
+                                $('#download_report').selectpicker('refresh');
+                            }
                         }
                     });
                     return 1;
@@ -2891,6 +2957,17 @@ function loadDetailChartFive(){
                     categories_forecast_income = categories;
                     arrDataForecastIncome = arrData;
                     reDetailChartForecast5();
+                    if(isMobile.any()){
+                        $('#txtEmailReport').selectmenu('enable');
+                        $('#txtEmailReport').selectmenu('refresh');
+                        $('#txtDownloadReport').selectmenu('enable');
+                        $('#txtDownloadReport').selectmenu('refresh');
+                    }else{
+                        $('#email_report').prop('disabled',false);
+                        $('#email_report').selectpicker('refresh');
+                        $('#download_report').prop('disabled',false);
+                        $('#download_report').selectpicker('refresh');
+                    }
                 }
             },
             error: function(request, status, error) {

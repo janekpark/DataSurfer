@@ -30,6 +30,8 @@ if (isset($_POST) && count($_POST) > 0) {
     $geography_type = isset($_SESSION['geography_type'])?$_SESSION['geography_type']:null;
     $location = isset($_SESSION['location'])?$_SESSION['location']:null;
 }
+
+setcookie('PHPSESSID', session_id(), time()+60 * 60 * 24 * 30, '/');
 $url = API_URL;
 $url_san_income = "";
 if (isset($source_type)) {
@@ -153,7 +155,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>race &amp; ethnicity</h4>
 												<div class="chart-map">
 													<div id="chart-1" class="chart-frame"></div>
-													<a class="chart-icon isScroll" id="link_ethnicity" title="" href="#site-top" data-ajax="false"></a>
+													<a class="chart-icon" id="link_ethnicity" title="" href="javascript:void(0);" data-ajax="false"></a>
 												</div>
 											</div>
 										</div>
@@ -162,7 +164,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>housing types</h4>
 												<div class="chart-map">
 													<div id="chart-2" class="chart-frame"></div>
-													<a class="chart-icon isScroll" title="" href="#site-top" id="link_housing" data-ajax="false"></a>
+													<a class="chart-icon" title="" href="javascript:void(0);" id="link_housing" data-ajax="false"></a>
 												</div>
 												
 											</div>
@@ -181,7 +183,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>household income</h4>
 												<div class="chart-map">                                        	
 													<div id="chart-5" class="chart-frame"></div>
-													<a class="chart-icon isScroll" title="" href="#site-top" id="link_income" data-ajax="false"></a>
+													<a class="chart-icon" title="" href="javascript:void(0);" id="link_income" data-ajax="false"></a>
 												</div>
 											</div>
 										</div> 
@@ -190,7 +192,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>Civilian Jobs</h4>
 												<div class="chart-map">
 													<div id="chart-4" class="chart-frame"></div>
-													<a class="chart-icon isScroll" title="" href="#site-top" id="link_age" data-ajax="false"></a>
+													<a class="chart-icon" title="" href="javascript:void(0);" id="link_age" data-ajax="false"></a>
 												</div>
 											</div>
 										</div>
@@ -201,7 +203,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>age by gender</h4>
 												<div class="chart-map">
 													<div id="chart-4" class="chart-frame"></div>
-													<a class="chart-icon isScroll" title="" href="#site-top" id="link_age" data-ajax="false"></a>
+													<a class="chart-icon" title="" href="javascript:void(0);" id="link_age" data-ajax="false"></a>
 												</div>
 											</div>
 										</div>
@@ -210,7 +212,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<h4>household income</h4>
 												<div class="chart-map">                                        	
 													<div id="chart-5" class="chart-frame"></div>
-													<a class="chart-icon isScroll" title="" href="#site-top" id="link_income" data-ajax="false"></a>
+													<a class="chart-icon" title="" href="javascript:void(0);" id="link_income" data-ajax="false"></a>
 												</div>
 											</div>
 										</div> 
@@ -455,6 +457,10 @@ $page_title="SANDAG Data Surfer | Data Overview";
                 loadMaxSize();
             }
 			$('.site-header').css({"z-index":'12'});
+            $("#link_ethnicity").unbind("click");
+            $("#link_housing").unbind("click");
+            $("#link_age").unbind("click");
+            $("#link_income").unbind("click");
             loadChart();
             
 			// view full report 
@@ -465,7 +471,13 @@ $page_title="SANDAG Data Surfer | Data Overview";
 					window.open('<?php echo "/".$urlFolder; ?>', '_blank');
 				}, 1000);				
 			});
-		});	
+		});
+        $(window).load(function(){
+            $("#link_ethnicity").bind("click",link_ethnicity);
+            $("#link_housing").bind("click",link_housing);
+            $("#link_age").bind("click",link_age);
+            $("#link_income").bind("click",link_income);
+        });
 	</script> 
 	<!-- InstanceEndEditable -->
     <script type="text/javascript" src="/scripts/font-chart.js"></script>

@@ -709,8 +709,40 @@ function chart5()
             var tmp_san = [];
             var data_san = [];
             var sum_total_san = 0;
-
             if (res.length > 0) {
+                for (var i = 0; i < res.length; i++) {
+                    var obj = res[i];
+                    var str = obj.income_group;
+                    if (obj.income_group != "") {
+                        if (str.indexOf("Less than") >= 0) {
+                            res[i].index=0;
+                        }
+                        if (str.indexOf("or more") >= 0) {
+                            res[i].index = res.length-1;
+                        }
+                    }
+                }
+                for(var i=1;i<=res.length-2;i++){
+                    var max_res = 0;
+                    var ind=-1;
+                    for (var j = 0; j < res.length; j++) {
+                        var obj = res[j];
+                        var str = obj.income_group;
+                        if (typeof(obj.index)=='undefined'){
+                            var from = str.indexOf('$')+1;
+                            var to = str.indexOf(',');
+                            if(parseInt(str.substring(from, to)) > max_res){
+                                max_res = str.substring(from, to);
+                                ind = j;
+                            }
+                        } 
+                    }
+                    res[ind].index = (res.length-1)-i;
+                }
+                res.sort(function(a,b){
+                    return a.index - b.index;
+                })
+                
                 var location = $('#pck_location').val();
                 var locationLabel = location;
                 var sandiegoLabel = 'San Diego Region';
