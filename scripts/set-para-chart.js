@@ -2017,43 +2017,42 @@ function loadDetailChartOne(){
                     var arrEthnicity = [];
                     var dataDetailArray = [];
 
-                    for (var i = 0; i < res.length - 1; i++) {
-
+                    for (var i = 0; i < res.length; i++) {
                         var obj = res[i]; // console.log(obj[key]);
-                        for (var key in obj) {
-                            if (key == "ethnicity") {
-                            } else {
-                                sum_key += obj[key];
-                            }
-                        }
+						if (obj.ethnicity != 'Total Population')
+						    sum_key += obj.population;
                     }
+					
+					var i_counter = 0;
 
-                    for (var i = 0; i < res.length - 1; i++) {
+                    for (var i = 0; i < res.length; i++) {
                         var obj = res[i];
-                        for (var key in obj) {
-                            if (key == "ethnicity") {
-                                categories.push(obj[key]);
-                                var cKey = obj[key].replace(/ /g, "").toLowerCase();
-                                colors.push(colorEthnicityCensus[cKey][0]);
-                            } else {
-                                keys.push(obj[key]);
-                            }
+						if (obj.ethnicity != 'Total Population')
+						{
+                            categories.push(obj.ethnicity);
+                            var cKey = obj.ethnicity.replace(/ /g, "").toLowerCase();
+                            colors.push(colorEthnicityCensus[cKey][0]);
+							console.log(obj.ethnicity + ": " + obj.population);
+                            
+                            keys.push(obj.population);
+                        
+                            datalen = keys[i_counter].length;
+                            var brightness = 0.2 - (i_counter) / res.length;
+                            arrEthnicity.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 0),
+                                color: colors[i_counter],
+                                fy:precise_round((keys[i_counter] / sum_key) * 100, 1),
+                            });
+
+                            dataDetailArray.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 1),
+                                color: colors[i_counter]
+                            });
+							
+							i_counter += 1;
                         }
-                        datalen = keys[i].length;
-                        var brightness = 0.2 - (i) / res.length;
-                        arrEthnicity.push({
-                            name: categories[i],
-                            y: precise_round((keys[i] / sum_key) * 100, 0),
-                            color: colors[i],
-                            fy:precise_round((keys[i] / sum_key) * 100, 1),
-                        });
-
-                        dataDetailArray.push({
-                            name: categories[i],
-                            y: precise_round((keys[i] / sum_key) * 100, 1),
-                            color: colors[i]
-                        });
-
                     }
 
                     arrEthnicity.sort(function(a,b){
