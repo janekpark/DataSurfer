@@ -143,9 +143,9 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
  	{
         $columnName = $GLOBALS['geotypes'][$geoType];
         $datasource_id = $GLOBALS['datasources'][$datasource][$year];
-        $params = [$datasource_id, $columnName, $zone];
+        $params = [$datasource_id, $columnName, $geoType, $zone];
     
-        $sql = "EXEC app.sp_census_estimate_housing ?, ?, ?";
+        $sql = "EXEC app.sp_housing_profile ?, ?, ?, ?";
         
         $json = Query::getInstance()->getResultAsJson($sql, $params);
         
@@ -156,7 +156,36 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
         echo $json;
 	}
      
-})->conditions(array('datasource' => 'census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate'));
+
+//Census / Estimate - Housing
+$app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource, $year, $geoType, $zone)
+{
+	$file_name = strtolower(join("_", array('population', $datasource, $year, $geoType, $zone)).".json");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year,$geoType, $file_name));
+
+	if (file_exists($file_path) && $GLOBALS['useCache'])
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+		$columnName = $GLOBALS['geotypes'][$geoType];
+		$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+		$params = [$datasource_id, $columnName, $geoType, $zone];
+
+		$sql = "EXEC app.sp_population_profile ?, ?, ?, ?";
+
+		$json = Query::getInstance()->getResultAsJson($sql, $params);
+
+		$f = fopen($file_path, 'w');
+		fwrite($f, $json);
+		fclose($f);
+
+		echo $json;
+	}
+	 
+})->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Ethnicity
 $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, $year, $geoType, $zone)
@@ -172,9 +201,9 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
   	{
     	$columnName = $GLOBALS['geotypes'][$geoType];
     	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    	$params = [$datasource_id, $columnName, $zone];
+    	$params = [$datasource_id, $columnName, $geoType, $zone];
     
-    	$sql = "app.sp_census_estimate_ethnicity ?, ?, ?";
+    	$sql = "app.sp_ethnicity_profile ?, ?, ?, ?";
     
     	$json = Query::getInstance()->getResultAsJson($sql, $params); 
 		
@@ -184,7 +213,7 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
 		
 		echo $json;
  	}
-})->conditions(array('datasource' => 'census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Age
 $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year, $geoType, $zone)
@@ -200,9 +229,9 @@ $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year,
  	{
     	$columnName = $GLOBALS['geotypes'][$geoType];
    		$datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    	$params = [$datasource_id, $columnName, $zone];
+    	$params = [$datasource_id, $columnName, $geoType, $zone];
     
-    	$sql = "app.sp_census_estimate_age ?, ?, ?";			
+    	$sql = "app.sp_age_profile ?, ?, ?, ?";			
     
    		$json = Query::getInstance()->getResultAsJson($sql, $params); 
 		
@@ -212,7 +241,7 @@ $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year,
 		
 		echo $json;
 	}
-})->conditions(array('datasource' => 'census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Income
 $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $year, $geoType, $zone) use ($app)
@@ -228,9 +257,9 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 	{
 		$columnName = $GLOBALS['geotypes'][$geoType];
     	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
-    	$params = [$datasource_id, $columnName, $zone];
+    	$params = [$datasource_id, $columnName, $geoType, $zone];
     
-    	$sql = "app.sp_census_estimate_income ?, ?, ?";	
+    	$sql = "app.sp_income_profile ?, ?, ?, ?";	
 	
 		$json = Query::getInstance()->getResultAsJson($sql, $params); 
 		
@@ -240,7 +269,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 		
 		echo $json;
 	}
-})->conditions(array('datasource' => 'census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate'));
 
 $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geoType, $zone) use ($app)
 {
@@ -336,6 +365,168 @@ $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 		unlink($sys_file_name);
 	}
 })->via('GET', 'POST')->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
+
+$app->get('/test/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
+{
+	$url = 'http://datasurfer.sandag.org';
+	natcasesort($zones);
+	
+	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).'_'.join("_",str_replace(' ', '_', $zones)).".xlsx");
+	$file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
+
+ 	$res = $app->response();
+ 	$res['Content-Description'] = 'File Transfer';
+ 	$res['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+ 	$res['Content-Disposition'] ='attachment; filename='.$file_name;
+ 	$res['Content-Transfer-Encoding'] = 'binary';
+ 	$res['Expires'] = '0';
+ 	$res['Cache-Control'] = 'must-revalidate';
+ 	$res['Pragma'] = 'public';
+
+	if (file_exists($file_path) && $GLOBALS['useCache'])
+	{
+		$res['Content-Length'] = filesize($file_path);
+		readfile($file_path);
+	} else
+	{
+	    $objPHPExcel = new PHPExcel();
+	    $objPHPExcel->getProperties()->setCreator("San Diego Association of Governments");
+	
+	    if("census"==$datasource)
+		    $objPHPExcel->getProperties()->setTitle("SANDAG Census {$year} Profile");
+	    elseif ("estimate" == $datasource)
+	        $objPHPExcel->getProperties()->setTitle("SANDAG ${year} Estimate Profile");
+	    elseif("forecast"==$datasource)
+	        $objPHPExcel->getProperties()->setTitle("SANDAG Series {$year} Forecast Profile");
+	
+	    $objPHPExcel->getProperties()->setCompany("San Diego Association of Governments");
+	
+	    $ageSheet = $objPHPExcel->getActiveSheet();
+	    $ageSheet->setTitle('Age', true);
+	    $ageSheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+	    $ageSheet->getCellByColumnAndRow(1,1)->setValue('Year');
+	    $ageSheet->getCellByColumnAndRow(2,1)->setValue('Sex');
+	    $ageSheet->getCellByColumnAndRow(3,1)->setValue('Group - 10 Year');
+	    $ageSheet->getCellByColumnAndRow(4,1)->setValue('Population');
+	
+	    $ethnicitySheet = $objPHPExcel->createSheet(NULL);
+	    $ethnicitySheet->setTitle('Ethnicity',true);
+	    $ethnicitySheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+	    $ethnicitySheet->getCellByColumnAndRow(1,1)->setValue('Year');
+	    $ethnicitySheet->getCellByColumnAndRow(2,1)->setValue('Ethnicity');
+	    $ethnicitySheet->getCellByColumnAndRow(3,1)->setValue('Population');
+	
+	    $housingSheet = $objPHPExcel->createSheet(NULL);
+	    $housingSheet->setTitle('Housing',true);
+	    $housingSheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+	    $housingSheet->getCellByColumnAndRow(1,1)->setValue('Year');
+	    $housingSheet->getCellByColumnAndRow(2,1)->setValue('Unit Type');
+	    $housingSheet->getCellByColumnAndRow(3,1)->setValue('Units');
+	    $housingSheet->getCellByColumnAndRow(4,1)->setValue('Occupied (Households)');
+	    $housingSheet->getCellByColumnAndRow(5,1)->setValue('Unoccupied');
+	    $housingSheet->getCellByColumnAndRow(6,1)->setValue('Vacancy Rate');
+	
+	    $populationSheet = $objPHPExcel->createSheet(NULL);
+	    $populationSheet->setTitle('Population',true);
+	    $populationSheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+	    $populationSheet->getCellByColumnAndRow(1,1)->setValue('Year');
+	    $populationSheet->getCellByColumnAndRow(2,1)->setValue('Household Population');
+	    $populationSheet->getCellByColumnAndRow(3,1)->setValue('Population - Group Quarter - Military');
+	    $populationSheet->getCellByColumnAndRow(4,1)->setValue('Population - Group Quarter - Other');
+	
+	    $incomeSheet = $objPHPExcel->createSheet(NULL);
+	    $incomeSheet->setTitle('Income',true);
+	    $incomeSheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+	    $incomeSheet->getCellByColumnAndRow(1,1)->setValue('Year');
+	    $incomeSheet->getCellByColumnAndRow(2,1)->setValue('Income Group');
+	    $incomeSheet->getCellByColumnAndRow(3,1)->setValue('Households');
+	
+	    if("forecast"==$datasource)
+	    {
+		    $jobsSheet = $objPHPExcel->createSheet(NULL);
+		    $jobsSheet->setTitle('Jobs',true);
+		    $jobsSheet->getCellByColumnAndRow(0,1)->setValue('Jurisdiction');
+		    $jobsSheet->getCellByColumnAndRow(1,1)->setValue('Year');
+		    $jobsSheet->getCellByColumnAndRow(2,1)->setValue('Category');
+		    $jobsSheet->getCellByColumnAndRow(3,1)->setValue('Jobs');
+	    }
+	
+	    $urls = array();
+	    $housingArray = array();
+	    $ageArray = array();
+	    $ethnicityArray = array();
+	    $incomeArray = array();
+	    $jobsArray = array();
+
+	    foreach($zones as $zone)
+	    {
+	        $request_predicate = join("/", array($datasource, $year, $geoType, str_replace(' ', '%20', $zone)));
+		
+    	    $housing_url = "{$url}/api/{$request_predicate}/housing";
+	        $age_url = "{$url}/api/{$request_predicate}/age";
+	        $ethnicity_url = "{$url}/api/{$request_predicate}/ethnicity";
+	        $income_url = "{$url}/api/{$request_predicate}/income";
+	        $jobs_url = "{$url}/api/{$request_predicate}/jobs";
+	
+	        $housingArray = array_merge($housingArray, json_decode(file_get_contents($housing_url), true));
+	        $ageArray = array_merge($ageArray, json_decode(file_get_contents($age_url), true));
+	        $ethnicityArray = array_merge($ethnicityArray, json_decode(file_get_contents($ethnicity_url), true));
+	        $incomeArray = array_merge($incomeArray, json_decode(file_get_contents($income_url), true));
+	        if("forecast"==$datasource)
+	            $jobsArray = array_merge($jobsArray, json_decode(file_get_contents($jobs_url), true));
+	    }
+	
+	    for($j=0;$j<count($ageArray); $j++)
+	    {
+            $ageSheet->getCellByColumnAndRow(0,$j+2)->setValue($ageArray[$j]['jurisdiction']);
+	        $ageSheet->getCellByColumnAndRow(1,$j+2)->setValue($ageArray[$j]['year']);
+    	    $ageSheet->getCellByColumnAndRow(2,$j+2)->setValue($ageArray[$j]['sex']);
+	        $ageSheet->getCellByColumnAndRow(3,$j+2)->setValue($ageArray[$j]['group_10yr']);
+    	    $ageSheet->getCellByColumnAndRow(4,$j+2)->setValue($ageArray[$j]['population']);
+        }
+	
+	    for($j=0;$j<count($ethnicityArray); $j++)
+	    {
+	        $ethnicitySheet->getCellByColumnAndRow(0,$j+2)->setValue($ethnicityArray[$j]['jurisdiction']);
+		    $ethnicitySheet->getCellByColumnAndRow(1,$j+2)->setValue($ethnicityArray[$j]['year']);
+		    $ethnicitySheet->getCellByColumnAndRow(2,$j+2)->setValue($ethnicityArray[$j]['ethnicity']);
+		    $ethnicitySheet->getCellByColumnAndRow(3,$j+2)->setValue($ethnicityArray[$j]['population']);
+	    }
+	
+    	for($j=0;$j<count($housingArray); $j++)
+	    {
+	        $housingSheet->getCellByColumnAndRow(0,$j+2)->setValue($housingArray[$j]['jurisdiction']);
+	        $housingSheet->getCellByColumnAndRow(1,$j+2)->setValue($housingArray[$j]['year']);
+	        $housingSheet->getCellByColumnAndRow(2,$j+2)->setValue($housingArray[$j]['unit_type']);
+	        $housingSheet->getCellByColumnAndRow(3,$j+2)->setValue($housingArray[$j]['units']);
+	        $housingSheet->getCellByColumnAndRow(4,$j+2)->setValue($housingArray[$j]['occupied']);
+	        $housingSheet->getCellByColumnAndRow(5,$j+2)->setValue($housingArray[$j]['unoccupied']);
+	        $housingSheet->getCellByColumnAndRow(6,$j+2)->setValue($housingArray[$j]['vacancy_rate']);
+	    }
+	
+    	for($j=0;$j<count($incomeArray); $j++)
+	    {
+	        $incomeSheet->getCellByColumnAndRow(0,$j+2)->setValue($incomeArray[$j]['jurisdiction']);
+	        $incomeSheet->getCellByColumnAndRow(1,$j+2)->setValue($incomeArray[$j]['year']);
+	        $incomeSheet->getCellByColumnAndRow(2,$j+2)->setValue($incomeArray[$j]['income_group']);
+	        $incomeSheet->getCellByColumnAndRow(3,$j+2)->setValue($incomeArray[$j]['households']);
+	    }
+	    
+	    if("forecast"==$datasource)
+	    {
+	    	for($j=0;$j<count($jobsArray); $j++)
+	    	{
+	    		$jobsSheet->getCellByColumnAndRow(0,$j+2)->setValue($jobsArray[$j]['jurisdiction']);
+	    		$jobsSheet->getCellByColumnAndRow(1,$j+2)->setValue($jobsArray[$j]['year']);
+	    		$jobsSheet->getCellByColumnAndRow(2,$j+2)->setValue($jobsArray[$j]['category']);
+	    		$jobsSheet->getCellByColumnAndRow(3,$j+2)->setValue($jobsArray[$j]['jobs']);
+	    	}	
+	    }
+	    $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+	    $objWriter->save($file_path);
+	    $objWriter->save('php://output');
+	}
+});
 
 //Export to Excel
 $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
@@ -449,72 +640,13 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 	}
 })->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
-//Forecast - Housing
-$app->get('/forecast/:series/:geotype/:zone/housing', function ($series, $geoType, $zone)
-{
-	$file_name = strtolower(join("_", array('housing', 'forecast', $series, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
-	
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-		$columnName = $GLOBALS['geotypes'][$geoType];
-		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-    	$params = [$datasource_id, $columnName, $zone];
-    
-    	$sql = "app.sp_forecast_housing ?, ?, ?";
-	
-		$json = Query::getInstance()->getResultAsJson($sql, $params); 
-		
-		$f = fopen($file_path, 'w');
-		fwrite($f, $json);
-		fclose($f); 
-		
-		echo $json;
-	}
-			
-})->conditions(array('series' => '12|13'));
-
-//Forecast - Ethnicity
-$app->get('/forecast/:series/:geotype/:zone/ethnicity', function ($series, $geoType, $zone)
-{
-	$file_name = strtolower(join("_", array('ethnicity', 'forecast', $series, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
-	
- 	if (file_exists($file_path) && $GLOBALS['useCache'])
- 	{
- 		$res['Content-Length'] = filesize($file_path);
- 		readfile($file_path);
- 	} else
- 	{
-		$columnName = $GLOBALS['geotypes'][$geoType];
-		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-    	$params = [$datasource_id, $columnName, $zone];
-    
-    	$sql = "app.sp_forecast_ethnicity ?, ?, ?";
-	  
-		$json = Query::getInstance()->getResultAsJson($sql, $params); 
-		
-		$f = fopen($file_path, 'w');
-		fwrite($f, $json);
-		fclose($f); 
-		
-		echo $json;
- 	}
-
-})->conditions(array('series' => '12|13'));
-
-//Forecast - Ethnicity
+//Forecast - Ethnicity Change
 $app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series, $geoType, $zone)
 {
 	$file_name = strtolower(join("_", array('ethnicity_change', 'forecast', $series, $geoType, $zone)).".json");
 	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
 
-//	if (file_exists($file_path) && $GLOBALS['useCache'])
-	if (file_exists($file_path) && false)
+    if (file_exists($file_path) && $GLOBALS['useCache'])
 	{
 		$res['Content-Length'] = filesize($file_path);
 		readfile($file_path);
@@ -535,63 +667,6 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series
 		echo $json;
 	}
 
-})->conditions(array('series' => '12|13'));
-
-//Forecast - Age
-$app->get('/forecast/:series/:geotype/:zone/age', function ($series, $geoType, $zone)
-{
-	$file_name = strtolower(join("_", array('age', 'forecast', $series, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
-	
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-    	$columnName = $GLOBALS['geotypes'][$geoType];
-    	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-    	$params = [$datasource_id, $columnName, $zone];
-    
-    	$sql = "app.sp_forecast_age ?, ?, ?";
-    
-    	$json = Query::getInstance()->getResultAsJson($sql, $params);
-    
-	    $f = fopen($file_path, 'w');
-    	fwrite($f, $json);
-    	fclose($f);
-    
-    	echo $json;
-    }
-})->conditions(array('series' => '12|13'));
-
-$app->get('/forecast/:series/:geotype/:zone/income', function ($series, $geoType, $zone) use ($app)
-{
-	$file_name = strtolower(join("_", array('income', 'forecast', $series, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
-	
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-	
-		$columnName = $GLOBALS['geotypes'][$geoType];
-		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-    	$params = [$datasource_id, $columnName, $zone];
-    
-    	$sql = "app.sp_forecast_income ?, ?, ?";
-	
-		$json = Query::getInstance()->getResultAsJson($sql, $params);
-    
-	    $f = fopen($file_path, 'w');
-    	fwrite($f, $json);
-    	fclose($f);
-    
-    	echo $json;
-    }
-	
 })->conditions(array('series' => '12|13'));
 
 $app->get('/forecast/:series/:geotype/:zone/income/median', function ($series, $geoType, $zone) use ($app)
@@ -634,12 +709,11 @@ $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, 
 		readfile($file_path);
 	} else
 	{
-	
 		$columnName = $GLOBALS['geotypes'][$geoType];
 		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-		    	$params = [$datasource_id, $columnName, $zone];
+		    	$params = [$datasource_id, $columnName, $geoType, $zone];
     
-    	$sql = "app.sp_forecast_jobs ?, ?, ?";
+    	$sql = "app.sp_jobs_profile ?, ?, ?, ?";
 	
 		$json = Query::getInstance()->getResultAsJson($sql, $params);
     
