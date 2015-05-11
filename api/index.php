@@ -347,7 +347,7 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 
  	$res = $app->response();
  	$res['Content-Description'] = 'File Transfer';
- 	$res['Content-Type'] = 'application/vnd.ms-excel';
+ 	$res['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
  	$res['Content-Disposition'] ='attachment; filename='.$file_name;
  	$res['Content-Transfer-Encoding'] = 'binary';
  	$res['Expires'] = '0';
