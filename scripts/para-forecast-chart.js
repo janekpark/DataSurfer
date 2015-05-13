@@ -1181,7 +1181,7 @@ var para_over_forecast_income={
         spacingBottom: spacing_bottom_forcast_income,
         marginLeft:margin_left_forcast_income,
         marginRight:margin_right_forcast_income,
-        marginBottom: margin_bottom_forcast_income,
+        marginBottom: 0,// margin_bottom_forcast_income,
         marginTop:margin_top_forcast_income,
         reflow:false,
     },
@@ -1200,23 +1200,23 @@ var para_over_forecast_income={
                 lineHeight: '10%', //(Thuan Apr 2) added this to control spacing between lines
             },
             formatter: function() {
-                var str = this.value;
-                if(typeof(str)=='string'){
-                    str = str.replace("&lt;","<");
-					var window_width = $(window).width();
-                    if (window_width <1024) {
-                        return str.toUpperCase();
-                    }else{
-                        return str.toUpperCase().replace('-', '-<br/>');
-                    }
-                }else{
-                    return '';
-                }
+                return this.value;
+                //if(typeof(str)=='string'){
+                //    str = str.replace("&lt;","<");
+				//	var window_width = $(window).width();
+                //    if (window_width <1024) {
+                //        return str.toUpperCase();
+                //    }else{
+                //        return str.toUpperCase().replace('-', '-<br/>');
+                //    }
+                //}else{
+                //    return '';
+                //}
             },
             y:10
         },
         title: {
-            text: 'INCOME',
+            text: 'FORECAST YEAR',
             margin: 0,
             offset: offset_x_title_forcast_income,
            style:{
@@ -1326,12 +1326,20 @@ var para_over_forecast_income={
         symbolHeight: 6,
         symbolWidth: 8,
         labelFormatter: function() {
-            return this.name;
+            str = this.name;
+		    var window_width = $(window).width();
+            if (window_width <768) {
+			    if (str.indexOf(' - ') >= 0)
+				{
+                    return "< $" + (parseInt(str.substring(str.indexOf(' - ')+4, str.indexOf('.',-1))) +1) + "k";
+			    }
+			}
+			return str;
         },
         align: align_legend,
         verticalAlign: vertical_align_legend,
         layout: layout_legend,
-        itemMarginBottom: 5.25,
+        itemMarginBottom: 3,
         y:y_legend_forcast_income,
         x:x_legend_forcast_income//-3
     },
@@ -1383,24 +1391,10 @@ var para_detail_forecast_income={
                 fontWeight: chart_fontWeight,
             },
             rotation: rotation_detail_forcast_income,
-            formatter: function() {
-                var str = this.value;
-                str=str.replace("&lt;","<");
-				var window_width = $(window).width();
-                if (window_width < 1024) {
-                    if(window_width >= 768){
-                        return str.toUpperCase().replace('-', '-<br/>');
-                    }else{
-                        return str.toUpperCase();
-                    }
-                }else{
-                    return str.toUpperCase().replace('-', '-<br/>');
-                }
-            },
             y:label_x_detail_forcast_income
         },
         title: {
-            text: 'INCOME',
+            text: 'FORECAST YEAR',
             offset: offset_x_title_detail_forcast_income,
             style:{
                 fontSize: detail_axisLable,
@@ -1484,7 +1478,16 @@ var para_detail_forecast_income={
         symbolWidth: detail_symbol_width,
         //  symbolPadding: 3,
         labelFormatter: function() {
-            return this.name;
+		    str = this.name;
+		    var window_width = $(window).width();
+            if (window_width <768) {
+			    if (str.indexOf(' - ') >= 0)
+				{
+                    return "< $" + (parseInt(str.substring(str.indexOf(' - ')+4, str.indexOf('.',-1))) +1) + "k";
+				}
+			}	
+            
+			return this.name;
         },
         align: align_legend,
         verticalAlign: vertical_align_legend,

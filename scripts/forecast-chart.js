@@ -547,102 +547,59 @@ function chart5()
         data: {type_chart: "income", url_des: $('#url_income').val()},
         success: function(res) {
             if (res.length > 0) {
+               
                 var categories = [];
                 var arr_year = [];
-                var colors = [];
                 var arrData = [];
-                var arrTmp = [];
-                for (var i = 0; i < res.length; i++) {
-                    var obj = res[i];
-                    if (obj.income_group != "") {
-                        var str = obj.income_group;
-                        while (obj.income_group.indexOf("$") >= 0) {
-                            obj.income_group = obj.income_group.replace("$", "");
-                        }
-                        while (obj.income_group.indexOf(",") >= 0) {
-                            obj.income_group = obj.income_group.replace(",", "");
-                        }
-                        if (obj.income_group.indexOf("Less than") >= 0) {
-                            obj.income_group = obj.income_group.replace("Less than", "")
-                        }
-                        if (obj.income_group.indexOf("or more") >= 0) {
-                            obj.income_group = obj.income_group.replace("or more", "")
-                        }
-                        if (obj.income_group.indexOf(" to ") >= 0) {
-                            obj.income_group = obj.income_group.replace(" to ", ".")
-                        }
-                    }
+				var data = [];
+				var yearGrp = -1;
+					
+				res.sort(function (a, b) {
+				    if ((a.year - b.year) == 0)
+					  return a.ordinal - b.ordinal;
+					else
+					  return a.year - b.year;
+				});
+					
+				for (var i = 0; i < res.length; i++) {
+				    obj = res[i];
+				    if (-1 == $.inArray(obj.year, arr_year))
+				        arr_year.push(obj.year);
+						
+					if (!data[obj.income_group]) 
+					    data[obj.income_group] = [];
+						
+					data[obj.income_group].push(obj.households);
+			    }
+					
+				var ftIncomeForecast = [];
+					
+	            ftIncomeForecast[0] = ['#087087', '#80b3bd'];
+	            ftIncomeForecast[1] = ['#0f96a2', '#89cacf'];
+	            ftIncomeForecast[2] = ['#16bcbc', '#89dbdb'];
+	            ftIncomeForecast[3] = ['#96908a', '#c3beb9'];
+	            ftIncomeForecast[4] = ['#d2c2ac', '#e2d9cd'];
+	            ftIncomeForecast[5] = ['#662f89', '#ad91bc'];
+	            ftIncomeForecast[6] = ['#b5469a', '#d79ec7'];
+	            ftIncomeForecast[7] = ['#399344', '#92bd93'];
+	            ftIncomeForecast[8] = ['#7dc249', '#abd489'];
+				ftIncomeForecast[9] = ['#1B53AF', '#80b3bd'];
+					
+				var counter = 0;
+                for (var key in data) {
+				    var str_color = ftIncomeForecast[counter][0];
+					var label = key.replace("Less than ", "< ");
+					if (label.indexOf(" or more") >= 0)
+					    label = ">= " + label.replace(" or more", "");
+					
+					var label = label.replace(" to ", " - ").replace(",000", "k").replace(",999", ".9k");
+
+                    arrData.push({name: label, data: data[key], color: str_color});
+					counter += 1;
                 }
-
-                res.sort(function(a, b) {
-                    return a.year - b.year;
-                }
-                );
-                for (var i = 0; i < res.length; i++) {
-                    var obj = res[i];
-                    if ('year' in obj && !isInArray(obj.year, arr_year)) {
-                        arr_year.push(obj.year);
-                    }
-                }
-
-                for (var j = 0; j < arr_year.length; j++) {
-                    var arr = [];
-
-                    for (var i = 0; i < res.length; i++) {
-                        var obj = res[i];
-                        if (obj.year == arr_year[j]) {
-                            arr.push(obj)
-                        }
-                    }
-
-                    arr.sort(function(a, b) {
-                        return a.income_group - b.income_group;
-                    }
-                    );
-
-                    var ser_data = [];
-
-                    for (var ind = 0; ind < arr.length; ind++) {
-                        var objArr = arr[ind];
-                        if (!isInArray(objArr.income_group, categories)) {
-                            var str_category = objArr.income_group
-                            if (ind == 0) {
-                                str_category = "&lt;$" + shortenBigNumber(str_category);
-                            }
-                            if (ind == (arr.length - 1)) {
-                                var tmp = str_category / 1000
-                                tmp = tmp.toString();
-                                if (tmp.indexOf(".999") >= 0) {
-                                    str_category = "≥$ " + tmp.replace(".999", ".9K");
-                                } else {
-                                    str_category = "≥$" + shortenBigNumber(str_category);
-                                }
-                            }
-                            var str_spl = str_category.split(".");
-
-                            if (str_spl.length > 1) {
-                                var tmp = str_spl[1] / 1000
-                                tmp = tmp.toString();
-                                if (tmp.indexOf(".999") >= 0) {
-                                    tmp = tmp.replace(".999", ".9K");
-                                } else {
-                                    tmp = shortenBigNumber(str_category);
-                                }
-                                str_category = "$" + shortenBigNumber(str_spl[0]) + "-$" + tmp
-                            }
-                            categories.push(str_category);
-                        }
-                        ser_data.push(objArr.households);
-                    }
-
-                    var str_color = '';
-                    if (isInArray(arr_year[j].toString(), Object.keys(fontIncomeForecast))) {
-                        str_color = fontIncomeForecast[arr_year[j]][0];
-                    }
-                    arrData.push({name: arr_year[j], data: ser_data, color: str_color});
-                }
+               
                 var window_width = $(window).width();
-                categories_forecast_income = categories;
+                categories_forecast_income = arr_year;
                 arrDataForecastIncome = arrData;
                 para_over_forecast_income.series = arrDataForecastIncome;
                 para_over_forecast_income.xAxis.categories = categories_forecast_income;
