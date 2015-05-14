@@ -329,7 +329,7 @@ $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 		
 		$zip = new ZipArchive();
 		$ts = round(microtime(true) * 1000);
-		$base_file_name = strtolower(join("_", array('sandag',$datasource, $year, $geoType))."_".join("_",$zones).".zip");
+		$base_file_name = strtolower(join("_", array('sandag',$datasource, $year, $geoType))."_".$ts.".zip");
 		
 		$sys_file_name = './zip/'.$ts."_".$base_file_name;
 		
@@ -485,7 +485,8 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 	
 	natcasesort($zones);
 	
-	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).".xlsx");
+	$ts = round(microtime(true) * 1000);
+	$file_name = strtolower(join("_", array($datasource, $year, $geoType))."_{$ts}.xlsx");
 	
     $res = $app->response();
     $res['Content-Description'] = 'File Transfer';
