@@ -556,9 +556,9 @@ function loadCurrentData(){
                     arrTemp.sort(function(a, b){return a-b});
                     for(var i=0;i<arrTemp.length;i++){
                         if(!isMobile.any()){
-                            $('#slt_year').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+                            $('#slt_year').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }else{
-                            $('#txtYear').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+                            $('#txtYear').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }
                     }
                 }

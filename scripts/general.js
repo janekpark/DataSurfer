@@ -440,7 +440,7 @@ $(document).ready(function(){
 						}
                         arrTemp.sort(function(a, b){return a-b});
                         for(var i=0;i<arrTemp.length;i++){
-							$('#slt_year').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+							$('#slt_year').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }
 					}
                     $('#slt_year').prop('disabled', false);
@@ -750,7 +750,7 @@ $(document).ready(function(){
 						}
                         arrTemp.sort(function(a, b){return a-b});
                         for(var i=0;i<arrTemp.length;i++){
-							$('#txtYear').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+							$('#txtYear').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }
 						$('#txtYear').selectmenu('enable');
 						$('#txtYear').selectmenu('refresh');
