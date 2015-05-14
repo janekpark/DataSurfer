@@ -288,8 +288,8 @@ $(document).ready(function()
                     $('#cmp_email_report_device').find('option:not(:first)').remove();
                     $('#cmp_email_report_device').append($('<option>', {value: download_pdf, text: 'pdf document (pdf)'}));
                     $('#cmp_email_report_device').append($('<option>', {value: download_xlsx, text: 'microsoft excel (xls)'}));        
-                    $('#cmp_email_report_device').selectmenu('disable');
-                    $('#cmp_email_report_device').selectpicker('refresh');
+                    $('#cmp_email_report_device').selectmenu('enable');
+                    $('#cmp_email_report_device').selectmenu('refresh');
                     
                     $('#cmp_download_report_device').find('option:not(:first)').remove();
                     $('#cmp_download_report_device').append($('<option>', {value: download_pdf, text: 'pdf document (pdf)'}));
