@@ -352,8 +352,8 @@ $page_title="SANDAG Data Surfer | Data Overview";
 														<!-- /.year-selection -->
 													
 														<!-- .location-selection -->
-														<div class="data-selection">
-															<h4>SELECT ADDITIONAL LOCATIONS</h4>
+														<div class="data-selection" >
+															<h4 id="h4_data_section_header">SELECT ADDITIONAL LOCATIONS</h4>
 															<div class="data-scroll">
 																<div class="data-content" id="section_location">
 																	  
