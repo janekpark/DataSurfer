@@ -336,7 +336,7 @@ function chart2()
                     dataArrayHousing = dataArray;
                     para_over_housing.series[0].startAngle = sAg;
                     para_over_housing.tooltip.style.fontSize=font_size_tool_tip;
-                    console.log(dataArrayHousing);
+                    //console.log(dataArrayHousing);
                     chart4();
                     var width = $(".chart-list").width();
                     para_detail_housing.series[0].data = dataArray;
@@ -839,7 +839,7 @@ function chart5()
                         arrData.sort(function(a,b){
                             return a.name - b.name;
                         })
-                        console.log(arrData);
+                        //console.log(arrData);
                         if(max_san > max){
                             max = max_san;
                         }

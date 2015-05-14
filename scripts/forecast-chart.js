@@ -100,8 +100,8 @@ function loadChart()
                 }
                 cYear=temp;
                 arrDataSumForecastEthnicity = arrSum;
-                console.log(cYear);
-                console.log(arrDataSumForecastEthnicity);
+                //console.log(cYear);
+                //console.log(arrDataSumForecastEthnicity);
                 arrYearForecastEthnicity = arrYear;
                 arrDataForecastEthnicity = arrData;
                 para_over_forecast_ethnicity.series = arrDataForecastEthnicity;
@@ -454,7 +454,7 @@ function chart4()
                     var obj = relData[i];
                     obj.zIndex = i+1;
                 }
-                console.log(relData);
+                //console.log(relData);
                 arrYearForecastJob = arr_year;
                 arrDataForecastJob = relData;
                 para_over_forecast_job.series = arrDataForecastJob;

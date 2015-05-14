@@ -1953,8 +1953,8 @@ function loadDetailChartOne(){
                     }
                     cYear=temp;
                     arrDataSumForecastEthnicity = arrSum;
-                    console.log(cYear);
-                    console.log(arrDataSumForecastEthnicity);
+                    //console.log(cYear);
+                    //console.log(arrDataSumForecastEthnicity);
                     arrYearForecastEthnicity = arrYear;
                     arrDataForecastEthnicity = arrData;
                     max_detail_forecast_ethnicity=maxVal;
@@ -2032,7 +2032,7 @@ function loadDetailChartOne(){
                             categories.push(obj.ethnicity);
                             var cKey = obj.ethnicity.replace(/ /g, "").toLowerCase();
                             colors.push(colorEthnicityCensus[cKey][0]);
-							console.log(obj.ethnicity + ": " + obj.population);
+							//console.log(obj.ethnicity + ": " + obj.population);
                             
                             keys.push(obj.population);
                         
