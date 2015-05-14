@@ -9,9 +9,9 @@
  */
 ini_set('display_errors', 1);
 require 'Slim/Slim.php';
-require 'Analytics.php';
 require 'Query.php';
 require 'PHPExcel.php';
+require 'xlsxwriter.class.php';
 
 \Slim\Slim::registerAutoloader();
 
@@ -366,179 +366,216 @@ $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 	}
 })->via('GET', 'POST')->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
+$app->post('/:datasource/:year/:geotype/export/xlsx', function ($datasource, $year, $geoType) use ($app)
+{
+    $zones_param = $app->request()->post('zones');
+    if ($zones_param == null)
+    {
+    	$app->halt(400, 'Invalid XLSX Export Request');
+    }
+    
+    $zones = explode(',', strtolower($zones_param));
+    
+    natcasesort($zones);
+    
+    $url = 'http://datasurfer.sandag.org';
+    
+    $file_name = strtolower(join("_", array($datasource, $year, $geoType)).".xlsx");
+    $file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
+    
+    $res = $app->response();
+    $res['Content-Description'] = 'File Transfer';
+    $res['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    $res['Content-Disposition'] ='attachment; filename='.$file_name;
+    $res['Content-Transfer-Encoding'] = 'binary';
+    $res['Expires'] = '0';
+    $res['Cache-Control'] = 'must-revalidate';
+    $res['Pragma'] = 'public';
+    
+    $ageArray[0] = [ucwords($geoType), 'Year', 'Sex', 'Group - 10 Year', 'Population'];
+    $ethnicityArray[0] = [ucwords($geoType), 'Year', 'Ethnicity', 'Population'];
+    $housingArray[0] = [ucwords($geoType), 'Year', 'Unit Type', 'Units', 'Occupied (Households)', 'Unoccupied', 'Vacancy Rate'];
+    $populationArray[0] = [ucwords($geoType), 'Year', 'Housing Type', 'Population'];
+    $incomeArray[0] = [ucwords($geoType), 'Year', 'Income Group', 'Households'];
+    
+    if("forecast"==$datasource)
+    {
+    	$jobsArray[0] = [ucwords($geoType), 'Year', 'Category', 'Jobs'];
+    }
+
+    $ageIterator = 1;
+    $ethnicityIterator = 1;
+    $housingIterator = 1;
+    $populationIterator = 1;
+    $incomeIterator = 1;
+    $jobsIterator = 1;
+        
+    foreach($zones as $zone)
+    {
+    	$age_file_name = strtolower(join("_", array('age', $datasource, $year, $geoType, $zone)).".json");
+    	$age_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $age_file_name));
+    		
+    	$ethnicity_file_name = strtolower(join("_", array('ethnicity', $datasource, $year, $geoType, $zone)).".json");
+    	$ethnicity_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $ethnicity_file_name));
+    	
+        $housing_file_name = strtolower(join("_", array('housing', $datasource, $year, $geoType, $zone)).".json");
+        $housing_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $housing_file_name));
+        
+        $population_file_name = strtolower(join("_", array('population', $datasource, $year, $geoType, $zone)).".json");
+        $population_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $population_file_name));   
+    	    
+        $income_file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
+        $income_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $income_file_name));
+    	    
+        $jobs_file_name = strtolower(join("_", array('jobs', $datasource, $year, $geoType, $zone)).".json");
+        $jobs_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $jobs_file_name));
+    		  
+        $ageZoneArray = json_decode(file_get_contents($age_file_path), true);
+        $ethnicityZoneArray = json_decode(file_get_contents($ethnicity_file_path), true);
+        $housingZoneArray = json_decode(file_get_contents($housing_file_path), true);
+    	$populationZoneArray = json_decode(file_get_contents($population_file_path), true);
+    	$incomeZoneArray = json_decode(file_get_contents($income_file_path), true);
+
+    	foreach($ageZoneArray as $arr)
+    		$ageArray[$ageIterator++] = [$arr[$geoType], $arr['year'], $arr['sex'], $arr['group_10yr'], $arr['population']];
+    		
+    	foreach($ethnicityZoneArray as $arr)
+    		$ethnicityArray[$ethnicityIterator++] =[$arr[$geoType], $arr['year'],$arr['ethnicity'],$arr['population']];
+    		
+    	foreach($housingZoneArray as $arr)
+    		$housingArray[$housingIterator++] = [$arr[$geoType], $arr['year'], $arr['unit_type'], $arr['units'], $arr['occupied'], $arr['unoccupied'], $arr['vacancy_rate']];
+    		
+    	foreach($populationZoneArray as $arr)
+    		$populationArray[$populationIterator++] = [$arr[$geoType], $arr['year'],$arr['housing_type'],$arr['population']];
+    		
+    	foreach($incomeZoneArray as $arr)
+    		$incomeArray[$incomeIterator++] = [$arr[$geoType], $arr['year'],$arr['income_group'],$arr['households']];
+    	
+    	if("forecast"==$datasource)
+    	{
+    		$jobsZoneArray = json_decode(file_get_contents($jobs_file_path), true);
+    		foreach($jobsZoneArray as $arr)
+    			$jobsArray[$jobsIterator++] = [$arr[$geoType], $arr['year'], $arr['category'], $arr['jobs']];
+    	}
+    }
+    
+    $objPHPExcel = new XLSXWriter();
+    $objPHPExcel->setAuthor("San Diego Association of Governments");
+    
+    $objPHPExcel->writeSheet($ageArray, 'Age');
+    $objPHPExcel->writeSheet($ethnicityArray, 'Ethnicity');
+    $objPHPExcel->writeSheet($housingArray, 'Housing');
+    $objPHPExcel->writeSheet($populationArray, 'Population');
+    $objPHPExcel->writeSheet($incomeArray, 'Income');
+   
+    if("forecast"==$datasource)
+    	$objPHPExcel->writeSheet($jobsArray, 'Jobs');
+    
+    
+    $objPHPExcel->writeToStdOut();
+    
+})->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
+
 $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geoType, $zones) use ($app)
 {
-	$url = 'http://datasurfer.sandag.org';
+	if (count($zones) > 20)
+	{
+		$app->halt(400, 'Max Zone Request Exceeded (Limit: 20)');
+	}
+	
 	natcasesort($zones);
 	
-	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).'_'.join("_",str_replace(' ', '_', $zones)).".xlsx");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
+	$file_name = strtolower(join("_", array($datasource, $year, $geoType)).".xlsx");
+	
+    $res = $app->response();
+    $res['Content-Description'] = 'File Transfer';
+    $res['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    $res['Content-Disposition'] ='attachment; filename='.$file_name;
+    $res['Content-Transfer-Encoding'] = 'binary';
+    $res['Expires'] = '0';
+    $res['Cache-Control'] = 'must-revalidate';
+    $res['Pragma'] = 'public';
 
- 	$res = $app->response();
-  	$res['Content-Description'] = 'File Transfer';
-  	$res['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-  	$res['Content-Disposition'] ='attachment; filename='.$file_name;
-  	$res['Content-Transfer-Encoding'] = 'binary';
-  	$res['Expires'] = '0';
-  	$res['Cache-Control'] = 'must-revalidate';
-  	$res['Pragma'] = 'public';
+    $ageArray[0] = [ucwords($geoType), 'Year', 'Sex', 'Group - 10 Year', 'Population'];
+    $ethnicityArray[0] = [ucwords($geoType), 'Year', 'Ethnicity', 'Population'];
+    $housingArray[0] = [ucwords($geoType), 'Year', 'Unit Type', 'Units', 'Occupied (Households)', 'Unoccupied', 'Vacancy Rate'];
+    $populationArray[0] = [ucwords($geoType), 'Year', 'Housing Type', 'Population'];
+    $incomeArray[0] = [ucwords($geoType), 'Year', 'Income Group', 'Households'];
+    
+    if("forecast"==$datasource)
+    {
+    	$jobsArray[0] = [ucwords($geoType), 'Year', 'Category', 'Jobs'];
+    }
 
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-	    $objPHPExcel = new PHPExcel();
-	    $objPHPExcel->getProperties()->setCreator("San Diego Association of Governments");
-	
-	    if("census"==$datasource)
-		    $objPHPExcel->getProperties()->setTitle("SANDAG Census {$year} Profile");
-	    elseif ("estimate" == $datasource)
-	        $objPHPExcel->getProperties()->setTitle("SANDAG ${year} Estimate Profile");
-	    elseif("forecast"==$datasource)
-	        $objPHPExcel->getProperties()->setTitle("SANDAG Series {$year} Forecast Profile");
-	
-	    $objPHPExcel->getProperties()->setCompany("San Diego Association of Governments");
-	
-	    $ageSheet = $objPHPExcel->getActiveSheet();
-	    $ageSheet->setTitle('Age', true);
-	    $ageSheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-	    $ageSheet->getCellByColumnAndRow(1,1)->setValue('Year');
-	    $ageSheet->getCellByColumnAndRow(2,1)->setValue('Sex');
-	    $ageSheet->getCellByColumnAndRow(3,1)->setValue('Group - 10 Year');
-	    $ageSheet->getCellByColumnAndRow(4,1)->setValue('Population');
-	
-	    $ethnicitySheet = $objPHPExcel->createSheet(NULL);
-	    $ethnicitySheet->setTitle('Ethnicity',true);
-	    $ethnicitySheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-	    $ethnicitySheet->getCellByColumnAndRow(1,1)->setValue('Year');
-	    $ethnicitySheet->getCellByColumnAndRow(2,1)->setValue('Ethnicity');
-	    $ethnicitySheet->getCellByColumnAndRow(3,1)->setValue('Population');
-	
-	    $housingSheet = $objPHPExcel->createSheet(NULL);
-	    $housingSheet->setTitle('Housing',true);
-	    $housingSheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-	    $housingSheet->getCellByColumnAndRow(1,1)->setValue('Year');
-	    $housingSheet->getCellByColumnAndRow(2,1)->setValue('Unit Type');
-	    $housingSheet->getCellByColumnAndRow(3,1)->setValue('Units');
-	    $housingSheet->getCellByColumnAndRow(4,1)->setValue('Occupied (Households)');
-	    $housingSheet->getCellByColumnAndRow(5,1)->setValue('Unoccupied');
-	    $housingSheet->getCellByColumnAndRow(6,1)->setValue('Vacancy Rate');
-	
-	    $populationSheet = $objPHPExcel->createSheet(NULL);
-	    $populationSheet->setTitle('Population',true);
-	    $populationSheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-	    $populationSheet->getCellByColumnAndRow(1,1)->setValue('Year');
-	    $populationSheet->getCellByColumnAndRow(2,1)->setValue('Housing Type');
-	    $populationSheet->getCellByColumnAndRow(3,1)->setValue('Population');
-	
-	    $incomeSheet = $objPHPExcel->createSheet(NULL);
-	    $incomeSheet->setTitle('Income',true);
-	    $incomeSheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-	    $incomeSheet->getCellByColumnAndRow(1,1)->setValue('Year');
-	    $incomeSheet->getCellByColumnAndRow(2,1)->setValue('Income Group');
-	    $incomeSheet->getCellByColumnAndRow(3,1)->setValue('Households');
-	
-	    if("forecast"==$datasource)
-	    {
-		    $jobsSheet = $objPHPExcel->createSheet(NULL);
-		    $jobsSheet->setTitle('Jobs',true);
-		    $jobsSheet->getCellByColumnAndRow(0,1)->setValue(ucwords($geoType));
-		    $jobsSheet->getCellByColumnAndRow(1,1)->setValue('Year');
-		    $jobsSheet->getCellByColumnAndRow(2,1)->setValue('Category');
-		    $jobsSheet->getCellByColumnAndRow(3,1)->setValue('Jobs');
-	    }
-	
-	    $urls = array();
-	    $housingArray = array();
-	    $populationArray = array();
-	    $ageArray = array();
-	    $ethnicityArray = array();
-	    $incomeArray = array();
-	    $jobsArray = array();
+    $ageIterator = 1;
+    $ethnicityIterator = 1;
+    $housingIterator = 1;
+    $populationIterator = 1;
+    $incomeIterator = 1;
+    $jobsIterator = 1;
+        
+    foreach($zones as $zone)
+    {
+    	$age_file_name = strtolower(join("_", array('age', $datasource, $year, $geoType, $zone)).".json");
+    	$age_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $age_file_name));
+    		
+    	$ethnicity_file_name = strtolower(join("_", array('ethnicity', $datasource, $year, $geoType, $zone)).".json");
+    	$ethnicity_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $ethnicity_file_name));
+    	
+        $housing_file_name = strtolower(join("_", array('housing', $datasource, $year, $geoType, $zone)).".json");
+        $housing_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $housing_file_name));
+        
+        $population_file_name = strtolower(join("_", array('population', $datasource, $year, $geoType, $zone)).".json");
+        $population_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $population_file_name));   
+    	    
+        $income_file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
+        $income_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $income_file_name));
+    	    
+        $jobs_file_name = strtolower(join("_", array('jobs', $datasource, $year, $geoType, $zone)).".json");
+        $jobs_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $jobs_file_name));
+    		  
+        $ageZoneArray = json_decode(file_get_contents($age_file_path), true);
+        $ethnicityZoneArray = json_decode(file_get_contents($ethnicity_file_path), true);
+        $housingZoneArray = json_decode(file_get_contents($housing_file_path), true);
+    	$populationZoneArray = json_decode(file_get_contents($population_file_path), true);
+    	$incomeZoneArray = json_decode(file_get_contents($income_file_path), true);
 
-	    foreach($zones as $zone)
-	    {
-	        $request_predicate = join("/", array($datasource, $year, $geoType, str_replace(' ', '%20', $zone)));
-		
-    	    $housing_url = "{$url}/api/{$request_predicate}/housing";
-    	    $population_url = "{$url}/api/{$request_predicate}/population";
-	        $age_url = "{$url}/api/{$request_predicate}/age";
-	        $ethnicity_url = "{$url}/api/{$request_predicate}/ethnicity";
-	        $income_url = "{$url}/api/{$request_predicate}/income";
-	        $jobs_url = "{$url}/api/{$request_predicate}/jobs";
-	
-	        $housingArray = array_merge($housingArray, json_decode(file_get_contents($housing_url), true));
-	        $populationArray = array_merge($populationArray, json_decode(file_get_contents($population_url), true));
-	        $ageArray = array_merge($ageArray, json_decode(file_get_contents($age_url), true));
-	        $ethnicityArray = array_merge($ethnicityArray, json_decode(file_get_contents($ethnicity_url), true));
-	        $incomeArray = array_merge($incomeArray, json_decode(file_get_contents($income_url), true));
-	        
-	        if("forecast"==$datasource)
-	            $jobsArray = array_merge($jobsArray, json_decode(file_get_contents($jobs_url), true));
-	        
-	    }
-
-	    for($j=0;$j<count($ageArray); $j++)
-	    {
-            $ageSheet->getCellByColumnAndRow(0,$j+2)->setValue($ageArray[$j][$geoType]);
-	        $ageSheet->getCellByColumnAndRow(1,$j+2)->setValue($ageArray[$j]['year']);
-    	    $ageSheet->getCellByColumnAndRow(2,$j+2)->setValue($ageArray[$j]['sex']);
-	        $ageSheet->getCellByColumnAndRow(3,$j+2)->setValue($ageArray[$j]['group_10yr']);
-    	    $ageSheet->getCellByColumnAndRow(4,$j+2)->setValue($ageArray[$j]['population']);
-        }
-	
-	    for($j=0;$j<count($ethnicityArray); $j++)
-	    {
-	        $ethnicitySheet->getCellByColumnAndRow(0,$j+2)->setValue($ethnicityArray[$j][$geoType]);
-		    $ethnicitySheet->getCellByColumnAndRow(1,$j+2)->setValue($ethnicityArray[$j]['year']);
-		    $ethnicitySheet->getCellByColumnAndRow(2,$j+2)->setValue($ethnicityArray[$j]['ethnicity']);
-		    $ethnicitySheet->getCellByColumnAndRow(3,$j+2)->setValue($ethnicityArray[$j]['population']);
-	    }
-	
-    	for($j=0;$j<count($housingArray); $j++)
-	    {
-	        $housingSheet->getCellByColumnAndRow(0,$j+2)->setValue($housingArray[$j][$geoType]);
-	        $housingSheet->getCellByColumnAndRow(1,$j+2)->setValue($housingArray[$j]['year']);
-	        $housingSheet->getCellByColumnAndRow(2,$j+2)->setValue($housingArray[$j]['unit_type']);
-	        $housingSheet->getCellByColumnAndRow(3,$j+2)->setValue($housingArray[$j]['units']);
-	        $housingSheet->getCellByColumnAndRow(4,$j+2)->setValue($housingArray[$j]['occupied']);
-	        $housingSheet->getCellByColumnAndRow(5,$j+2)->setValue($housingArray[$j]['unoccupied']);
-	        $housingSheet->getCellByColumnAndRow(6,$j+2)->setValue($housingArray[$j]['vacancy_rate']);
-	    }
-	    
-	    for($j=0;$j<count($populationArray); $j++)
-	    {
-	        $populationSheet->getCellByColumnAndRow(0,$j+2)->setValue($populationArray[$j][$geoType]);
-	    	$populationSheet->getCellByColumnAndRow(1,$j+2)->setValue($populationArray[$j]['year']);
-	    	$populationSheet->getCellByColumnAndRow(2,$j+2)->setValue($populationArray[$j]['housing_type']);
-	    	$populationSheet->getCellByColumnAndRow(3,$j+2)->setValue($populationArray[$j]['population']);
-	    }
-	
-    	for($j=0;$j<count($incomeArray); $j++)
-	    {
-	        $incomeSheet->getCellByColumnAndRow(0,$j+2)->setValue($incomeArray[$j][$geoType]);
-	        $incomeSheet->getCellByColumnAndRow(1,$j+2)->setValue($incomeArray[$j]['year']);
-	        $incomeSheet->getCellByColumnAndRow(2,$j+2)->setValue($incomeArray[$j]['income_group']);
-	        $incomeSheet->getCellByColumnAndRow(3,$j+2)->setValue($incomeArray[$j]['households']);
-	    }
-	    
-	    if("forecast"==$datasource)
-	    {
-	    	for($j=0;$j<count($jobsArray); $j++)
-	    	{
-	    		$jobsSheet->getCellByColumnAndRow(0,$j+2)->setValue($jobsArray[$j][$geoType]);
-	    		$jobsSheet->getCellByColumnAndRow(1,$j+2)->setValue($jobsArray[$j]['year']);
-	    		$jobsSheet->getCellByColumnAndRow(2,$j+2)->setValue($jobsArray[$j]['category']);
-	    		$jobsSheet->getCellByColumnAndRow(3,$j+2)->setValue($jobsArray[$j]['jobs']);
-	    	}	
-	    }
-	    
-	    $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-	    $objWriter->save($file_path);
-	    $objWriter->save('php://output');
-	}
+    	foreach($ageZoneArray as $arr)
+    		$ageArray[$ageIterator++] = [$arr[$geoType], $arr['year'], $arr['sex'], $arr['group_10yr'], $arr['population']];
+    		
+    	foreach($ethnicityZoneArray as $arr)
+    		$ethnicityArray[$ethnicityIterator++] =[$arr[$geoType], $arr['year'],$arr['ethnicity'],$arr['population']];
+    		
+    	foreach($housingZoneArray as $arr)
+    		$housingArray[$housingIterator++] = [$arr[$geoType], $arr['year'], $arr['unit_type'], $arr['units'], $arr['occupied'], $arr['unoccupied'], $arr['vacancy_rate']];
+    		
+    	foreach($populationZoneArray as $arr)
+    		$populationArray[$populationIterator++] = [$arr[$geoType], $arr['year'],$arr['housing_type'],$arr['population']];
+    		
+    	foreach($incomeZoneArray as $arr)
+    		$incomeArray[$incomeIterator++] = [$arr[$geoType], $arr['year'],$arr['income_group'],$arr['households']];
+    	
+    	if("forecast"==$datasource)
+    	{
+    		$jobsZoneArray = json_decode(file_get_contents($jobs_file_path), true);
+    		foreach($jobsZoneArray as $arr)
+    			$jobsArray[$jobsIterator++] = [$arr[$geoType], $arr['year'], $arr['category'], $arr['jobs']];
+    	}
+    }
+    
+    $objPHPExcel = new XLSXWriter();
+    $objPHPExcel->setAuthor("San Diego Association of Governments");
+    
+    $objPHPExcel->writeSheet($ageArray, 'Age');
+    $objPHPExcel->writeSheet($ethnicityArray, 'Ethnicity');
+    $objPHPExcel->writeSheet($housingArray, 'Housing');
+    $objPHPExcel->writeSheet($populationArray, 'Population');
+    $objPHPExcel->writeSheet($incomeArray, 'Income');
+   
+    if("forecast"==$datasource)
+    	$objPHPExcel->writeSheet($jobsArray, 'Jobs');
+    
+    $objPHPExcel->writeToStdOut();
 });
 
 //Export to Excel
