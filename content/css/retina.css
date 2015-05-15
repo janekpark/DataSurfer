@@ -94,7 +94,7 @@ only screen and (                min-resolution: 2dppx)  and (min-width: 320px) 
 	{
 		background-image:url(../images/ui/logo-footer@2x.png);
 	}
-	.site-footer .col-right .created-by a
+	.site-footer .col-right .created-by p
 	{
 		background-image:url(../images/ui/logo-footer-2@2x.png);
 	}
@@ -280,7 +280,7 @@ only screen and (                min-resolution: 2dppx)  and (min-width: 1024px)
 	{
 		background-image:none;
 	}
-	.site-footer .col-right .created-by a
+	.site-footer .col-right .created-by p
 	{
 		background-image:url(../images/ui/logo-footer-2@2x.png);
 	}

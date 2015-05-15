@@ -709,17 +709,13 @@ h1, h2, h3, h4, h5, h6
 	padding:17px 0;
 	border-top:1px solid #ccc;
 }
-.site-footer .col-right .created-by a
+.site-footer .col-right .created-by p
 {
 	display:block;
 	width:151px;
 	height:59px;
 	background:url(../images/ui/logo-footer-2.png) top center no-repeat;
 	background-size:100% auto;
-}
-.site-footer .col-right .created-by a:hover
-{
-	opacity:.4;
 }
 
 .site-content .content

@@ -48,7 +48,7 @@
 						</div>
 						<div class="col-xs-6 col-sm-12 col-md-4">
 							<div class="created-by">
-								<a class="btn-link" title="" href="http://www.themthdegree.com/" data-ajax="false" target="_blank"></a>
+							    <p></p>
 							</div>
 						</div>
 					</div>
