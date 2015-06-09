@@ -904,3 +904,107 @@ CREATE INDEX ix_summary_population_ds10 ON fact.summary_population_ds10 (geotype
 CREATE INDEX ix_summary_population_ds12 ON fact.summary_population_ds12 (geotype, lower(geozone));
 CREATE INDEX ix_summary_population_ds13 ON fact.summary_population_ds13 (geotype, lower(geozone));
 CREATE INDEX ix_summary_population_ds14 ON fact.summary_population_ds14 (geotype, lower(geozone));
+
+CREATE TABLE fact.summary_income (
+  datasource_id integer
+  ,geotype varchar
+  ,geozone varchar
+  ,yr smallint
+  ,ordinal int
+  ,income_group varchar
+  ,households bigint
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE fact.summary_income_ds2 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds3 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds4 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds5 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds6 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE fact.summary_income_ds10 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds12 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds13 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds14 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_income_ds2 ADD CONSTRAINT chk_summary_income_ds2 CHECK (datasource_id = 2);
+ALTER TABLE fact.summary_income_ds3 ADD CONSTRAINT chk_summary_income_ds3 CHECK (datasource_id = 3);
+ALTER TABLE fact.summary_income_ds4 ADD CONSTRAINT chk_summary_income_ds4 CHECK (datasource_id = 4);
+ALTER TABLE fact.summary_income_ds5 ADD CONSTRAINT chk_summary_income_ds5 CHECK (datasource_id = 5);
+ALTER TABLE fact.summary_income_ds6 ADD CONSTRAINT chk_summary_income_ds6 CHECK (datasource_id = 6);
+
+ALTER TABLE fact.summary_income_ds10 ADD CONSTRAINT chk_summary_income_ds10 CHECK (datasource_id = 10);
+ALTER TABLE fact.summary_income_ds12 ADD CONSTRAINT chk_summary_income_ds12 CHECK (datasource_id = 12);
+ALTER TABLE fact.summary_income_ds13 ADD CONSTRAINT chk_summary_income_ds13 CHECK (datasource_id = 13);
+ALTER TABLE fact.summary_income_ds14 ADD CONSTRAINT chk_summary_income_ds14 CHECK (datasource_id = 14);
+
+INSERT INTO fact.summary_income_ds2 SELECT * FROM app.fn_summarize_income(2); COMMIT;
+INSERT INTO fact.summary_income_ds3 SELECT * FROM app.fn_summarize_income(3); COMMIT;
+INSERT INTO fact.summary_income_ds4 SELECT * FROM app.fn_summarize_income(4); COMMIT;
+INSERT INTO fact.summary_income_ds5 SELECT * FROM app.fn_summarize_income(5); COMMIT;
+INSERT INTO fact.summary_income_ds6 SELECT * FROM app.fn_summarize_income(6); COMMIT;
+
+INSERT INTO fact.summary_income_ds10 SELECT * FROM app.fn_summarize_income(10); COMMIT;
+INSERT INTO fact.summary_income_ds12 SELECT * FROM app.fn_summarize_income(12); COMMIT;
+INSERT INTO fact.summary_income_ds13 SELECT * FROM app.fn_summarize_income(13); COMMIT;
+INSERT INTO fact.summary_income_ds14 SELECT * FROM app.fn_summarize_income(14); COMMIT;
+
+CREATE INDEX ix_summary_income_ds2_geotype_geozone ON fact.summary_income_ds2 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds3_geotype_geozone ON fact.summary_income_ds3 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds4_geotype_geozone ON fact.summary_income_ds4 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds5_geotype_geozone ON fact.summary_income_ds5 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds6_geotype_geozone ON fact.summary_income_ds6 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+
+CREATE INDEX ix_summary_income_ds10_geotype_geozone ON fact.summary_income_ds10 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds12_geotype_geozone ON fact.summary_income_ds12 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds13_geotype_geozone ON fact.summary_income_ds13 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_ds14_geotype_geozone ON fact.summary_income_ds14 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE fact.summary_income_median (
+  datasource_id smallint
+  ,geotype varchar(50)
+  ,geozone varchar(50)
+  ,yr smallint
+  ,median_inc int
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE fact.summary_income_median_ds2 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds3 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds4 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds5 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds6 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds10 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds12 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds13 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds14 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_income_median_ds2 ADD CONSTRAINT chk_summary_income_median_ds2 CHECK (datasource_id = 2);
+ALTER TABLE fact.summary_income_median_ds3 ADD CONSTRAINT chk_summary_income_median_ds3 CHECK (datasource_id = 3);
+ALTER TABLE fact.summary_income_median_ds4 ADD CONSTRAINT chk_summary_income_median_ds4 CHECK (datasource_id = 4);
+ALTER TABLE fact.summary_income_median_ds5 ADD CONSTRAINT chk_summary_income_median_ds5 CHECK (datasource_id = 5);
+ALTER TABLE fact.summary_income_median_ds6 ADD CONSTRAINT chk_summary_income_median_ds6 CHECK (datasource_id = 6);
+ALTER TABLE fact.summary_income_median_ds10 ADD CONSTRAINT chk_summary_income_median_ds10 CHECK (datasource_id = 10);
+ALTER TABLE fact.summary_income_median_ds12 ADD CONSTRAINT chk_summary_income_median_ds12 CHECK (datasource_id = 12);
+ALTER TABLE fact.summary_income_median_ds13 ADD CONSTRAINT chk_summary_income_median_ds13 CHECK (datasource_id = 13);
+ALTER TABLE fact.summary_income_median_ds14 ADD CONSTRAINT chk_summary_income_median_ds14 CHECK (datasource_id = 14);
+
+INSERT INTO fact.summary_income_median_ds2 SELECT * FROM app.fn_summarize_median_income(2); COMMIT;
+INSERT INTO fact.summary_income_median_ds3 SELECT * FROM app.fn_summarize_median_income(3); COMMIT;
+INSERT INTO fact.summary_income_median_ds4 SELECT * FROM app.fn_summarize_median_income(4); COMMIT;
+INSERT INTO fact.summary_income_median_ds5 SELECT * FROM app.fn_summarize_median_income(5); COMMIT;
+INSERT INTO fact.summary_income_median_ds6 SELECT * FROM app.fn_summarize_median_income(6); COMMIT;
+
+INSERT INTO fact.summary_income_median_ds10 SELECT * FROM app.fn_summarize_median_income(10); COMMIT;
+INSERT INTO fact.summary_income_median_ds12 SELECT * FROM app.fn_summarize_median_income(12); COMMIT;
+INSERT INTO fact.summary_income_median_ds13 SELECT * FROM app.fn_summarize_median_income(13); COMMIT;
+INSERT INTO fact.summary_income_median_ds14 SELECT * FROM app.fn_summarize_median_income(14); COMMIT;
+
+CREATE INDEX ix_summary_income_median_ds2 ON fact.summary_income_median_ds2 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds3 ON fact.summary_income_median_ds3 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds4 ON fact.summary_income_median_ds4 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds5 ON fact.summary_income_median_ds5 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds6 ON fact.summary_income_median_ds6 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+
+CREATE INDEX ix_summary_income_median_ds10 ON fact.summary_income_median_ds10 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds12 ON fact.summary_income_median_ds12 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds13 ON fact.summary_income_median_ds13 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_income_median_ds14 ON fact.summary_income_median_ds14 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
