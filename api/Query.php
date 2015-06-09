@@ -6,20 +6,19 @@ class Query {
 	private static $instance;
 	
 	private $db_server = null;
+	private $database = null;
+	private $uid = null;
+	private $pwd = null;
 	private $connectionInfo = array();
 	
 	private function __construct()
 	{
 		$config = new Config("configuration.ini");
+		
 		$this->db_server = $config->get('db_server');
-		
-		$uid = $config->get('user');
-		$pwd = $config->get('password');
-		$database = $config->get('database');
-		
-		$this->connectionInfo['UID'] = $uid;
-		$this->connectionInfo['PWD'] = $pwd;
-		$this->connectionInfo['Database'] = $database;
+		$this->uid = $config->get('user');
+		$this->pwd = $config->get('password');
+		$this->database = $config->get('database');
 	}
 	
 	public static function getInstance()
@@ -33,31 +32,26 @@ class Query {
 	}
 	
 	
-	public function getResultAsJson($sql, $params) {
+	public function getResultAsJson($sql, $datasource_id, $geotype, $geozone) {
 		$json = array ();
 		
-		try {
-			$conn = sqlsrv_connect ( $this->db_server, $this->connectionInfo );
+		$db = new PDO("pgsql:dbname={$this->database};host={$this->db_server};user={$this->uid};password={$this->pwd}");
+		$stmt = $db->prepare($sql);
 			
-			if ($params != null) {
-				$stmt = sqlsrv_query ( $conn, $sql, $params );
-			} else {
-				$stmt = sqlsrv_query ( $conn, $sql );
-			}
-			
-			do {
-				while ( $row = sqlsrv_fetch_array ( $stmt, SQLSRV_FETCH_ASSOC ) ) {
-					$json [] = $row;
-				}
-			} while ( sqlsrv_next_result ( $stmt ) );
-			
-			sqlsrv_free_stmt ( $stmt );
-			sqlsrv_close ( $conn );
-		} catch ( Exception $e ) {
-			echo $e->message;
-		}
+		$stmt->bindParam(':datasource_id', $datasource_id);
+		$stmt->bindParam(':geotype', $geotype);
+		$stmt->bindParam(':geozone', $geozone);
 		
-		return json_encode ( $json );
+		$stmt->execute();
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		$json = json_encode($results);
+		
+		$results = null;
+		$stmt = null;
+		$db = null;
+
+		return $json;
 	}
 	
 	public function getResultAsSheet($sql, $params, &$sheet) 
