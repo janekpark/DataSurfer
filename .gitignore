@@ -4,3 +4,4 @@ api/.settings/
 *.ini
 .idea
 download/
+api/utilities/*.csv
