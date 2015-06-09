@@ -196,31 +196,16 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
     echo $json;
 })->conditions(array('datasource' => 'forecast|census|estimate'));
 
-$app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geoType, $zone) use ($app)
+$app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$file_name = strtolower(join("_", array('income_median', $datasource, $year, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $file_name));
+    $datasource_id = $GLOBALS['datasources'][$datasource][$year];
 
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-		$columnName = $GLOBALS['geotypes'][$geoType];
-		$datasource_id = $GLOBALS['datasources'][$datasource][$year];
-		$params = [$datasource_id, $columnName, $zone];
+    $sql = "SELECT geozone as {$geotype}, yr as year, median_inc FROM fact.summary_income_median 
+            WHERE datasource_id = :datasource_id AND geotype = :geotype AND lower(geozone) = lower(:geozone);";	
 
-		$sql = "app.sp_median_hh_inc ?, ?, ?";
+    $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
-		$json = Query::getInstance()->getResultAsJson($sql, $params);
-
-		$f = fopen($file_path, 'w');
-		fwrite($f, $json);
-		fclose($f);
-
-		echo $json;
-	}
+    echo $json;
 })->conditions(array('datasource' => 'forecast|census|estimate'));
 
 $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
@@ -645,31 +630,16 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series
 
 })->conditions(array('series' => '12|13'));
 
-$app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geoType, $zone) use ($app)
+$app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geotype, $zone) use ($app)
 {
-	$file_name = strtolower(join("_", array('jobs', 'forecast', $series, $geoType, $zone)).".json");
-	$file_path = join(DIRECTORY_SEPARATOR, array(".","json",'forecast',$series,$geoType, $file_name));
-	
-	if (file_exists($file_path) && $GLOBALS['useCache'])
-	{
-		$res['Content-Length'] = filesize($file_path);
-		readfile($file_path);
-	} else
-	{
-		$columnName = $GLOBALS['geotypes'][$geoType];
-		$datasource_id = $GLOBALS['datasources']['forecast'][$series];
-		    	$params = [$datasource_id, $columnName, $geoType, $zone];
-    
-    	$sql = "app.sp_jobs_profile ?, ?, ?, ?";
-	
-		$json = Query::getInstance()->getResultAsJson($sql, $params);
-    
-		$f = fopen($file_path, 'w');
-    	fwrite($f, $json);
-    	fclose($f);
-    
-    	echo $json;
-	}
+    $datasource_id = $GLOBALS['datasources']['forecast'][$series];
+
+    $sql = "SELECT geozone as {$geotype}, yr as year, employment_type as category, jobs FROM fact.summary_jobs 
+            WHERE datasource_id = :datasource_id AND geotype = :geotype AND lower(geozone) = lower(:geozone);";	
+
+    $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
+
+    echo $json;
 	
 })->conditions(array('series' => '12|13'));
 
