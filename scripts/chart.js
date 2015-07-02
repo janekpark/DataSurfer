@@ -212,7 +212,7 @@ function loadChart()
                             data: []
                         }],
                         lang: {
-                            noData: "Data not available."
+                            noData: "No residents in selected area."
                         },
                         noData: {
                             style: {
