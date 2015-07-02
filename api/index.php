@@ -283,8 +283,6 @@ $app->post('/:datasource/:year/:geotype/export/xlsx', function ($datasource, $ye
     
     natcasesort($zones);
     
-    $url = 'http://datasurfer.sandag.org';
-    
     $file_name = strtolower(join("_", array($datasource, $year, $geoType)).".xlsx");
     $file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
     

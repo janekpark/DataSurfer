@@ -270,7 +270,9 @@ $(document).ready(function()
             var year = $('#pck_year').val();
             var geography_type = $('#pck_geography_type').val();
 
-            var static_url = "http://datasurfer.sandag.org/api"+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
+			var api_url = $('#api_url').val();
+			
+            var static_url = api_url+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
             mlt_location = '';
             $('[name="ch_location"]').each(function(){
                 if($(this).is(':checked')){
