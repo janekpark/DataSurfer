@@ -547,11 +547,8 @@ function loadCurrentData(){
                     var arrTemp = [];
                     for(var i=0;i<res.length;i++){
                         var obj = res[i];
-                        for(var key in obj){
-                            if(key > 0){
-                                arrTemp.push(obj[key]);
-                            }
-                        }
+                        for(var key in obj)
+                          arrTemp.push(obj[key]);
                     }
                     arrTemp.sort(function(a, b){return a-b});
                     for(var i=0;i<arrTemp.length;i++){
@@ -602,9 +599,7 @@ function loadCurrentData(){
                     for(var i=0;i<res.length;i++){
                         var obj = res[i];
                         for(var key in obj){
-                            if(key > 0){
-                                arrTemp.push(obj[key]);
-                            }
+                            arrTemp.push(obj[key]);
                         }
                     }
                     arrTemp.sort();

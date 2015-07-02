@@ -30,9 +30,7 @@ function loadYear(){
                     for(var i=0;i<res.length;i++){
                         var obj = res[i];
                         for(var key in obj){
-                            if(key > 0){
-                                arrTemp.push(obj[key]);
-                            }
+                            arrTemp.push(obj[key]);
                         }
                     }
                     var str_year='<div class="cb-selection"><input class="cb-check" id="cb-year-all" name="all" type="checkbox" /><label for="cb-year-all">select/unselect all</label></div>';
@@ -119,8 +117,10 @@ function loadYear(){
                         var source_type = $('#pck_source_type').val();
                         var year = $('#pck_year').val();
                         var geography_type = $('#pck_geography_type').val();
+						
+						var api_url = $('#api_url').val();
                         
-                        var static_url = "http://datasurfer.sandag.org/api"+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
+                        var static_url = api_url + "/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
                         
                         $('[name="ch_location"]').on('click',function(){
                             var mlt_location = '';
@@ -433,9 +433,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort(function(a, b){return a-b});
@@ -539,9 +537,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-									arrTemp.push(obj[key]);
-								}
+    							arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort();
@@ -743,9 +739,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort(function(a, b){return a-b});
@@ -800,9 +794,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort();
