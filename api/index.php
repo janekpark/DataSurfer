@@ -68,7 +68,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/', function () use ($app)
 {
     $app->response->headers->set('Content-Type', 'text/html');
-    $app->render('home.html');
+    $app->render('home.php');
 });
 
 $app->get('/:datasource', function ($datasource) use ($app)
