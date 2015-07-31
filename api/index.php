@@ -476,13 +476,13 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
       $jobsHeader = array(
       		strtoupper($geotype) => 'string',
       		'YEAR' => 'string',
-      		'EMPLOYMENT TYPE' => 'string',
+      		'EMPLOYMENT TYPE (Civilian)' => 'string',
       		'JOBS' => 'integer'
       );
       $jobsSql = "SELECT geozone, yr, employment_type, jobs FROM fact.summary_jobs 
       		WHERE datasource_id = :datasource_id AND geotype = :geotype AND lower(geozone) = ANY(:zonelist) and employment_type <> 'Total Jobs' order by geozone, yr;";
       $jobsArray = Query::getInstance()->getResultAsArray($jobsSql, $datasource_id, $geotype, $zonelist);
-      $writer->writeSheet($jobsArray, 'Jobs', $jobsHeader);
+      $writer->writeSheet($jobsArray, 'Civilian Jobs', $jobsHeader);
     }
     
     $writer->writeToStdOut();
