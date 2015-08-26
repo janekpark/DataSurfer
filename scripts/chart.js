@@ -110,43 +110,41 @@ function loadChart()
                 var arrEthnicity = [];
                 var dataDetailArray = [];
                 
-                for (var i = 0; i < res.length - 1; i++) {
-
+                for (var i = 0; i < res.length; i++) {
                     var obj = res[i]; // console.log(obj[key]);
-                    for (var key in obj) {
-                        if (key == "ethnicity") {
-                        } else {
-                            sum_key += obj[key];
-                        }
-                    }
+			
+					if(obj.ethnicity != 'Total Population')
+					    sum_key += obj.population;
                 }
                 
-                for (var i = 0; i < res.length - 1; i++) {
+				var i_counter = 0;
+				
+                for (var i = 0; i < res.length; i++) {
                     var obj = res[i];
-                    for (var key in obj) {
-                        if (key == "ethnicity") {
-                            categories.push(obj[key]);
-                            var cKey = obj[key].replace(/ /g, "").toLowerCase();
-                            colors.push(colorEthnicityCensus[cKey][0]);
-                        } else {
-                            keys.push(obj[key]);
-                        }
-                    }
-                    datalen = keys[i].length;
-                    var brightness = 0.2 - (i) / res.length;
-                    arrEthnicity.push({
-                        name: categories[i],
-                        y: precise_round((keys[i] / sum_key) * 100, 0),
-                        color: colors[i],
-                        fy:precise_round((keys[i] / sum_key) * 100, 1),
-                    });
+                    if (obj.ethnicity != 'Total Population')
+					{
+                        categories.push(obj.ethnicity);
+                        var cKey = obj.ethnicity.replace(/ /g, "").toLowerCase();
+                        colors.push(colorEthnicityCensus[cKey][0]);
+                        keys.push(obj.population);
+
+                        datalen = keys[i_counter].length;
+                        var brightness = 0.2 - (i_counter) / res.length;
+                        arrEthnicity.push({
+                            name: categories[i_counter],
+                            y: precise_round((keys[i_counter] / sum_key) * 100, 0),
+                            color: colors[i_counter],
+                            fy:precise_round((keys[i_counter] / sum_key) * 100, 1),
+                        });
                     
-                    dataDetailArray.push({
-                        name: categories[i],
-                        y: precise_round((keys[i] / sum_key) * 100, 1),
-                        color: colors[i]
-                    });
-                   
+                        dataDetailArray.push({
+                            name: categories[i_counter],
+                            y: precise_round((keys[i_counter] / sum_key) * 100, 1),
+                            color: colors[i_counter]
+                        });
+						
+						i_counter += 1;
+                    }
                 }
                 
                 arrEthnicity.sort(function(a,b){
@@ -214,7 +212,7 @@ function loadChart()
                             data: []
                         }],
                         lang: {
-                            noData: "Data not available."
+                            noData: "No residents in selected area."
                         },
                         noData: {
                             style: {
@@ -338,7 +336,7 @@ function chart2()
                     dataArrayHousing = dataArray;
                     para_over_housing.series[0].startAngle = sAg;
                     para_over_housing.tooltip.style.fontSize=font_size_tool_tip;
-                    console.log(dataArrayHousing);
+                    //console.log(dataArrayHousing);
                     chart4();
                     var width = $(".chart-list").width();
                     para_detail_housing.series[0].data = dataArray;
@@ -841,7 +839,7 @@ function chart5()
                         arrData.sort(function(a,b){
                             return a.name - b.name;
                         })
-                        console.log(arrData);
+                        //console.log(arrData);
                         if(max_san > max){
                             max = max_san;
                         }

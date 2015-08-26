@@ -21,7 +21,7 @@
 								<li><a title="" href="http://www.sandag.org/index.asp?fuseaction=utility.privacy" data-ajax="false" target="_blank">privacy policy</a></li>
 								<li><a title="" href="http://www.sandag.org/index.asp?fuseaction=about.bylaws" data-ajax="false" target="_blank">legal</a></li>
 								<li><a title="" href="/contact" data-ajax="false" target="_self">contact us</a></li>
-								<li><a title="" href="http://datasurfer.sandag.org/api " data-ajax="false" target="_blank">API</a></li>
+								<li><a title="" href="/api " data-ajax="false" target="_blank">API</a></li>
 							</ul> 
 						</div>
 						<div class="col-xs-4 col-md-4">					
@@ -42,13 +42,13 @@
 					<div class="row ">
 						<div class="col-xs-6 col-sm-12 col-md-offset-2 col-md-6">
 							<div class="copyright">
-								<a class="btn-link" title="" href="http://www.sandag.org/" data-ajax="false" target="_blank"></a>
-								© 2015 sandag
+
 							</div>
 						</div>
 						<div class="col-xs-6 col-sm-12 col-md-4">
 							<div class="created-by">
-								<a class="btn-link" title="" href="http://www.themthdegree.com/" data-ajax="false" target="_blank"></a>
+							    <a class="btn-link" title="" href="http://www.sandag.org/" data-ajax="false" target="_blank"></a>
+								© 2015 sandag
 							</div>
 						</div>
 					</div>

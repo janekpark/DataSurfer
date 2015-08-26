@@ -45,7 +45,7 @@ var para_over_ethnicity = {
         reflow:false,
     },
     lang: {
-        noData: "Data not available."
+        noData: "No residents in selected area."
     },
     noData: {
         style: {
@@ -308,7 +308,7 @@ var para_over_housing = {
         text: ''
     },
     lang: {
-        noData: "Data not available."
+        noData: "No housing units in selected area."
     },
     noData: {
         style: {
@@ -601,7 +601,7 @@ var para_over_age={
         align: 'left',
     },
     lang: {
-        noData: "Data not available"
+        noData: "No residents in selected area."
     },
     noData: {
         style: {
@@ -971,7 +971,7 @@ var para_over_income = {
         text: ''
     },
     lang: {
-        noData: "Data not available."
+        noData: "No households in selected area."
     },
     noData: {
         style: {

@@ -30,9 +30,7 @@ function loadYear(){
                     for(var i=0;i<res.length;i++){
                         var obj = res[i];
                         for(var key in obj){
-                            if(key > 0){
-                                arrTemp.push(obj[key]);
-                            }
+                            arrTemp.push(obj[key]);
                         }
                     }
                     var str_year='<div class="cb-selection"><input class="cb-check" id="cb-year-all" name="all" type="checkbox" /><label for="cb-year-all">select/unselect all</label></div>';
@@ -76,10 +74,30 @@ function loadYear(){
                             arrTemp.push(obj[key]);
                         }
                     }
-                    arrTemp.sort();
+                    
+					var geography_type = $('#pck_geography_type').val();
+					if (arrTemp.every(function checkNumbers(element, index, array) {return $.isNumeric(element);}))
+					{
+					    arrTemp.sort(function (a,b){return a-b;});
+					} else {
+					    arrTemp.sort();
+					}
+					
+					var str_location;
+						
                     var str_location='<div class="cb-selection pck_location">';
-                    str_location += '<input class="cb-check" id="cb-location-all" name="all" type="checkbox" />';
-                    str_location +='<label for="cb-location-all">select/unselect all</label>';
+					if (arrTemp.length <= 20)
+					{
+					    str_location += '<input class="cb-check" id="cb-location-all" name="all" type="checkbox" />';
+                        str_location +='<label for="cb-location-all">select/unselect all</label>';
+					} else
+					{
+					    if ($( window ).width() < 568)
+					      $('#h4_data_section_header').append('<br/>(Max Limit: 20)');
+						else
+						  $('#h4_data_section_header').append('&nbsp;&nbsp;&nbsp;(Max Limit: 20)');
+					}
+                    
                     str_location +='</div>';
                     var id=1;
                     for(var i=0;i<arrTemp.length;i++){
@@ -99,11 +117,14 @@ function loadYear(){
                         var source_type = $('#pck_source_type').val();
                         var year = $('#pck_year').val();
                         var geography_type = $('#pck_geography_type').val();
+						
+						var api_url = $('#api_url').val();
                         
-                        var static_url = "http://datasurfer.sandag.org/api"+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
+                        var static_url = api_url + "/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
                         
                         $('[name="ch_location"]').on('click',function(){
                             var mlt_location = '';
+							var count_check = $('[name="ch_location"]:checked').length;
                             $('[name="ch_location"]').each(function(){
                                 if($(this).is(':checked')){
                                     var str_location = $(this).val();
@@ -111,7 +132,9 @@ function loadYear(){
                                         str_location = str_location.replace(' ','%20');
                                     }
                                     mlt_location+="/"+str_location.replace(' ','%20');
-                                }
+                                } else {
+								    this.disabled = count_check >= 20;
+								}
                             })
                             var download_pdf = static_url+mlt_location+"/export/pdf";
                             var download_xlsx = static_url+mlt_location+"/export/xlsx";
@@ -410,14 +433,12 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort(function(a, b){return a-b});
                         for(var i=0;i<arrTemp.length;i++){
-							$('#slt_year').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+							$('#slt_year').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }
 					}
                     $('#slt_year').prop('disabled', false);
@@ -516,9 +537,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-									arrTemp.push(obj[key]);
-								}
+    							arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort();
@@ -602,7 +621,14 @@ $(document).ready(function(){
 								arrTemp.push(obj[key]);
 							}
 						}
-						arrTemp.sort();
+						
+						if (arrTemp.every(function checkNumbers(element, index, array) {return $.isNumeric(element);}))
+					    {
+					        arrTemp.sort(function (a,b){return a-b;});
+					    } else {
+					        arrTemp.sort();
+					    }
+						
                         for(var i=0;i<arrTemp.length;i++){
 							$('#slt_location').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
                         }
@@ -713,14 +739,12 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort(function(a, b){return a-b});
                         for(var i=0;i<arrTemp.length;i++){
-							$('#txtYear').append($('<option>', {value: arrTemp[i], text: arrTemp[i]}));
+							$('#txtYear').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
                         }
 						$('#txtYear').selectmenu('enable');
 						$('#txtYear').selectmenu('refresh');
@@ -770,9 +794,7 @@ $(document).ready(function(){
                         for(var i=0;i<res.length;i++){
 							var obj = res[i];
 							for(var key in obj){
-								if(key > 0){
-                                    arrTemp.push(obj[key]);
-								}
+                                arrTemp.push(obj[key]);
 							}
 						}
                         arrTemp.sort();
@@ -826,7 +848,14 @@ $(document).ready(function(){
 								arrTemp.push(obj[key]);
 							}
 						}
-						arrTemp.sort();
+					
+    					if (arrTemp.every(function checkNumbers(element, index, array) {return $.isNumeric(element);}))
+	    				{
+		    			    arrTemp.sort(function (a,b){return a-b;});
+			    		} else {
+				    	    arrTemp.sort();
+					    }
+						
                         for(var i=0;i<arrTemp.length;i++){
 							$('#txtLocation').append($('<option>', {value: arrTemp[i], text: arrTemp[i].toUpperCase()}));
                         }

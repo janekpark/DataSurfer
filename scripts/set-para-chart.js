@@ -89,7 +89,7 @@ function loadMaxSize(){
      offset_x_title_forcast_income = 58;
      offset_x_label_forcast_income = 15;
      y_legend_forcast_income = 0;
-     x_legend_forcast_income =-40;//-34
+     x_legend_forcast_income = 0;//-34
     /* end overview */
 
     /* overview forcast job*/
@@ -179,7 +179,7 @@ function loadMaxSize(){
      offset_x_title_detail_forcast_income =65;
      offset_y_title_detail_forcast_income =60;
      y_legend_detail_forcast_income =40;
-     x_legend_detail_forcast_income =-100;
+     x_legend_detail_forcast_income =0;
      label_x_detail_forcast_income = 27;
      label_y_detail_forcast_income = 38;
      item_margin_bottom_detail_focast_income = 3;
@@ -1953,8 +1953,8 @@ function loadDetailChartOne(){
                     }
                     cYear=temp;
                     arrDataSumForecastEthnicity = arrSum;
-                    console.log(cYear);
-                    console.log(arrDataSumForecastEthnicity);
+                    //console.log(cYear);
+                    //console.log(arrDataSumForecastEthnicity);
                     arrYearForecastEthnicity = arrYear;
                     arrDataForecastEthnicity = arrData;
                     max_detail_forecast_ethnicity=maxVal;
@@ -2017,43 +2017,42 @@ function loadDetailChartOne(){
                     var arrEthnicity = [];
                     var dataDetailArray = [];
 
-                    for (var i = 0; i < res.length - 1; i++) {
-
+                    for (var i = 0; i < res.length; i++) {
                         var obj = res[i]; // console.log(obj[key]);
-                        for (var key in obj) {
-                            if (key == "ethnicity") {
-                            } else {
-                                sum_key += obj[key];
-                            }
-                        }
+						if (obj.ethnicity != 'Total Population')
+						    sum_key += obj.population;
                     }
+					
+					var i_counter = 0;
 
-                    for (var i = 0; i < res.length - 1; i++) {
+                    for (var i = 0; i < res.length; i++) {
                         var obj = res[i];
-                        for (var key in obj) {
-                            if (key == "ethnicity") {
-                                categories.push(obj[key]);
-                                var cKey = obj[key].replace(/ /g, "").toLowerCase();
-                                colors.push(colorEthnicityCensus[cKey][0]);
-                            } else {
-                                keys.push(obj[key]);
-                            }
+						if (obj.ethnicity != 'Total Population')
+						{
+                            categories.push(obj.ethnicity);
+                            var cKey = obj.ethnicity.replace(/ /g, "").toLowerCase();
+                            colors.push(colorEthnicityCensus[cKey][0]);
+							//console.log(obj.ethnicity + ": " + obj.population);
+                            
+                            keys.push(obj.population);
+                        
+                            datalen = keys[i_counter].length;
+                            var brightness = 0.2 - (i_counter) / res.length;
+                            arrEthnicity.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 0),
+                                color: colors[i_counter],
+                                fy:precise_round((keys[i_counter] / sum_key) * 100, 1),
+                            });
+
+                            dataDetailArray.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 1),
+                                color: colors[i_counter]
+                            });
+							
+							i_counter += 1;
                         }
-                        datalen = keys[i].length;
-                        var brightness = 0.2 - (i) / res.length;
-                        arrEthnicity.push({
-                            name: categories[i],
-                            y: precise_round((keys[i] / sum_key) * 100, 0),
-                            color: colors[i],
-                            fy:precise_round((keys[i] / sum_key) * 100, 1),
-                        });
-
-                        dataDetailArray.push({
-                            name: categories[i],
-                            y: precise_round((keys[i] / sum_key) * 100, 1),
-                            color: colors[i]
-                        });
-
                     }
 
                     arrEthnicity.sort(function(a,b){
@@ -2861,100 +2860,55 @@ function loadDetailChartFive(){
                 if (res.length > 0) {
                     var categories = [];
                     var arr_year = [];
-                    var colors = [];
                     var arrData = [];
-                    var arrTmp = [];
-                    for (var i = 0; i < res.length; i++) {
-                        var obj = res[i];
-                        if (obj.income_group != "") {
-                            var str = obj.income_group;
-                            while (obj.income_group.indexOf("$") >= 0) {
-                                obj.income_group = obj.income_group.replace("$", "");
-                            }
-                            while (obj.income_group.indexOf(",") >= 0) {
-                                obj.income_group = obj.income_group.replace(",", "");
-                            }
-                            if (obj.income_group.indexOf("Less than") >= 0) {
-                                obj.income_group = obj.income_group.replace("Less than", "")
-                            }
-                            if (obj.income_group.indexOf("or more") >= 0) {
-                                obj.income_group = obj.income_group.replace("or more", "")
-                            }
-                            if (obj.income_group.indexOf(" to ") >= 0) {
-                                obj.income_group = obj.income_group.replace(" to ", ".")
-                            }
-                        }
+					var data = [];
+					var yearGrp = -1;
+					
+					res.sort(function (a, b) {
+					    if ((a.year - b.year) == 0)
+						  return a.ordinal - b.ordinal;
+						else
+						  return a.year - b.year;
+					});
+					
+					for (var i = 0; i < res.length; i++) {
+					    obj = res[i];
+					    if (-1 == $.inArray(obj.year, arr_year))
+						  arr_year.push(obj.year);
+						
+						if (!data[obj.income_group]) 
+						  data[obj.income_group] = [];
+						
+						data[obj.income_group].push(obj.households);
+					}
+					
+					var ftIncomeForecast = [];
+					
+	                ftIncomeForecast[0] = ['#087087', '#80b3bd'];
+	                ftIncomeForecast[1] = ['#0f96a2', '#89cacf'];
+	                ftIncomeForecast[2] = ['#16bcbc', '#89dbdb'];
+	                ftIncomeForecast[3] = ['#96908a', '#c3beb9'];
+	                ftIncomeForecast[4] = ['#d2c2ac', '#e2d9cd'];
+	                ftIncomeForecast[5] = ['#662f89', '#ad91bc'];
+	                ftIncomeForecast[6] = ['#b5469a', '#d79ec7'];
+	                ftIncomeForecast[7] = ['#399344', '#92bd93'];
+	                ftIncomeForecast[8] = ['#7dc249', '#abd489'];
+					ftIncomeForecast[9] = ['#1B53AF', '#80b3bd'];
+					
+					var counter = 0;
+                    for (var key in data) {
+					  var str_color = ftIncomeForecast[counter][0];
+					  var label = key.replace("Less than ", "< ");
+					  if (label.indexOf(" or more") >= 0)
+					    label = ">= " + label.replace(" or more", "");
+					  var label = label.replace(" to ", " - ").replace(",000", "k").replace(",999", ".9k");
+
+                      arrData.push({name: label, data: data[key], color: str_color});
+					  counter += 1;
                     }
 
-                    res.sort(function(a, b) {
-                        return a.year - b.year;
-                    }
-                    );
-                    for (var i = 0; i < res.length; i++) {
-                        var obj = res[i];
-                        if ('year' in obj && !isInArray(obj.year, arr_year)) {
-                            arr_year.push(obj.year);
-                        }
-                    }
-
-                    for (var j = 0; j < arr_year.length; j++) {
-                        var arr = [];
-
-                        for (var i = 0; i < res.length; i++) {
-                            var obj = res[i];
-                            if (obj.year == arr_year[j]) {
-                                arr.push(obj)
-                            }
-                        }
-
-                        arr.sort(function(a, b) {
-                            return a.income_group - b.income_group;
-                        }
-                        );
-
-                        var ser_data = [];
-
-                        for (var ind = 0; ind < arr.length; ind++) {
-                            var objArr = arr[ind];
-                            if (!isInArray(objArr.income_group, categories)) {
-                                var str_category = objArr.income_group
-                                if (ind == 0) {
-                                    str_category = "&lt;$" + shortenBigNumber(str_category);
-                                }
-                                if (ind == (arr.length - 1)) {
-                                    var tmp = str_category / 1000
-                                    tmp = tmp.toString();
-                                    if (tmp.indexOf(".999") >= 0) {
-                                        str_category = "≥$ " + tmp.replace(".999", ".9K");
-                                    } else {
-                                        str_category = "≥$" + shortenBigNumber(str_category);
-                                    }
-                                }
-                                var str_spl = str_category.split(".");
-
-                                if (str_spl.length > 1) {
-                                    var tmp = str_spl[1] / 1000
-                                    tmp = tmp.toString();
-                                    if (tmp.indexOf(".999") >= 0) {
-                                        tmp = tmp.replace(".999", ".9K");
-                                    } else {
-                                        tmp = shortenBigNumber(str_category);
-                                    }
-                                    str_category = "$" + shortenBigNumber(str_spl[0]) + "-$" + tmp
-                                }
-                                categories.push(str_category);
-                            }
-                            ser_data.push(objArr.households);
-                        }
-
-                        var str_color = '';
-                        if (isInArray(arr_year[j].toString(), Object.keys(fontIncomeForecast))) {
-                            str_color = fontIncomeForecast[arr_year[j]][0];
-                        }
-                        arrData.push({name: arr_year[j], data: ser_data, color: str_color});
-                    }
                     var window_width = $(window).width();
-                    categories_forecast_income = categories;
+                    categories_forecast_income = arr_year;
                     arrDataForecastIncome = arrData;
                     reDetailChartForecast5();
                     if(isMobile.any()){

@@ -270,7 +270,9 @@ $(document).ready(function()
             var year = $('#pck_year').val();
             var geography_type = $('#pck_geography_type').val();
 
-            var static_url = "http://datasurfer.sandag.org/api"+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
+			var api_url = $('#api_url').val();
+			
+            var static_url = api_url+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
             mlt_location = '';
             $('[name="ch_location"]').each(function(){
                 if($(this).is(':checked')){
@@ -288,8 +290,8 @@ $(document).ready(function()
                     $('#cmp_email_report_device').find('option:not(:first)').remove();
                     $('#cmp_email_report_device').append($('<option>', {value: download_pdf, text: 'pdf document (pdf)'}));
                     $('#cmp_email_report_device').append($('<option>', {value: download_xlsx, text: 'microsoft excel (xls)'}));        
-                    $('#cmp_email_report_device').selectmenu('disable');
-                    $('#cmp_email_report_device').selectpicker('refresh');
+                    $('#cmp_email_report_device').selectmenu('enable');
+                    $('#cmp_email_report_device').selectmenu('refresh');
                     
                     $('#cmp_download_report_device').find('option:not(:first)').remove();
                     $('#cmp_download_report_device').append($('<option>', {value: download_pdf, text: 'pdf document (pdf)'}));
