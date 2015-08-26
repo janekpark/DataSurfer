@@ -42,13 +42,13 @@
 					<div class="row ">
 						<div class="col-xs-6 col-sm-12 col-md-offset-2 col-md-6">
 							<div class="copyright">
-								<a class="btn-link" title="" href="http://www.sandag.org/" data-ajax="false" target="_blank"></a>
-								© 2015 sandag
+
 							</div>
 						</div>
 						<div class="col-xs-6 col-sm-12 col-md-4">
 							<div class="created-by">
-							    <p></p>
+							    <a class="btn-link" title="" href="http://www.sandag.org/" data-ajax="false" target="_blank"></a>
+								© 2015 sandag
 							</div>
 						</div>
 					</div>
