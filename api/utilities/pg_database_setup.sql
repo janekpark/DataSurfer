@@ -2,13 +2,13 @@ DROP SCHEMA dim cascade;
 DROP SCHEMA fact cascade;
 DROP SCHEMA app cascade;
 
-CREATE SCHEMA dim AUTHORIZATION data_surfer_admin;
+CREATE SCHEMA IF NOT EXISTS dim AUTHORIZATION datasurfer_admin;
 COMMENT ON SCHEMA dim IS 'Data warehouse dimension schema.';
   
-CREATE SCHEMA fact AUTHORIZATION data_surfer_admin;
+CREATE SCHEMA IF NOT EXISTS fact AUTHORIZATION datasurfer_admin;
 COMMENT ON SCHEMA fact IS 'Data warehouse fact table schema.';  
 
-CREATE SCHEMA app AUTHORIZATION data_surfer_admin;
+CREATE SCHEMA IF NOT EXISTS app AUTHORIZATION datasurfer_admin;
 COMMENT ON SCHEMA app IS 'Schema for housing application specific procedures and data.';
 
 CREATE SEQUENCE fact.seq_acs_profile_id;
@@ -20,10 +20,12 @@ CREATE SEQUENCE fact.seq_population_id;
 
 CREATE TABLE IF NOT EXISTS dim.age_group(
 	age_group_id smallint CONSTRAINT pk_age_group PRIMARY KEY,
-	name varchar(15) NOT NULL,
-	group_10yr varchar(10) NOT NULL,
-	lower_bound smallint NOT NULL,
-	upper_bound smallint NOT NULL
+    name character varying(15) NOT NULL,
+    group_10yr character varying(10) NOT NULL,
+    lower_bound smallint NOT NULL,
+    upper_bound smallint NOT NULL,
+    group_10yr_lower_bound smallint,
+    group_10yr_upper_bound smallint
 ) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS dim.datasource(
@@ -33,7 +35,8 @@ CREATE TABLE IF NOT EXISTS dim.datasource(
 	yr int NOT NULL,
 	description varchar(50) NOT NULL,
 	is_active boolean NOT NULL,
-	displayed_name varchar(50) NULL
+	displayed_name varchar(50) NULL,
+	series smallint NOT NULL
 ) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS dim.employment_type(
@@ -79,34 +82,11 @@ CREATE TABLE IF NOT EXISTS dim.lu_group(
 ) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS dim.mgra(
-	mgra_id int CONSTRAINT pk_mgra PRIMARY KEY,
-	series_id smallint NOT NULL,
-	mgra int NOT NULL,
-	city_id smallint NOT NULL,
-	city_name varchar(25) NOT NULL,
-	region_id smallint NOT NULL,
-	region_name nchar(9) NOT NULL,
-	zip int NOT NULL,
-	msa smallint NOT NULL,
-	msa_name varchar(20) NOT NULL,
-	sra_id int NOT NULL,
-	sra_name varchar(50) NOT NULL,
-	tract int NOT NULL,
-	tract_name varchar(7) NOT NULL,
-	elementary smallint NULL,
-	elementary_name varchar(25) NULL,
-	high_school smallint NULL,
-	high_school_name varchar(50) NULL,
-	unified smallint NULL,
-	unified_name varchar(50) NULL,
-	community_college smallint NOT NULL,
-	community_college_name varchar(50) NOT NULL,
-	council smallint NULL,
-	supervisorial smallint NOT NULL,
-	cpa smallint NULL,
-	cpa_name varchar(50) NULL,
-	transit_district smallint NOT NULL,
-	transit_district_name varchar(5) NULL
+  mgra_id integer NOT NULL,
+  mgra integer NOT NULL,
+  series smallint NOT NULL,
+  geotype character varying(50) NOT NULL,
+  geozone character varying(50) NOT NULL
 ) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS dim.sex(
@@ -387,19 +367,19 @@ CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity(
 ) TABLESPACE datasurfer_tablespace;
 
 --Forecast Partitions
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds6 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds13 () INHERITS (fact.age_sex_ethnicity);
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds6 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds13 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
 
 --Census Partitions
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds12 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds5 () INHERITS (fact.age_sex_ethnicity);
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds12 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds5 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
 
 --Estimate Partitions
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds2 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds3 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds4 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds10 () INHERITS (fact.age_sex_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds14 () INHERITS (fact.age_sex_ethnicity);
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds2 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds3 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds4 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds10 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds14 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
 
 ALTER TABLE fact.age_sex_ethnicity_ds6 ADD CONSTRAINT chk_ase_ds6 CHECK (datasource_id = 6);
 ALTER TABLE fact.age_sex_ethnicity_ds13 ADD CONSTRAINT chk_ase_ds13 CHECK (datasource_id = 13);
@@ -433,6 +413,15 @@ CREATE TABLE IF NOT EXISTS fact.housing(
 	vacancy float NOT NULL
 ) TABLESPACE datasurfer_tablespace;
 
+CREATE TABLE IF NOT EXISTS fact.jobs_load(
+	jobs_id int NOT NULL DEFAULT nextval('fact.seq_jobs_id'),
+	datasource_id smallint NOT NULL,
+	yr smallint NOT NULL,
+	mgra_id int NOT NULL,
+	employment_type_id smallint NOT NULL,
+	jobs int NOT NULL
+) TABLESPACE datasurfer_tablespace;
+
 CREATE TABLE IF NOT EXISTS fact.jobs(
 	jobs_id int NOT NULL DEFAULT nextval('fact.seq_jobs_id'),
 	datasource_id smallint NOT NULL,
@@ -441,6 +430,12 @@ CREATE TABLE IF NOT EXISTS fact.jobs(
 	employment_type_id smallint NOT NULL,
 	jobs int NOT NULL
 ) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.jobs_ds6 () INHERITS (fact.jobs) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.jobs_ds13 () INHERITS (fact.jobs) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.jobs_ds6 ADD CONSTRAINT chk_jobs_ds6 CHECK (datasource_id = 6);
+ALTER TABLE fact.jobs_ds13 ADD CONSTRAINT chk_jobs_ds6 CHECK (datasource_id = 13);
 
 CREATE TABLE IF NOT EXISTS fact.population(
 	population_id int NOT NULL DEFAULT nextval('fact.seq_population_id'),
@@ -459,39 +454,39 @@ ALTER SEQUENCE fact.seq_jobs_id OWNED BY fact.jobs.jobs_id;
 ALTER SEQUENCE fact.seq_population_id OWNED BY fact.population.population_id;
 
 
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (1, 'Under 5', 'Under 10', 0, 4);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (2, '5 to 9', 'Under 10', 5, 9);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (3, '10 to 14', '10 to 19', 10, 14);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (4, '15 to 17', '10 to 19', 15, 17);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (5, '18 and 19', '10 to 19', 18, 19);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (6, '20 to 24', '20 to 29', 20, 24);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (7, '25 to 29', '20 to 29', 25, 29);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (8, '30 to 34', '30 to 39', 30, 34);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (9, '35 to 39', '30 to 39', 35, 39);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (10, '40 to 44', '40 to 49', 40, 44);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (11, '45 to 49', '40 to 49', 45, 49);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (12, '50 to 54', '50 to 59', 50, 54);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (13, '55 to 59', '50 to 59', 55, 59);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (14, '60 and 61', '60 to 69', 60, 61);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (15, '62 to 64', '60 to 69', 62, 64);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (16, '65 to 69', '60 to 69', 65, 69);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (17, '70 to 74', '70 to 79', 70, 74);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (18, '75 to 79', '70 to 79', 75, 79);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (19, '80 to 84', '80+', 80, 84);
-INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound) VALUES (20, '85 and Older', '80+', 85, 100);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (1, 'Under 5', 'Under 10', 0, 4, 0, 9);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (2, '5 to 9', 'Under 10', 5, 9, 0, 9);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (3, '10 to 14', '10 to 19', 10, 14, 10, 19);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (4, '15 to 17', '10 to 19', 15, 17, 10, 19);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (5, '18 and 19', '10 to 19', 18, 19, 10, 19);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (6, '20 to 24', '20 to 29', 20, 24, 20, 29);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (7, '25 to 29', '20 to 29', 25, 29, 20, 29);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (8, '30 to 34', '30 to 39', 30, 34, 30, 39);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (9, '35 to 39', '30 to 39', 35, 39, 30, 39);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (10, '40 to 44', '40 to 49', 40, 44, 40, 49);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (11, '45 to 49', '40 to 49', 45, 49, 40, 49);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (12, '50 to 54', '50 to 59', 50, 54, 50, 59);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (13, '55 to 59', '50 to 59', 55, 59, 50, 59);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (14, '60 and 61', '60 to 69', 60, 61, 60, 69);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (15, '62 to 64', '60 to 69', 62, 64, 60, 69);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (16, '65 to 69', '60 to 69', 65, 69, 60, 69);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (17, '70 to 74', '70 to 79', 70, 74, 70, 79);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (18, '75 to 79', '70 to 79', 75, 79, 70, 79);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (19, '80 to 84', '80+', 80, 84, 80, 100);
+INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (20, '85 and Older', '80+', 85, 100, 80, 100);
 
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (2, 2, '2010 Estimates', 2010, 'Jan. 1, 2010 population and housing estimates', TRUE, '2010');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (3, 2, '2011 Estimates', 2011, 'Jan. 1, 2011 population and housing estimates', TRUE, '2011');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (4, 2, '2012 Estimates', 2012, 'Jan. 1, 2012 population and housing estimates', TRUE, '2012');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (5, 1, '2010 Census', 2010, 'SANDAG 2010 Census Base', TRUE, '2010');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (6, 3, 'Series 12 - 2050 Forecast', 2011, 'Series 12 Growth Forecast', TRUE, 'Series 12 (2011)');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (7, 3, 'Series 13 Draft - San Diego Foreward Forecast', 2015, 'Draft San Diego Forward RTP Subregional Forecast', TRUE, 'Draft Series 13 (2015)');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (9, 1, '2010 5-Year ACS', 2010, '2006-2010 American Community Survey', FALSE, '2010');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (10, 2, '2013 Estimates', 2013, 'Jan. 1, 2013 population and housing estimates', TRUE, '2013');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (11, 3, 'Series 11 Forecast', 2004, 'Series 11 Growth Forecast', TRUE, 'Series 11 (2004)');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (12, 1, '2000 Census', 2000, 'SANDAG 2000 Census Base', TRUE, '2000');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (13, 3, 'Series 13 Final - San Diego Forward Forecast', 2015, 'Final San Diego Forward RTP Subregional Forecast', TRUE, 'Series 13 (2015)');
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name) VALUES (14, 2, '2014 Estimates', 2014, 'Jan. 1, 2014 population and housing estimates', TRUE, '2014');
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (2, 2, '2010 Estimates', 2010, 'Jan. 1, 2010 population and housing estimates', TRUE, '2010', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (3, 2, '2011 Estimates', 2011, 'Jan. 1, 2011 population and housing estimates', TRUE, '2011', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (4, 2, '2012 Estimates', 2012, 'Jan. 1, 2012 population and housing estimates', TRUE, '2012', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (5, 1, '2010 Census', 2010, 'SANDAG 2010 Census Base', TRUE, '2010', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (6, 3, 'Series 12 - 2050 Forecast', 2011, 'Series 12 Growth Forecast', TRUE, 'Series 12 (2011)', 12);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (7, 3, 'Series 13 Draft - San Diego Foreward Forecast', 2015, 'Draft San Diego Forward RTP Subregional Forecast', TRUE, 'Draft Series 13 (2015)', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (9, 1, '2010 5-Year ACS', 2010, '2006-2010 American Community Survey', FALSE, '2010', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (10, 2, '2013 Estimates', 2013, 'Jan. 1, 2013 population and housing estimates', TRUE, '2013', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (11, 3, 'Series 11 Forecast', 2004, 'Series 11 Growth Forecast', TRUE, 'Series 11 (2004)', 11);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (12, 1, '2000 Census', 2000, 'SANDAG 2000 Census Base', TRUE, '2000', 10);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (13, 3, 'Series 13 Final - San Diego Forward Forecast', 2015, 'Final San Diego Forward RTP Subregional Forecast', TRUE, 'Series 13 (2015)', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (14, 2, '2014 Estimates', 2014, 'Jan. 1, 2014 population and housing estimates', TRUE, '2014', 13);
 
 INSERT INTO dim.employment_type (employment_type_id, short_name, full_name, civilian) VALUES (1, 'mil', 'Military', FALSE);
 INSERT INTO dim.employment_type (employment_type_id, short_name, full_name, civilian) VALUES (2, 'agmin', 'Agriculture and Mining', TRUE);
@@ -597,11 +592,7 @@ INSERT INTO dim.lu_group (lu_group_id, short_name, full_name) VALUES (15, 'mixed
 INSERT INTO dim.lu_group (lu_group_id, short_name, full_name) VALUES (16, 'constrained', 'Constrained');
 
 --MGRA INSERTS
---COPY dim.mgra (mgra_id, series_id, mgra, city_id, city_name, region_id, region_name, zip, msa, msa_name, sra_id, sra_name, tract, tract_name, 
---  elementary, elementary_name, high_school, high_school_name, unified, unified_name, community_college, community_college_name, council, 
---  supervisorial, cpa, cpa_name, transit_district, transit_district_name) FROM 'E:/Apps/DataSurfer/api/utilities/dim_mgra_data.csv'
---  WITH 
---    CSV DELIMITER ',' HEADER;
+COPY dim.mgra (mgra_id, mgra, series, geotype, geozone) FROM '' WITH CSV DELIMITER ',' HEADER;
 
 INSERT INTO dim.sex (sex_id, sex, abbreviation) VALUES (1, 'Female', 'F');
 INSERT INTO dim.sex (sex_id, sex, abbreviation) VALUES (2, 'Male', 'M');
@@ -651,69 +642,64 @@ COPY fact.acs_profile (
     CSV DELIMITER ',' HEADER;
 
 	
---COPY fact.household_income (datasource_id, yr, mgra_id, income_group_id, households)
---  FROM 'E:/Apps/DataSurfer/api/utilities/fact_household_income_data.csv' WITH CSV DELIMITER ',' HEADER;  
+COPY fact.household_income (datasource_id, yr, mgra_id, income_group_id, households)
+  FROM 'E:/Apps/DataSurfer/api/utilities/fact_household_income_data.csv' WITH CSV DELIMITER ',' HEADER;  
   
---COPY fact.housing (datasource_id, yr, mgra_id, structure_type_id, units, occupied, vacancy)
---  FROM 'E:/Apps/DataSurfer/api/utilities/fact_housing_data.csv' WITH CSV DELIMITER ',' HEADER;
+COPY fact.housing (datasource_id, yr, mgra_id, structure_type_id, units, occupied, vacancy)
+  FROM 'E:/Apps/DataSurfer/api/utilities/fact_housing_data.csv' WITH CSV DELIMITER ',' HEADER;
   
---COPY fact.jobs (datasource_id, yr, mgra_id, employment_type_id, jobs)
---  FROM 'E:/Apps/DataSurfer/api/utilities/fact_jobs_data.csv' WITH CSV DELIMITER ',' HEADER;
+COPY fact.jobs_load (datasource_id, yr, mgra_id, employment_type_id, jobs)
+  FROM 'E:/Apps/DataSurfer/api/utilities/fact_jobs_data.csv' WITH CSV DELIMITER ',' HEADER;
   
---COPY fact.population (datasource_id, yr, mgra_id, housing_type_id, population)
---  FROM 'E:/Apps/DataSurfer/api/utilities/fact_population_data.csv' WITH CSV DELIMITER ',' HEADER;
-  
---COPY fact.age_sex_ethnicity_load (datasource_id, yr, mgra_id, age_group_id, sex_id, ethnicity_id, population)
---  FROM 'E:/Apps/DataSurfer/api/utilities/fact_age_sex_ethnicity_data.csv' WITH CSV DELIMITER ',' HEADER;
+INSERT INTO fact.jobs_ds6 SELECT * FROM fact.jobs_load WHERE datasource_id = 6 and jobs > 0;
+INSERT INTO fact.jobs_ds13 SELECT * FROM fact.jobs_load WHERE datasource_id = 13 and jobs > 0;
 
-INSERT INTO fact.age_sex_ethnicity_ds10 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 10;
-INSERT INTO fact.age_sex_ethnicity_ds12 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 12;
-INSERT INTO fact.age_sex_ethnicity_ds13 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 13;
-INSERT INTO fact.age_sex_ethnicity_ds14 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 14;
-INSERT INTO fact.age_sex_ethnicity_ds2 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 2;
-INSERT INTO fact.age_sex_ethnicity_ds3 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 3;
-INSERT INTO fact.age_sex_ethnicity_ds4 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 4;
-INSERT INTO fact.age_sex_ethnicity_ds5 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 5;
-INSERT INTO fact.age_sex_ethnicity_ds6 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 6;
+DROP TABLE fact.jobs_load;
+  
+COPY fact.population (datasource_id, yr, mgra_id, housing_type_id, population)
+  FROM 'E:/Apps/DataSurfer/api/utilities/fact_population_data.csv' WITH CSV DELIMITER ',' HEADER;
+  
+COPY fact.age_sex_ethnicity_load (datasource_id, yr, mgra_id, age_group_id, sex_id, ethnicity_id, population)
+  FROM 'E:/Apps/DataSurfer/api/utilities/fact_age_sex_ethnicity_data.csv' WITH CSV DELIMITER ',' HEADER;
+
+INSERT INTO fact.age_sex_ethnicity_ds10 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 10 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds12 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 12 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds13 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 13 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds14 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 14 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds2 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 2 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds3 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 3 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds4 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 4 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds5 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 5 and population > 0;
+INSERT INTO fact.age_sex_ethnicity_ds6 SELECT * FROM fact.age_sex_ethnicity_load WHERE datasource_id = 6 and population > 0;
 
 DROP TABLE fact.age_sex_ethnicity_load; 
 
-ALTER TABLE fact.acs_profile ADD CONSTRAINT pk_acs_profile PRIMARY KEY (acs_profile_id)
+ALTER TABLE fact.acs_profile ADD CONSTRAINT pk_acs_profile PRIMARY KEY (acs_profile_id);
 ALTER TABLE fact.household_income ADD CONSTRAINT pk_household_income PRIMARY KEY (household_income_id);
 ALTER TABLE fact.housing ADD CONSTRAINT pk_housing PRIMARY KEY (housing_id);
 ALTER TABLE fact.jobs ADD CONSTRAINT pk_jobs PRIMARY KEY (jobs_id);
 ALTER TABLE fact.population ADD CONSTRAINT pk_population PRIMARY KEY (population_id);
 ALTER TABLE fact.age_sex_ethnicity ADD CONSTRAINT pk_age_sex_ethnicity PRIMARY KEY (age_sex_ethnicity_id);
 
-CREATE INDEX ix_houshold_income_datasource_mgra ON fact.household_income (datasource_id, mgra_id);
-CREATE INDEX ix_housing_datasource_mgra ON fact.housing (datasource_id, mgra_id);
-CREATE INDEX ix_jobs_datasource_mgra_civilian ON fact.jobs (datasource_id, mgra_id);
-CREATE INDEX ix_population_datasource_mgra ON fact.population (datasource_id, mgra_id)
+CREATE INDEX ix_mgra_geotype_geozone ON dim.mgra (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+
+CREATE INDEX ix_houshold_income_datasource_mgra ON fact.household_income (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_housing_datasource_mgra ON fact.housing (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_jobs_datasource_mgra_civilian ON fact.jobs (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_population_datasource_mgra ON fact.population (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
   
-CREATE INDEX ix_age_ds10_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds10 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds12_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds12 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds13_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds13 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds14_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds14 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds2_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds2 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds3_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds3 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds4_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds4 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds5_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds5 (mgra_id, yr) WHERE population > 0;
-CREATE INDEX ix_age_ds6_mgra_year_pop_gt_0 ON fact.age_sex_ethnicity_ds6 (mgra_id, yr) WHERE population > 0;
+CREATE INDEX ix_age_ds10_mgra ON fact.age_sex_ethnicity_ds10 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds12_mgra ON fact.age_sex_ethnicity_ds12 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds13_mgra ON fact.age_sex_ethnicity_ds13 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds14_mgra ON fact.age_sex_ethnicity_ds14 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds2_mgra ON fact.age_sex_ethnicity_ds2 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds3_mgra ON fact.age_sex_ethnicity_ds3 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds4_mgra ON fact.age_sex_ethnicity_ds4 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds5_mgra ON fact.age_sex_ethnicity_ds5 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds6_mgra ON fact.age_sex_ethnicity_ds6 (mgra_id) TABLESPACE datasurfer_tablespace;
 
-CREATE INDEX ix_mgra_city_name ON dim.mgra (lower(city_name));
-CREATE INDEX ix_mgra_region_name ON dim.mgra (lower(region_name));
-CREATE INDEX ix_mgra_zip ON dim.mgra (lower(zip));
-CREATE INDEX ix_mgra_msa_name ON dim.mgra (lower(msa_name));
-CREATE INDEX ix_mgra_sra_name ON dim.mgra (lower(sra_name));
-CREATE INDEX ix_mgra_tract_name ON dim.mgra (lower(tract_name));
-CREATE INDEX ix_mgra_elementary_name ON dim.mgra (lower(elementary_name));
-CREATE INDEX ix_mgra_high_school_name ON dim.mgra (lower(high_school_name));
-CREATE INDEX ix_mgra_unified_name ON dim.mgra (lower(unified_name));
-CREATE INDEX ix_mgra_community_college_name ON dim.mgra (lower(community_college_name));
-CREATE INDEX ix_mgra_council ON dim.mgra (lower(council));
-CREATE INDEX ix_mgra_supervisorial ON dim.mgra (lower(supervisorial));
-CREATE INDEX ix_mgra_cpa_name ON dim.mgra (lower(cpa_name));
-
+CREATE INDEX ix_jobs_ds6_mgra ON fact.jobs_ds6 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_jobs_ds13_mgra ON fact.jobs_ds13 (mgra_id) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS fact.summary_age
 (
@@ -724,17 +710,17 @@ CREATE TABLE IF NOT EXISTS fact.summary_age
   ,sex varchar(6) not null
   ,age_group varchar(17) not null
   ,population int not null
-);
+) TABLESPACE datasurfer_tablespace;
 
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds2 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds3 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds4 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds5 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds6 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds10 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds12 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds13 () INHERITS (fact.summary_age);
-CREATE TABLE IF NOT EXISTS fact.summary_age_ds14 () INHERITS (fact.summary_age);
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds2 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds3 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds4 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds5 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds6 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds10 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds12 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds13 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds14 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
 
 ALTER TABLE fact.summary_age_ds2 ADD CONSTRAINT chk_summary_age_ds2 CHECK (datasource_id = 2);
 ALTER TABLE fact.summary_age_ds3 ADD CONSTRAINT chk_summary_age_ds3 CHECK (datasource_id = 3);
@@ -754,17 +740,17 @@ CREATE TABLE IF NOT EXISTS fact.summary_ethnicity
   ,yr smallint not null
   ,ethnic varchar (35) not null
   ,population int not null
-);
+) TABLESPACE datasurfer_tablespace;
 
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds2 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds3 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds4 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds5 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds6 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds10 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds12 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds13 () INHERITS (fact.summary_ethnicity);
-CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds14 () INHERITS (fact.summary_ethnicity);
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds2 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds3 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds4 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds5 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds6 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds10 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds12 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds13 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds14 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
 
 ALTER TABLE fact.summary_ethnicity_ds2 ADD CONSTRAINT chk_summary_ethnicity_ds2 CHECK (datasource_id = 2);
 ALTER TABLE fact.summary_ethnicity_ds3 ADD CONSTRAINT chk_summary_ethnicity_ds3 CHECK (datasource_id = 3);
@@ -776,6 +762,28 @@ ALTER TABLE fact.summary_ethnicity_ds12 ADD CONSTRAINT chk_summary_ethnicity_ds1
 ALTER TABLE fact.summary_ethnicity_ds13 ADD CONSTRAINT chk_summary_ethnicity_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_ethnicity_ds14 ADD CONSTRAINT chk_summary_ethnicity_ds14 CHECK (datasource_id = 14);
 
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_change
+(
+  datasource_id smallint NOT NULL,
+  geotype character varying(50) NOT NULL,
+  geozone character varying(50) NOT NULL,
+  ethnicity character varying(35),
+  pct_chg_byear_to_2020 double precision,
+  pct_chg_2020_to_2025 double precision,
+  pct_chg_2025_to_2030 double precision,
+  pct_chg_2030_to_2035 double precision,
+  pct_chg_2035_to_2040 double precision,
+  pct_chg_2040_to_2045 double precision,
+  pct_chg_2045_to_2050 double precision,
+  pct_chg_base_to_horizon double precision
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_change_ds6 () INHERITS (fact.summary_ethnicity_change) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_change_ds13 () INHERITS (fact.summary_ethnicity_change) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_ethnicity_change_ds6 ADD CONSTRAINT chk_summary_ethnicity_chg_ds6 CHECK (datasource_id = 6);
+ALTER TABLE fact.summary_ethnicity_change_ds13 ADD CONSTRAINT chk_summary_ethnicity_chg_ds13 CHECK (datasource_id = 13);
+
 CREATE TABLE IF NOT EXISTS fact.summary_jobs
 (
   datasource_id smallint NOT NULL,
@@ -784,16 +792,16 @@ CREATE TABLE IF NOT EXISTS fact.summary_jobs
   yr smallint NOT NULL,
   employment_type character varying(45) NOT NULL,
   jobs integer NOT NULL
-);
+) TABLESPACE datasurfer_tablespace;
 
-CREATE TABLE IF NOT EXISTS fact.summary_jobs_ds6 () INHERITS (fact.summary_jobs);
-CREATE TABLE IF NOT EXISTS fact.summary_jobs_ds13 () INHERITS (fact.summary_jobs);
+CREATE TABLE IF NOT EXISTS fact.summary_jobs_ds6 () INHERITS (fact.summary_jobs) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_jobs_ds13 () INHERITS (fact.summary_jobs) TABLESPACE datasurfer_tablespace;
 
 ALTER TABLE fact.summary_jobs_ds6 ADD CONSTRAINT chk_summary_jobs_ds6 CHECK (datasource_id = 6);
 ALTER TABLE fact.summary_jobs_ds13 ADD CONSTRAINT chk_summary_jobs_ds6 CHECK (datasource_id = 13);
 
-CREATE INDEX ix_summary_jobs_ds6_geotype_geozone ON fact.summary_jobs_ds6 (geotype, lower(geozone));
-CREATE INDEX ix_summary_jobs_ds13_geotype_geozone ON fact.summary_jobs_ds13 (geotype, lower(geozone));
+CREATE INDEX ix_summary_jobs_ds6_geotype_geozone ON fact.summary_jobs_ds6 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_summary_jobs_ds13_geotype_geozone ON fact.summary_jobs_ds13 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS fact.summary_housing
 (
@@ -830,27 +838,6 @@ ALTER TABLE fact.summary_housing_ds12 ADD CONSTRAINT chk_summary_housing_ds12 CH
 ALTER TABLE fact.summary_housing_ds13 ADD CONSTRAINT chk_summary_housing_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_housing_ds14 ADD CONSTRAINT chk_summary_housing_ds14 CHECK (datasource_id = 14);
 
-INSERT INTO fact.summary_housing_ds2 SELECT * FROM app.fn_summarize_housing(2); COMMIT;
-INSERT INTO fact.summary_housing_ds3 SELECT * FROM app.fn_summarize_housing(3); COMMIT;
-INSERT INTO fact.summary_housing_ds4 SELECT * FROM app.fn_summarize_housing(4); COMMIT;
-INSERT INTO fact.summary_housing_ds5 SELECT * FROM app.fn_summarize_housing(5); COMMIT;
-INSERT INTO fact.summary_housing_ds6 SELECT * FROM app.fn_summarize_housing(6); COMMIT;
-INSERT INTO fact.summary_housing_ds10 SELECT * FROM app.fn_summarize_housing(10); COMMIT;
-INSERT INTO fact.summary_housing_ds12 SELECT * FROM app.fn_summarize_housing(12); COMMIT;
-INSERT INTO fact.summary_housing_ds13 SELECT * FROM app.fn_summarize_housing(13); COMMIT;
-INSERT INTO fact.summary_housing_ds14 SELECT * FROM app.fn_summarize_housing(14); COMMIT;
-
-CREATE INDEX ix_summary_housing_ds2_geotype_geozone ON fact.summary_housing_ds2 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds3_geotype_geozone ON fact.summary_housing_ds3 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds4_geotype_geozone ON fact.summary_housing_ds4 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds5_geotype_geozone ON fact.summary_housing_ds5 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds6_geotype_geozone ON fact.summary_housing_ds6 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds10_geotype_geozone ON fact.summary_housing_ds10 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds12_geotype_geozone ON fact.summary_housing_ds12 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds13_geotype_geozone ON fact.summary_housing_ds13 (geotype, lower(geozone));
-CREATE INDEX ix_summary_housing_ds14_geotype_geozone ON fact.summary_housing_ds14 (geotype, lower(geozone));
-
-
 CREATE TABLE fact.summary_population
 (
   datasource_id smallint
@@ -882,28 +869,6 @@ ALTER TABLE fact.summary_population_ds10 ADD CONSTRAINT chk_summary_population_d
 ALTER TABLE fact.summary_population_ds12 ADD CONSTRAINT chk_summary_population_ds12 CHECK (datasource_id = 12);
 ALTER TABLE fact.summary_population_ds13 ADD CONSTRAINT chk_summary_population_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_population_ds14 ADD CONSTRAINT chk_summary_population_ds14 CHECK (datasource_id = 14);
-
-INSERT INTO fact.summary_population_ds2 SELECT * FROM app.fn_summarize_population(2); COMMIT;
-INSERT INTO fact.summary_population_ds3 SELECT * FROM app.fn_summarize_population(3); COMMIT;
-INSERT INTO fact.summary_population_ds4 SELECT * FROM app.fn_summarize_population(4); COMMIT;
-INSERT INTO fact.summary_population_ds5 SELECT * FROM app.fn_summarize_population(5); COMMIT;
-INSERT INTO fact.summary_population_ds6 SELECT * FROM app.fn_summarize_population(6); COMMIT;
-
-INSERT INTO fact.summary_population_ds10 SELECT * FROM app.fn_summarize_population(10); COMMIT;
-INSERT INTO fact.summary_population_ds12 SELECT * FROM app.fn_summarize_population(12); COMMIT;
-INSERT INTO fact.summary_population_ds13 SELECT * FROM app.fn_summarize_population(13); COMMIT;
-INSERT INTO fact.summary_population_ds14 SELECT * FROM app.fn_summarize_population(14); COMMIT;
-
-CREATE INDEX ix_summary_population_ds2 ON fact.summary_population_ds2 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds3 ON fact.summary_population_ds3 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds4 ON fact.summary_population_ds4 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds5 ON fact.summary_population_ds5 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds6 ON fact.summary_population_ds6 (geotype, lower(geozone));
-
-CREATE INDEX ix_summary_population_ds10 ON fact.summary_population_ds10 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds12 ON fact.summary_population_ds12 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds13 ON fact.summary_population_ds13 (geotype, lower(geozone));
-CREATE INDEX ix_summary_population_ds14 ON fact.summary_population_ds14 (geotype, lower(geozone));
 
 CREATE TABLE fact.summary_income (
   datasource_id integer
@@ -937,28 +902,6 @@ ALTER TABLE fact.summary_income_ds12 ADD CONSTRAINT chk_summary_income_ds12 CHEC
 ALTER TABLE fact.summary_income_ds13 ADD CONSTRAINT chk_summary_income_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_income_ds14 ADD CONSTRAINT chk_summary_income_ds14 CHECK (datasource_id = 14);
 
-INSERT INTO fact.summary_income_ds2 SELECT * FROM app.fn_summarize_income(2); COMMIT;
-INSERT INTO fact.summary_income_ds3 SELECT * FROM app.fn_summarize_income(3); COMMIT;
-INSERT INTO fact.summary_income_ds4 SELECT * FROM app.fn_summarize_income(4); COMMIT;
-INSERT INTO fact.summary_income_ds5 SELECT * FROM app.fn_summarize_income(5); COMMIT;
-INSERT INTO fact.summary_income_ds6 SELECT * FROM app.fn_summarize_income(6); COMMIT;
-
-INSERT INTO fact.summary_income_ds10 SELECT * FROM app.fn_summarize_income(10); COMMIT;
-INSERT INTO fact.summary_income_ds12 SELECT * FROM app.fn_summarize_income(12); COMMIT;
-INSERT INTO fact.summary_income_ds13 SELECT * FROM app.fn_summarize_income(13); COMMIT;
-INSERT INTO fact.summary_income_ds14 SELECT * FROM app.fn_summarize_income(14); COMMIT;
-
-CREATE INDEX ix_summary_income_ds2_geotype_geozone ON fact.summary_income_ds2 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds3_geotype_geozone ON fact.summary_income_ds3 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds4_geotype_geozone ON fact.summary_income_ds4 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds5_geotype_geozone ON fact.summary_income_ds5 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds6_geotype_geozone ON fact.summary_income_ds6 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-
-CREATE INDEX ix_summary_income_ds10_geotype_geozone ON fact.summary_income_ds10 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds12_geotype_geozone ON fact.summary_income_ds12 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds13_geotype_geozone ON fact.summary_income_ds13 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_ds14_geotype_geozone ON fact.summary_income_ds14 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-
 CREATE TABLE fact.summary_income_median (
   datasource_id smallint
   ,geotype varchar(50)
@@ -986,25 +929,3 @@ ALTER TABLE fact.summary_income_median_ds10 ADD CONSTRAINT chk_summary_income_me
 ALTER TABLE fact.summary_income_median_ds12 ADD CONSTRAINT chk_summary_income_median_ds12 CHECK (datasource_id = 12);
 ALTER TABLE fact.summary_income_median_ds13 ADD CONSTRAINT chk_summary_income_median_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_income_median_ds14 ADD CONSTRAINT chk_summary_income_median_ds14 CHECK (datasource_id = 14);
-
-INSERT INTO fact.summary_income_median_ds2 SELECT * FROM app.fn_summarize_median_income(2); COMMIT;
-INSERT INTO fact.summary_income_median_ds3 SELECT * FROM app.fn_summarize_median_income(3); COMMIT;
-INSERT INTO fact.summary_income_median_ds4 SELECT * FROM app.fn_summarize_median_income(4); COMMIT;
-INSERT INTO fact.summary_income_median_ds5 SELECT * FROM app.fn_summarize_median_income(5); COMMIT;
-INSERT INTO fact.summary_income_median_ds6 SELECT * FROM app.fn_summarize_median_income(6); COMMIT;
-
-INSERT INTO fact.summary_income_median_ds10 SELECT * FROM app.fn_summarize_median_income(10); COMMIT;
-INSERT INTO fact.summary_income_median_ds12 SELECT * FROM app.fn_summarize_median_income(12); COMMIT;
-INSERT INTO fact.summary_income_median_ds13 SELECT * FROM app.fn_summarize_median_income(13); COMMIT;
-INSERT INTO fact.summary_income_median_ds14 SELECT * FROM app.fn_summarize_median_income(14); COMMIT;
-
-CREATE INDEX ix_summary_income_median_ds2 ON fact.summary_income_median_ds2 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds3 ON fact.summary_income_median_ds3 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds4 ON fact.summary_income_median_ds4 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds5 ON fact.summary_income_median_ds5 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds6 ON fact.summary_income_median_ds6 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-
-CREATE INDEX ix_summary_income_median_ds10 ON fact.summary_income_median_ds10 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds12 ON fact.summary_income_median_ds12 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds13 ON fact.summary_income_median_ds13 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
-CREATE INDEX ix_summary_income_median_ds14 ON fact.summary_income_median_ds14 (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
