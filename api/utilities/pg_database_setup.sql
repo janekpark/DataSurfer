@@ -18,6 +18,49 @@ CREATE SEQUENCE fact.seq_housing_id;
 CREATE SEQUENCE fact.seq_jobs_id;
 CREATE SEQUENCE fact.seq_population_id;
 
+CREATE TABLE IF NOT EXISTS dim.acs_contract_rent_group
+(
+  acs_rent_group_id smallint NOT NULL,
+  name character varying(50) NOT NULL,
+  constant_dollars_year smallint NOT NULL,
+  lower_bound integer NOT NULL,
+  upper_bound integer NOT NULL,
+  CONSTRAINT pk_acs_rent_group PRIMARY KEY (acs_rent_group_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS dim.acs_employment_status_type
+(
+  acs_employment_status_type_id smallint NOT NULL,
+  name character varying(50) NOT NULL,
+  CONSTRAINT pk_acs_employment_status PRIMARY KEY (acs_employment_status_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS dim.acs_housing_value_group
+(
+  acs_housing_value_group_id integer NOT NULL,
+  name character varying(50) NOT NULL,
+  constant_dollars_year smallint NOT NULL,
+  lower_bound integer NOT NULL,
+  upper_bound integer NOT NULL,
+  CONSTRAINT pk_acs_housing_value_group PRIMARY KEY (acs_housing_value_group_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS dim.acs_structure_type
+(
+  acs_structure_type_id smallint NOT NULL,
+  name character varying NOT NULL,
+  CONSTRAINT pk_acs_structure_type PRIMARY KEY (acs_structure_type_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS dim.acs_travel_time_group
+(
+  acs_travel_time_group_id smallint NOT NULL,
+  name character varying NOT NULL,
+  lower_bound smallint NOT NULL,
+  upper_bound smallint NOT NULL,
+  CONSTRAINT pk_acs_travel_time_group PRIMARY KEY (acs_travel_time_group_id)
+) TABLESPACE datasurfer_tablespace;
+
 CREATE TABLE IF NOT EXISTS dim.age_group(
 	age_group_id smallint CONSTRAINT pk_age_group PRIMARY KEY,
     name character varying(15) NOT NULL,
@@ -344,6 +387,51 @@ CREATE TABLE IF NOT EXISTS fact.acs_profile(
 	profile_id int NOT NULL
 ) TABLESPACE datasurfer_tablespace;
 
+CREATE TABLE IF NOT EXISTS fact.acs_employment_status
+(
+    acs_employment_status_id serial NOT NULL,
+    datasource_id smallint NOT NULL,
+    yr integer NOT NULL,
+    mgra_id integer NOT NULL,
+    sex_id smallint NOT NULL,
+    acs_employment_status_type_id smallint NOT NULL,
+    population integer NOT NULL,
+    CONSTRAINT pk_acs_employment_status PRIMARY KEY (acs_employment_status_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.acs_housing_units
+(
+  acs_housing_units_id serial NOT NULL,
+  datasource_id smallint NOT NULL,
+  yr integer NOT NULL,
+  mgra_id integer NOT NULL,
+  acs_structure_type_id smallint NOT NULL,
+  hs integer NOT NULL,
+  CONSTRAINT pk_acs_housing_units PRIMARY KEY (acs_housing_units_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.acs_housing_value
+(
+  housing_value_id serial NOT NULL,
+  datasource_id smallint NOT NULL,
+  yr integer NOT NULL,
+  mgra_id integer NOT NULL,
+  housing_value_group integer NOT NULL,
+  households integer NOT NULL,
+  CONSTRAINT pk_acs_housing_value PRIMARY KEY (housing_value_id)
+) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.acs_travel_time_to_work
+(
+  acs_travel_time_to_work_id serial NOT NULL,
+  datasource_id smallint NOT NULL,
+  yr integer NOT NULL,
+  mgra_id integer NOT NULL,
+  acs_travel_time_group_id integer NOT NULL,
+  workers integer NOT NULL,
+  CONSTRAINT pk_acs_travel_time_to_work PRIMARY KEY (acs_travel_time_to_work_id)
+) TABLESPACE datasurfer_tablespace;
+
 CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_load(
     age_sex_ethnicity_id integer NOT NULL DEFAULT nextval('fact.seq_age_sex_ethnicity_id'),
 	datasource_id smallint NOT NULL,
@@ -453,6 +541,47 @@ ALTER SEQUENCE fact.seq_housing_id OWNED BY fact.housing.housing_id;
 ALTER SEQUENCE fact.seq_jobs_id OWNED BY fact.jobs.jobs_id;
 ALTER SEQUENCE fact.seq_population_id OWNED BY fact.population.population_id;
 
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (1, 'Less than $500', 2009, 0, 499);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (2, '$500 to $599', 2009, 500, 599);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (3, '$600 to $699', 2009, 600, 699);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (4, '$700 to $799', 2009, 700, 799);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (5, '$800 to $899', 2009, 800, 899);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (6, '$900 to $999', 2009, 900, 999);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (7, '$1000 to $1249', 2009, 1000, 1249);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (8, '$1250 to $1499', 2009, 1250, 1499);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (9, '$1500 to $1999', 2009, 1500, 1999);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (10, '$2000 or more', 2009, 2000, 3499);
+INSERT INTO dim.acs_contract_rent_group (acs_rent_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (11, 'No cash rent', 2009, 0, 0);
+
+INSERT INTO dim.acs_employment_status (acs_employment_status_id, name) VALUES (1, 'Armed forces');
+INSERT INTO dim.acs_employment_status (acs_employment_status_id, name) VALUES (2, 'Civilian (employed)');
+INSERT INTO dim.acs_employment_status (acs_employment_status_id, name) VALUES (3, 'Civilian (unemployed)');
+INSERT INTO dim.acs_employment_status (acs_employment_status_id, name) VALUES (4, 'Not in labor force');
+
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (1, "Less than $150,000", 2009, 0, 149999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (2, '$150,000 to $199,999', 2009, 150000, 199999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (3, '$200,000 to $249,999', 2009, 200000, 249999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (4, '$250,000 to $299,999', 2009, 250000, 299999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (5, '$300,000 to $399,999', 2009, 300000, 399999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (6, '$400,000 to $499,999', 2009, 400000, 499999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (7, '$500,000 to $749,999', 2009, 500000, 749999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (8, '$750,000 to $999,999', 2009, 750000, 999999);
+INSERT INTO dim.acs_housing_value_group (acs_housing_value_group_id, name, constant_dollars_year, lower_bound, upper_bound) VALUES (9, '$1,000,000 or more', 2009, 1000000, 1999999);
+
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (1, 'Single family (detached)');
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (2, 'Single family (attached)');
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (3, '2 to 4 units');
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (4, '5 to 9 units');
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (5, '10 or more units');
+INSERT INTO dim.acs_structure_type (acs_structure_type_id, name) VALUES (6, 'Mobile home and Other');
+
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (1, 'Less than 10 minutes', 0, 9);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (2, '10 to 19 minutes', 10, 19);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (3, '20 to 29 minutes', 20, 29);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (4, '30 to 44 minutes', 30, 44);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (5, '45 to 59 minutes', 45, 59);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (6, '60 to 89 minutes', 60, 89);
+INSERT INTO dim.acs_travel_time_group (acs_travel_time_group_id, name, lower_bound, upper_bound) VALUES (7, '90 minutes or more', 90, 180);
 
 INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (1, 'Under 5', 'Under 10', 0, 4, 0, 9);
 INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (2, '5 to 9', 'Under 10', 5, 9, 0, 9);
@@ -602,6 +731,26 @@ INSERT INTO dim.structure_type (structure_type_id, short_name, long_name) VALUES
 INSERT INTO dim.structure_type (structure_type_id, short_name, long_name) VALUES (3, 'mf', 'Multifamily');
 INSERT INTO dim.structure_type (structure_type_id, short_name, long_name) VALUES (4, 'mh', 'Mobile Home');
 
+COPY fact.acs_contract_rent (datasource_id, yr, mgra_id, acs_rent_group_id, households)
+FROM ''
+WITH  CSV DELIMITER ',' HEADER;
+
+COPY fact.acs_employment_status (datasource_id, yr, mgra_id, sex_id, acs_employment_status_type_id, population)
+FROM ''
+WITH  CSV DELIMITER ',' HEADER;
+
+COPY fact.acs_housing_units (datasource_id, yr, mgra_id, acs_structure_type_id, hs)
+FROM ''
+WITH CSV DELIMITER ',' HEADER;
+
+COPY fact.acs_housing_value (datasource_id, yr, mgra_id, housing_value_group, households)
+FROM ''
+WITH CSV DELIMITER ',' HEADER;
+
+COPY fact.acs_travel_time_to_work (datasource_id, yr, mgra_id, acs_travel_time_group_id, workers)
+FROM ''
+WITH CSV DELIMITER ',' HEADER;
+
 COPY fact.acs_profile (
 	datasource_id, yr, mgra_id, pop_15plus,	pop_15plus_no_married, pop_15plus_married, pop_15plus_separated, pop_15plus_widowed, pop_15plus_divorced,
 	pop_5plus, pop_5plus_english, pop_5plus_spanish, pop_5plus_spanish_english,	pop_5plus_spanish_no_english, pop_5plus_asian, pop_5plus_asian_english,
@@ -637,9 +786,8 @@ COPY fact.acs_profile (
 	hh_fam_m_below_poverty,	hh_fam_f_below_poverty,	hh_fam_n18_below_poverty, hh_fam_mar_n18_below_poverty,	hh_fam_m_n18_below_poverty,	hh_fam_f_n18_below_poverty,
 	hh_fam_u18_below_poverty, hh_fam_mar_u18_below_poverty,	hh_fam_m_u18_below_poverty,	hh_fam_f_u18_below_poverty, hh, hh_fam,	hh_nfam, hh_u18, hh_n18,
 	hh_own, profile_id)
- FROM 'E:/Apps/DataSurfer/api/utilities/fact_acs_profile_data.csv'
-  WITH 
-    CSV DELIMITER ',' HEADER;
+FROM 'E:/Apps/DataSurfer/api/utilities/fact_acs_profile_data.csv'
+WITH CSV DELIMITER ',' HEADER;
 
 	
 COPY fact.household_income (datasource_id, yr, mgra_id, income_group_id, households)
@@ -682,6 +830,11 @@ ALTER TABLE fact.population ADD CONSTRAINT pk_population PRIMARY KEY (population
 ALTER TABLE fact.age_sex_ethnicity ADD CONSTRAINT pk_age_sex_ethnicity PRIMARY KEY (age_sex_ethnicity_id);
 
 CREATE INDEX ix_mgra_geotype_geozone ON dim.mgra (geotype, lower(geozone)) TABLESPACE datasurfer_tablespace;
+
+CREATE INDEX ix_acs_contract_rent ON fact.acs_contract_rent (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_acs_employment_status ON fact.acs_employment_status (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_acs_housing_units ON fact.acs_housing_units (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_acs_housing_value ON fact.acs_housing_value (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
 
 CREATE INDEX ix_houshold_income_datasource_mgra ON fact.household_income (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
 CREATE INDEX ix_housing_datasource_mgra ON fact.housing (datasource_id, mgra_id) TABLESPACE datasurfer_tablespace;
