@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS dim.datasource(
 	description varchar(50) NOT NULL,
 	is_active boolean NOT NULL,
 	displayed_name varchar(50) NULL,
-	series smallint NOT NULL
+	series smallint NOT NULL,
+    vintage smallint
 ) TABLESPACE datasurfer_tablespace;
 
 CREATE TABLE IF NOT EXISTS dim.employment_type(
@@ -86,6 +87,7 @@ CREATE TABLE IF NOT EXISTS dim.mgra(
   mgra integer NOT NULL,
   series smallint NOT NULL,
   geotype character varying(50) NOT NULL,
+  geotype_pretty character varying(100) NOT NULL,
   geozone character varying(50) NOT NULL
 ) TABLESPACE datasurfer_tablespace;
 
@@ -592,7 +594,7 @@ INSERT INTO dim.lu_group (lu_group_id, short_name, full_name) VALUES (15, 'mixed
 INSERT INTO dim.lu_group (lu_group_id, short_name, full_name) VALUES (16, 'constrained', 'Constrained');
 
 --MGRA INSERTS
-COPY dim.mgra (mgra_id, mgra, series, geotype, geozone) FROM '' WITH CSV DELIMITER ',' HEADER;
+COPY dim.mgra (mgra_id, mgra, series, geotype, geotype_pretty,geozone) FROM '' WITH CSV DELIMITER ',' HEADER;
 
 INSERT INTO dim.sex (sex_id, sex, abbreviation) VALUES (1, 'Female', 'F');
 INSERT INTO dim.sex (sex_id, sex, abbreviation) VALUES (2, 'Male', 'M');
