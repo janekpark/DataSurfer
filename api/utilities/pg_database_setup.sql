@@ -383,6 +383,12 @@ CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds4 () INHERITS (fact.age_sex_
 CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds10 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
 CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds14 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
 
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds15 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds16 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds17 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds18 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds19 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+
 ALTER TABLE fact.age_sex_ethnicity_ds6 ADD CONSTRAINT chk_ase_ds6 CHECK (datasource_id = 6);
 ALTER TABLE fact.age_sex_ethnicity_ds13 ADD CONSTRAINT chk_ase_ds13 CHECK (datasource_id = 13);
 
@@ -394,6 +400,12 @@ ALTER TABLE fact.age_sex_ethnicity_ds3 ADD CONSTRAINT chk_ase_ds3 CHECK (datasou
 ALTER TABLE fact.age_sex_ethnicity_ds4 ADD CONSTRAINT chk_ase_ds4 CHECK (datasource_id = 4);
 ALTER TABLE fact.age_sex_ethnicity_ds10 ADD CONSTRAINT chk_ase_ds10 CHECK (datasource_id = 10);
 ALTER TABLE fact.age_sex_ethnicity_ds14 ADD CONSTRAINT chk_ase_ds14 CHECK (datasource_id = 14);
+
+ALTER TABLE fact.age_sex_ethnicity_ds15 ADD CONSTRAINT chk_ase_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.age_sex_ethnicity_ds16 ADD CONSTRAINT chk_ase_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.age_sex_ethnicity_ds17 ADD CONSTRAINT chk_ase_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.age_sex_ethnicity_ds18 ADD CONSTRAINT chk_ase_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.age_sex_ethnicity_ds19 ADD CONSTRAINT chk_ase_ds19 CHECK (datasource_id = 19);
 
 CREATE TABLE IF NOT EXISTS fact.household_income(
 	household_income_id int NOT NULL DEFAULT nextval('fact.seq_household_income_id'),
@@ -477,18 +489,23 @@ INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bo
 INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (19, '80 to 84', '80+', 80, 84, 80, 100);
 INSERT INTO dim.age_group (age_group_id, name, group_10yr, lower_bound, upper_bound, group_10yr_lower_bound, group_10yr_upper_bound) VALUES (20, '85 and Older', '80+', 85, 100, 80, 100);
 
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (2, 2, '2010 Estimates', 2010, 'Jan. 1, 2010 population and housing estimates', TRUE, '2010', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (3, 2, '2011 Estimates', 2011, 'Jan. 1, 2011 population and housing estimates', TRUE, '2011', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (4, 2, '2012 Estimates', 2012, 'Jan. 1, 2012 population and housing estimates', TRUE, '2012', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (5, 1, '2010 Census', 2010, 'SANDAG 2010 Census Base', TRUE, '2010', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (6, 3, 'Series 12 - 2050 Forecast', 2011, 'Series 12 Growth Forecast', TRUE, 'Series 12 (2011)', 12);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (7, 3, 'Series 13 Draft - San Diego Foreward Forecast', 2015, 'Draft San Diego Forward RTP Subregional Forecast', TRUE, 'Draft Series 13 (2015)', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (9, 1, '2010 5-Year ACS', 2010, '2006-2010 American Community Survey', FALSE, '2010', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (10, 2, '2013 Estimates', 2013, 'Jan. 1, 2013 population and housing estimates', TRUE, '2013', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (11, 3, 'Series 11 Forecast', 2004, 'Series 11 Growth Forecast', TRUE, 'Series 11 (2004)', 11);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (12, 1, '2000 Census', 2000, 'SANDAG 2000 Census Base', TRUE, '2000', 10);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (13, 3, 'Series 13 Final - San Diego Forward Forecast', 2015, 'Final San Diego Forward RTP Subregional Forecast', TRUE, 'Series 13 (2015)', 13);
-INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series) VALUES (14, 2, '2014 Estimates', 2014, 'Jan. 1, 2014 population and housing estimates', TRUE, '2014', 13);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (2, 2, '2010 Estimates', 2010, 'Jan. 1, 2010 population and housing estimates', TRUE, '2010', 13, 2010);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (3, 2, '2011 Estimates', 2011, 'Jan. 1, 2011 population and housing estimates', TRUE, '2011', 13, 2014);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (4, 2, '2012 Estimates', 2012, 'Jan. 1, 2012 population and housing estimates', TRUE, '2012', 13, 2014);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (5, 1, '2010 Census', 2010, 'SANDAG 2010 Census Base', TRUE, '2010', 13, 2010);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (6, 3, 'Series 12 - 2050 Forecast', 2011, 'Series 12 Growth Forecast', TRUE, 'Series 12 (2011)', 12, 2011);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (7, 3, 'Series 13 Draft - San Diego Foreward Forecast', 2015, 'Draft San Diego Forward RTP Subregional Forecast', TRUE, 'Draft Series 13 (2015)', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (9, 1, '2010 5-Year ACS', 2010, '2006-2010 American Community Survey', FALSE, '2010', 13, 2010);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (10, 2, '2013 Estimates', 2013, 'Jan. 1, 2013 population and housing estimates', TRUE, '2013', 13, 2014);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (11, 3, 'Series 11 Forecast', 2004, 'Series 11 Growth Forecast', TRUE, 'Series 11 (2004)', 11, 2004);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (12, 1, '2000 Census', 2000, 'SANDAG 2000 Census Base', TRUE, '2000', 10, 2000);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (13, 3, 'Series 13 Final - San Diego Forward Forecast', 2015, 'Final San Diego Forward RTP Subregional Forecast', TRUE, 'Series 13 (2015)', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (14, 2, '2014 Estimates', 2014, 'Jan. 1, 2014 population and housing estimates', TRUE, '2014', 13, 2014);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (15, 2, '2011 Estimates', 2011, 'Jan. 1, 2011 population and housing estimates', TRUE, '2011', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (16, 2, '2012 Estimates', 2012, 'Jan. 1, 2012 population and housing estimates', TRUE, '2012', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (17, 2, '2013 Estimates', 2014, 'Jan. 1, 2013 population and housing estimates', TRUE, '2013', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (18, 2, '2014 Estimates', 2014, 'Jan. 1, 2014 population and housing estimates', TRUE, '2014', 13, 2015);
+INSERT INTO dim.datasource (datasource_id, datasource_type_id, name, yr, description, is_active, displayed_name, series, vintage) VALUES (19, 2, '2015 Estimates', 2015, 'Jan. 1, 2015 population and housing estimates', TRUE, '2015', 13, 2015);
 
 INSERT INTO dim.employment_type (employment_type_id, short_name, full_name, civilian) VALUES (1, 'mil', 'Military', FALSE);
 INSERT INTO dim.employment_type (employment_type_id, short_name, full_name, civilian) VALUES (2, 'agmin', 'Agriculture and Mining', TRUE);
@@ -931,3 +948,93 @@ ALTER TABLE fact.summary_income_median_ds10 ADD CONSTRAINT chk_summary_income_me
 ALTER TABLE fact.summary_income_median_ds12 ADD CONSTRAINT chk_summary_income_median_ds12 CHECK (datasource_id = 12);
 ALTER TABLE fact.summary_income_median_ds13 ADD CONSTRAINT chk_summary_income_median_ds13 CHECK (datasource_id = 13);
 ALTER TABLE fact.summary_income_median_ds14 ADD CONSTRAINT chk_summary_income_median_ds14 CHECK (datasource_id = 14);
+
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds15 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds16 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds17 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds18 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.age_sex_ethnicity_ds19 () INHERITS (fact.age_sex_ethnicity) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.age_sex_ethnicity_ds15 ADD CONSTRAINT chk_ase_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.age_sex_ethnicity_ds16 ADD CONSTRAINT chk_ase_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.age_sex_ethnicity_ds17 ADD CONSTRAINT chk_ase_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.age_sex_ethnicity_ds18 ADD CONSTRAINT chk_ase_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.age_sex_ethnicity_ds19 ADD CONSTRAINT chk_ase_ds19 CHECK (datasource_id = 19);
+
+CREATE INDEX ix_age_ds15_mgra ON fact.age_sex_ethnicity_ds15 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds16_mgra ON fact.age_sex_ethnicity_ds16 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds17_mgra ON fact.age_sex_ethnicity_ds17 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds18_mgra ON fact.age_sex_ethnicity_ds18 (mgra_id) TABLESPACE datasurfer_tablespace;
+CREATE INDEX ix_age_ds19_mgra ON fact.age_sex_ethnicity_ds19 (mgra_id) TABLESPACE datasurfer_tablespace;
+
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds15 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds16 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds17 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds18 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_age_ds19 () INHERITS (fact.summary_age) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_age_ds15 ADD CONSTRAINT chk_summary_age_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_age_ds16 ADD CONSTRAINT chk_summary_age_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_age_ds17 ADD CONSTRAINT chk_summary_age_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_age_ds18 ADD CONSTRAINT chk_summary_age_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_age_ds19 ADD CONSTRAINT chk_summary_age_ds19 CHECK (datasource_id = 19);
+
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds15 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds16 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds17 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds18 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_ethnicity_ds19 () INHERITS (fact.summary_ethnicity) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_ethnicity_ds15 ADD CONSTRAINT chk_summary_ethnicity_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_ethnicity_ds16 ADD CONSTRAINT chk_summary_ethnicity_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_ethnicity_ds17 ADD CONSTRAINT chk_summary_ethnicity_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_ethnicity_ds18 ADD CONSTRAINT chk_summary_ethnicity_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_ethnicity_ds19 ADD CONSTRAINT chk_summary_ethnicity_ds19 CHECK (datasource_id = 19);
+
+CREATE TABLE IF NOT EXISTS fact.summary_housing_ds15 () INHERITS (fact.summary_housing) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_housing_ds16 () INHERITS (fact.summary_housing) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_housing_ds17 () INHERITS (fact.summary_housing) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_housing_ds18 () INHERITS (fact.summary_housing) TABLESPACE datasurfer_tablespace;
+CREATE TABLE IF NOT EXISTS fact.summary_housing_ds19 () INHERITS (fact.summary_housing) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_housing_ds15 ADD CONSTRAINT chk_summary_housing_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_housing_ds16 ADD CONSTRAINT chk_summary_housing_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_housing_ds17 ADD CONSTRAINT chk_summary_housing_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_housing_ds18 ADD CONSTRAINT chk_summary_housing_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_housing_ds19 ADD CONSTRAINT chk_summary_housing_ds19 CHECK (datasource_id = 19);
+
+CREATE TABLE fact.summary_income_ds15 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds16 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds17 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds18 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_ds19 () INHERITS (fact.summary_income) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_income_ds15 ADD CONSTRAINT chk_summary_income_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_income_ds16 ADD CONSTRAINT chk_summary_income_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_income_ds17 ADD CONSTRAINT chk_summary_income_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_income_ds18 ADD CONSTRAINT chk_summary_income_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_income_ds19 ADD CONSTRAINT chk_summary_income_ds19 CHECK (datasource_id = 19);
+
+CREATE TABLE fact.summary_income_median_ds15 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds16 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds17 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds18 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_income_median_ds19 () INHERITS (fact.summary_income_median) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_income_median_ds15 ADD CONSTRAINT chk_summary_income_median_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_income_median_ds16 ADD CONSTRAINT chk_summary_income_median_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_income_median_ds17 ADD CONSTRAINT chk_summary_income_median_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_income_median_ds18 ADD CONSTRAINT chk_summary_income_median_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_income_median_ds19 ADD CONSTRAINT chk_summary_income_median_ds19 CHECK (datasource_id = 19);
+
+CREATE TABLE fact.summary_population_ds15 () INHERITS (fact.summary_population) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_population_ds16 () INHERITS (fact.summary_population) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_population_ds17 () INHERITS (fact.summary_population) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_population_ds18 () INHERITS (fact.summary_population) TABLESPACE datasurfer_tablespace;
+CREATE TABLE fact.summary_population_ds19 () INHERITS (fact.summary_population) TABLESPACE datasurfer_tablespace;
+
+ALTER TABLE fact.summary_population_ds15 ADD CONSTRAINT chk_summary_population_ds15 CHECK (datasource_id = 15);
+ALTER TABLE fact.summary_population_ds16 ADD CONSTRAINT chk_summary_population_ds16 CHECK (datasource_id = 16);
+ALTER TABLE fact.summary_population_ds17 ADD CONSTRAINT chk_summary_population_ds17 CHECK (datasource_id = 17);
+ALTER TABLE fact.summary_population_ds18 ADD CONSTRAINT chk_summary_population_ds18 CHECK (datasource_id = 18);
+ALTER TABLE fact.summary_population_ds19 ADD CONSTRAINT chk_summary_population_ds19 CHECK (datasource_id = 19);
