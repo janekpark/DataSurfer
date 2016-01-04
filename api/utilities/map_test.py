@@ -18,8 +18,8 @@ def get_status_code(host, path):
         return None
 
 
-base_url = 'http://datasurfer.sandag.org.gerbera.arvixe.com/api'
-host = 'http://datasurfer.sandag.org.gerbera.arvixe.com'
+base_url = 'http://datasurfer.sandag.org/api'
+host = 'http://datasurfer.sandag.org'
 
 with open('e:/apps/datasurfer/api/map_test.log', 'w') as f:
 
@@ -28,12 +28,12 @@ with open('e:/apps/datasurfer/api/map_test.log', 'w') as f:
 		series_api = json.load(response)
 
 		for record in series_api:
-			series_id = record[1]
+			series_id = record['series']
 			response = urllib2.urlopen(base_url + '/' + datasource + '/' +str(series_id))
 			geo_api = json.load(response)
     
 			for geo in geo_api:
-				geo_id = geo[1]
+				geo_id = geo['zone']
 				response = urllib2.urlopen(base_url+ '/' + datasource + '/' +str(series_id)+'/'+ str(geo_id))
 				zone_api = json.load(response)
     
