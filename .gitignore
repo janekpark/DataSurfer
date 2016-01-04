@@ -5,3 +5,4 @@ api/.settings/
 .idea
 download/
 api/utilities/*.csv
+*.log
