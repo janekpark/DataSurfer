@@ -30,6 +30,23 @@ class Query {
 		
 		return self::$instance;
 	}
+    
+    public function getDatasourceId($datasource, $year)
+    {
+        $columns = ["forecast" => "series", "census"=>"yr", "estimate"=>"yr"];
+        $sql = "SELECT datasource_id FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND {$columns[$datasource]} = $2 AND is_active";
+        
+        $db = pg_connect("dbname={$this->database} host={$this->db_server} user={$this->uid} password={$this->pwd}");
+        
+        $result = pg_query_params($db, $sql, array($datasource, $year));
+        
+        if($datasource_id = pg_fetch_result($result, 'datasource_id'))
+        
+        pg_free_result($result);
+	    pg_close($db);
+        
+        return $datasource_id;
+    }
 	
 	public function getZonesAsJson($sql, $series_id, $geotype)
 	{
@@ -48,6 +65,48 @@ class Query {
         return $json;
 	}
 	
+    public function getYearsAsJson($sql, $datasource)
+    {
+        $json = array ();
+        
+        $php_to_pg = array(
+        	"int2" => "int",
+        	"int4" => "int",
+        	"int8" => "int",
+        	"float4" => "float",
+        	"float8" => "float",
+        	"numeric" => "float"
+        );
+        
+        $db = pg_connect("dbname={$this->database} host={$this->db_server} user={$this->uid} password={$this->pwd}");
+        
+        $result = pg_query_params($db, $sql, array($datasource));
+	    $result_array = pg_fetch_all($result);
+	    $mod_array = array();
+	    
+	    foreach($result_array as $row)
+	    {
+	    	for($j=0;$j<count($row);$j++)
+	    	{
+	    		if (array_key_exists(pg_field_type($result, $j), $php_to_pg))
+	    		{
+	    			$field_type = pg_field_type($result, $j);
+	    			$field_name = pg_field_name($result, $j);
+	    			eval("\$row[\$field_name] = (".$php_to_pg[$field_type].") \$row[\$field_name];");
+	    		}
+	    	}
+	    	
+	    	array_push($mod_array, $row);
+	    }
+	    
+	    $json = json_encode($mod_array);
+        
+        pg_free_result($result);
+	    pg_close($db);
+	    
+	    return $json;
+    }
+    
 	public function getResultAsJson($sql, $datasource_id, $geotype, $geozone) 
 	{
 		$json = array ();

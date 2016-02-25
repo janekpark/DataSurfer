@@ -31,30 +31,6 @@ $geotypes = [
 		"cpa" => "cpa_name"
 ];
 
-$datasources = [
-		"forecast" =>
-		[
-		//        11 => 11,
-				12 => 6,
-				13 => 13
-		],
-		"estimate" =>
-		[
-				2010 => 2,
-				2011 => 15,
-				2012 => 16,
-				2013 => 17,
-				2014 => 18,
-                2015 => 19
-		],
-		"census" =>
-		[
-		//        1990 =>
-				2000 => 12,
-				2010 => 5
-		]
-];
-
 $app = new \Slim\Slim();
 
 $app->notFound(function() use ($app)
@@ -64,8 +40,6 @@ $app->notFound(function() use ($app)
 $app->setName('datasurferapi');
 $app->response->headers->set('Content-Type', 'application/json');
 
-
-
 $app->get('/', function () use ($app)
 {
     $app->response->headers->set('Content-Type', 'text/html');
@@ -74,19 +48,20 @@ $app->get('/', function () use ($app)
 
 $app->get('/:datasource', function ($datasource) use ($app)
 {
-	$labels = ["forecast" => "series", "census"=>"year", "estimate"=>"year"];
-	$response = array();
-	
-	foreach($GLOBALS['datasources'][$datasource] as $key => $id)
-		$response[] = [$labels[$datasource] => $key];
+    $labels = ["forecast" => "series", "census"=>"year", "estimate"=>"year"];
+    $columns = ["forecast" => "series", "census"=>"yr", "estimate"=>"yr"];
 
-	echo json_encode($response);
+	$sql = "SELECT {$columns[$datasource]}  as {$labels[$datasource]} FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND is_active ORDER BY 1;";
 	
+	echo Query::getInstance()->getYearsAsJson($sql, $datasource);
+    
 })->conditions(array('datasource' => 'census|forecast|estimate'));
 
 $app->get('/:datasource/:year', function ($datasource, $year) use ($app)
 {
-	if(!array_key_exists($year, $GLOBALS['datasources'][$datasource]))
+    $datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+	if(!$datasource_id)
 	{
 		$app->halt(400, 'Invalid year or series id');
 	}
@@ -126,10 +101,13 @@ $app->get('/:datasource/:year/:geotype', function ($datasource, $series, $geotyp
 })->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
  //Census / Estimate - Housing
-$app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $year, $geotype, $zone)
+$app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
-
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
+    
     $sql = "SELECT geozone as {$geotype}, yr as year, unit_type, cast(units as int), occupied, unoccupied, round(cast(vacancy_rate as numeric),5) as vacancy_rate FROM fact.summary_housing 
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
 
@@ -140,9 +118,12 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
 })->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Housing
-$app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource, $year, $geotype, $zone)
+$app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, housing_type, population FROM fact.summary_population 
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -154,9 +135,12 @@ $app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource,
 })->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Ethnicity
-$app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, $year, $geotype, $zone)
+$app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, ethnic as ethnicity, population FROM fact.summary_ethnicity
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -167,9 +151,12 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
 })->conditions(array('datasource' => 'forecast|census|estimate'));
 
 //Census / Estimate - Age
-$app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year, $geotype, $zone)
+$app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, sex, age_group as group_10yr, population FROM fact.summary_age
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -182,7 +169,10 @@ $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year,
 //Census / Estimate - Income
 $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, ordinal, income_group, households FROM fact.summary_income 
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -194,7 +184,10 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
 
 $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geotype, $zone) use ($app)
 {
-    $datasource_id = $GLOBALS['datasources'][$datasource][$year];
+    $datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, median_inc FROM fact.summary_income_median 
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -390,7 +383,10 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 	
 	$zonelist = '{'.strtolower(implode(',', $zones)).'}';
 	 
-	$datasource_id = $GLOBALS['datasources'][$datasource][$year];
+	$datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 	
 	$ts = round(microtime(true) * 1000);
 	$file_name = strtolower(join("_", array($datasource, $year, $geotype))."_{$ts}.xlsx");
@@ -490,9 +486,12 @@ $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasour
 });
 
 //Forecast - Ethnicity Change
-$app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series, $geotype, $zone)
+$app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series, $geotype, $zone) use ($app)
 {
-	$datasource_id = $GLOBALS['datasources']['forecast'][$series];
+	$datasource_id = Query::getInstance()->getDatasourceId('forecast', $series);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 	
     $sql = "SELECT geozone as ${geotype}, ethnicity, pct_chg_byear_to_2020, pct_chg_2020_to_2025, pct_chg_2025_to_2030, 
     		pct_chg_2030_to_2035, pct_chg_2035_to_2040, pct_chg_2040_to_2045, pct_chg_2045_to_2050, 
@@ -503,11 +502,14 @@ $app->get('/forecast/:series/:geotype/:zone/ethnicity/change', function ($series
 
     echo $json;
 
-})->conditions(array('series' => '12|13'));
+})->conditions(array('series' => '(\d){2}'));
 
 $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geotype, $zone) use ($app)
 {
-    $datasource_id = $GLOBALS['datasources']['forecast'][$series];
+    $datasource_id = Query::getInstance()->getDatasourceId('forecast', $series);
+    
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
 
     $sql = "SELECT geozone as {$geotype}, yr as year, employment_type as category, jobs FROM fact.summary_jobs 
             WHERE datasource_id = $1 AND geotype = $2 AND lower(geozone) = lower($3);";	
@@ -516,7 +518,7 @@ $app->get('/forecast/:series/:geotype/:zone/jobs', function ($series, $geotype, 
 
     echo $json;
 	
-})->conditions(array('series' => '12|13'));
+})->conditions(array('series' => '(\d){2}'));
 
 $app->get('/:program/:series/:geotype/:zone/map', function ($datasource, $series, $geoType, $zone) use ($app)
 {
