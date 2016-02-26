@@ -156,7 +156,8 @@ class Query {
 			
 		$stmt->bindParam(':datasource_id', $datasource_id);
 		$stmt->bindParam(':geotype', $geotype);
-		$stmt->bindParam(':zonelist', $zonelist);
+        if ($zonelist)
+            $stmt->bindParam(':zonelist', $zonelist);
 		
 		$records = array();
 		if ($stmt->execute()) {
@@ -164,10 +165,6 @@ class Query {
 				$records[] = $row;
 			}
 		}
-		
-		$results = null;
-		$stmt = null;
-		$db = null;
 		
 		return $records;
 	}

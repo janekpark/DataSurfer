@@ -115,7 +115,7 @@ $app->get('/:datasource/:year/:geotype/:zone/housing', function ($datasource, $y
 
     echo $json;
      
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 //Census / Estimate - Housing
 $app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource, $year, $geotype, $zone) use ($app)
@@ -132,7 +132,7 @@ $app->get('/:datasource/:year/:geotype/:zone/population', function ($datasource,
 
     echo $json;
 	 
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 //Census / Estimate - Ethnicity
 $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, $year, $geotype, $zone) use ($app)
@@ -148,7 +148,7 @@ $app->get('/:datasource/:year/:geotype/:zone/ethnicity', function ($datasource, 
     $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
     echo $json;
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 //Census / Estimate - Age
 $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year, $geotype, $zone) use ($app)
@@ -164,7 +164,7 @@ $app->get('/:datasource/:year/:geotype/:zone/age', function ($datasource, $year,
     $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
     echo $json;
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 //Census / Estimate - Income
 $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $year, $geotype, $zone) use ($app)
@@ -180,7 +180,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income', function ($datasource, $ye
     $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
     echo $json;
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasource, $year, $geotype, $zone) use ($app)
 {
@@ -195,7 +195,7 @@ $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasour
     $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
     echo $json;
-})->conditions(array('datasource' => 'forecast|census|estimate'));
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
 {
@@ -265,20 +265,15 @@ $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource
 	}
 })->via('GET', 'POST')->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
 
-$app->post('/:datasource/:year/:geotype/export/xlsx', function ($datasource, $year, $geoType) use ($app)
+$app->get('/:datasource/:year/:geotype/all/export/xlsx', function ($datasource, $year, $geotype) use ($app)
 {
-    $zones_param = $app->request()->post('zones');
-    if ($zones_param == null)
-    {
-    	$app->halt(400, 'Invalid XLSX Export Request');
-    }
+    $datasource_id = Query::getInstance()->getDatasourceId($datasource, $year);
     
-    $zones = explode(',', strtolower($zones_param));
+    if (!$datasource_id)
+        $app->halt(400, 'Invalid year or series id');
     
-    natcasesort($zones);
-    
-    $file_name = strtolower(join("_", array($datasource, $year, $geoType)).".xlsx");
-    $file_path = join(DIRECTORY_SEPARATOR, array(".","xlsx",$datasource,$year,$geoType, $file_name));
+ 	$ts = round(microtime(true) * 1000);
+	$file_name = strtolower(join("_", array($datasource, $year, $geotype))."_{$ts}.xlsx");
     
     $res = $app->response();
     $res['Content-Description'] = 'File Transfer';
@@ -289,89 +284,107 @@ $app->post('/:datasource/:year/:geotype/export/xlsx', function ($datasource, $ye
     $res['Cache-Control'] = 'must-revalidate';
     $res['Pragma'] = 'public';
     
-    $ageArray[0] = [ucwords($geoType), 'Year', 'Sex', 'Group - 10 Year', 'Population'];
-    $ethnicityArray[0] = [ucwords($geoType), 'Year', 'Ethnicity', 'Population'];
-    $housingArray[0] = [ucwords($geoType), 'Year', 'Unit Type', 'Units', 'Occupied (Households)', 'Unoccupied', 'Vacancy Rate'];
-    $populationArray[0] = [ucwords($geoType), 'Year', 'Housing Type', 'Population'];
-    $incomeArray[0] = [ucwords($geoType), 'Year', 'Income Group', 'Households'];
-    
-    if("forecast"==$datasource)
-    {
-    	$jobsArray[0] = [ucwords($geoType), 'Year', 'Category', 'Jobs'];
-    }
+    $writer = new XLSXWriter();
+    $writer->setAuthor("San Diego Association of Governments");
 
-    $ageIterator = 1;
-    $ethnicityIterator = 1;
-    $housingIterator = 1;
-    $populationIterator = 1;
-    $incomeIterator = 1;
-    $jobsIterator = 1;
-        
-    foreach($zones as $zone)
-    {
-    	$age_file_name = strtolower(join("_", array('age', $datasource, $year, $geoType, $zone)).".json");
-    	$age_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $age_file_name));
-    		
-    	$ethnicity_file_name = strtolower(join("_", array('ethnicity', $datasource, $year, $geoType, $zone)).".json");
-    	$ethnicity_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $ethnicity_file_name));
-    	
-        $housing_file_name = strtolower(join("_", array('housing', $datasource, $year, $geoType, $zone)).".json");
-        $housing_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $housing_file_name));
-        
-        $population_file_name = strtolower(join("_", array('population', $datasource, $year, $geoType, $zone)).".json");
-        $population_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $population_file_name));   
-    	    
-        $income_file_name = strtolower(join("_", array('income', $datasource, $year, $geoType, $zone)).".json");
-        $income_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $income_file_name));
-    	    
-        $jobs_file_name = strtolower(join("_", array('jobs', $datasource, $year, $geoType, $zone)).".json");
-        $jobs_file_path = join(DIRECTORY_SEPARATOR, array(".","json", $datasource, $year, $geoType, $jobs_file_name));
-    		  
-        $ageZoneArray = json_decode(file_get_contents($age_file_path), true);
-        $ethnicityZoneArray = json_decode(file_get_contents($ethnicity_file_path), true);
-        $housingZoneArray = json_decode(file_get_contents($housing_file_path), true);
-    	$populationZoneArray = json_decode(file_get_contents($population_file_path), true);
-    	$incomeZoneArray = json_decode(file_get_contents($income_file_path), true);
+    //*******AGE*************
+    $ageSql = "SELECT geozone as {$geotype}, yr as year, sex, age_group as group_10yr, population FROM fact.summary_age
+                WHERE datasource_id = :datasource_id AND geotype = :geotype AND age_group <> 'Total Population'";
+    $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($ageSql, $datasource_id, $geotype, null),
+                'Age'
+                ,array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'SEX' => 'string',
+                    'Group - 10 Year' => 'string',
+                    'POPULATION' => 'integer'
+                )
+    );
 
-    	foreach($ageZoneArray as $arr)
-    		$ageArray[$ageIterator++] = [$arr[$geoType], $arr['year'], $arr['sex'], $arr['group_10yr'], $arr['population']];
-    		
-    	foreach($ethnicityZoneArray as $arr)
-    		$ethnicityArray[$ethnicityIterator++] =[$arr[$geoType], $arr['year'],$arr['ethnicity'],$arr['population']];
-    		
-    	foreach($housingZoneArray as $arr)
-    		$housingArray[$housingIterator++] = [$arr[$geoType], $arr['year'], $arr['unit_type'], $arr['units'], $arr['occupied'], $arr['unoccupied'], $arr['vacancy_rate']];
-    		
-    	foreach($populationZoneArray as $arr)
-    		$populationArray[$populationIterator++] = [$arr[$geoType], $arr['year'],$arr['housing_type'],$arr['population']];
-    		
-    	foreach($incomeZoneArray as $arr)
-    		$incomeArray[$incomeIterator++] = [$arr[$geoType], $arr['year'],$arr['income_group'],$arr['households']];
-    	
-    	if("forecast"==$datasource)
-    	{
-    		$jobsZoneArray = json_decode(file_get_contents($jobs_file_path), true);
-    		foreach($jobsZoneArray as $arr)
-    			$jobsArray[$jobsIterator++] = [$arr[$geoType], $arr['year'], $arr['category'], $arr['jobs']];
-    	}
-    }
+    //*******ETHNICITY*************
+    $ethnicitySql = "SELECT geozone as {$geotype}, yr as year, ethnic as ethnicity, population FROM fact.summary_ethnicity 
+                        WHERE datasource_id = :datasource_id AND geotype = :geotype AND ethnic <> 'Total Population' order by geozone, yr;";
     
-    $objPHPExcel = new XLSXWriter();
-    $objPHPExcel->setAuthor("San Diego Association of Governments");
+    $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($ethnicitySql, $datasource_id, $geotype, null),
+                'Ethnicity',
+                array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'ETHNICITY' => 'string',
+                    'POPULATION' => 'integer'
+                )
+    );
     
-    $objPHPExcel->writeSheet($ageArray, 'Age');
-    $objPHPExcel->writeSheet($ethnicityArray, 'Ethnicity');
-    $objPHPExcel->writeSheet($housingArray, 'Housing');
-    $objPHPExcel->writeSheet($populationArray, 'Population');
-    $objPHPExcel->writeSheet($incomeArray, 'Income');
+    //*******HOUSING*************
+    $housingSql = "SELECT geozone as {$geotype}, yr, unit_type, units, occupied, unoccupied, vacancy_rate FROM fact.summary_housing 
+        WHERE datasource_id = :datasource_id AND geotype = :geotype and unit_type <> 'Total Units' order by geozone, yr;";
+
+    $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($housingSql, $datasource_id, $geotype, null),
+                'Housing',
+                array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'UNIT TYPE' => 'string',
+                    'UNITS' => 'integer',
+                    'OCCUPIED' => 'integer',
+                    'UNOCCUPIED' => 'integer',
+                    'VACANCY RATE' => 'double'
+                )
+    );
+
+    //*******POPULATION*************
+    $populationSql = "SELECT geozone as {$geotype}, yr, housing_type, population FROM fact.summary_population 
+    		WHERE datasource_id = :datasource_id AND geotype = :geotype order by geozone, yr;";
+    
+    $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($populationSql, $datasource_id, $geotype, null),
+                'Population',
+                array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'HOUSING TYPE' => 'string',
+                    'POPULATION' => 'integer',
+                )
+    );
+
+    //*******INCOME*************
+    $incomeSql = "SELECT geozone as {$geotype}, yr, ordinal, income_group, households FROM fact.summary_income 
+    		WHERE datasource_id = :datasource_id AND geotype = :geotype order by geozone, yr, ordinal;";
+   
+    $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($incomeSql, $datasource_id, $geotype, null),
+                'Income',
+                array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'ORDINAL' => 'integer',
+                    'INCOME GROUP' => 'string',
+                    'HOUSEHOLDS' => 'integer'
+                )
+    );
    
     if("forecast"==$datasource)
-    	$objPHPExcel->writeSheet($jobsArray, 'Jobs');
+    {
+        $jobsSql = "SELECT geozone as {$geotype}, yr, employment_type, jobs FROM fact.summary_jobs 
+                        WHERE datasource_id = :datasource_id AND geotype = :geotype and employment_type <> 'Total Jobs' order by geozone, yr;";
+        $writer->writeSheet(
+                Query::getInstance()->getResultAsArray($jobsSql, $datasource_id, $geotype, null),
+                'Civilian Jobs',
+                array(
+                    strtoupper($geotype) => 'string',
+                    'YEAR' => 'string',
+                    'EMPLOYMENT TYPE (Civilian)' => 'string',
+                    'JOBS' => 'integer'
+                )
+        );
+    }
     
-    
-    $objPHPExcel->writeToStdOut();
-    
-})->conditions(array('datasource' => 'census|forecast|estimate', 'year' => '(\d){2,4}'));
+    $writer->writeToStdOut();
+
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 $app->get('/:datasource/:year/:geotype/:zones+/export/xlsx', function ($datasource, $year, $geotype, $zones) use ($app)
 {
