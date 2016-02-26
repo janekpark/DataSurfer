@@ -550,7 +550,7 @@ function loadCurrentData(){
                         for(var key in obj)
                           arrTemp.push(obj[key]);
                     }
-                    arrTemp.sort(function(a, b){return a-b});
+                    arrTemp.sort(function(a, b){return b-a});
                     for(var i=0;i<arrTemp.length;i++){
                         if(!isMobile.any()){
                             $('#slt_year').append($('<option>', {value: arrTemp[i], text: source_type === 'forecast'?'Series '+arrTemp[i]:arrTemp[i]}));
