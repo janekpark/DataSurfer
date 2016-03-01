@@ -40,6 +40,30 @@ $app->notFound(function() use ($app)
 $app->setName('datasurferapi');
 $app->response->headers->set('Content-Type', 'application/json');
 
+$app->hook('slim.after.router', function() use ($app) {
+    $env = $app->environment();
+    if ($env['pdf.zip.file'])
+    {
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename='.$env['pdf.zip.file']);
+        header('Content-Length: ' . filesize($env['pdf.zip.path']));
+        header('Content-Description: ZIP File Transfer');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        
+        set_time_limit(0);
+        $file = @fopen($env['pdf.zip.path'], 'rb');
+        while (!feof($file))
+        {
+            print @fread($file, 1024*8);
+            ob_flush();
+            flush();
+        }
+        
+        unlink($env['pdf.zip.path']);
+    }
+});
+
 $app->get('/', function () use ($app)
 {
     $app->response->headers->set('Content-Type', 'text/html');
@@ -195,6 +219,34 @@ $app->get('/:datasource/:year/:geotype/:zone/income/median', function ($datasour
     $json = Query::getInstance()->getResultAsJson($sql, $datasource_id, $geotype, $zone); 
 
     echo $json;
+})->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
+
+$app->get('/:datasource/:year/:geotype/all/export/pdf', function($datasource, $year, $geoType) use ($app)
+{
+	$ts = round(microtime(true) * 1000);
+	$base_file_name = strtolower(join("_", array('sandag',$datasource, $year, $geoType)).".zip");
+	$sys_file_name = './zip/'.$ts."_".$base_file_name;
+        
+    $zip = new ZipArchive();
+	$zip->open($sys_file_name, ZIPARCHIVE::CREATE);
+        
+    $pdf_dir = join(DIRECTORY_SEPARATOR, array(".","pdf", $datasource, $year, $geoType));
+		
+    if($handle = opendir($pdf_dir)) {
+        while ($entry = readdir($handle)) {
+            if (strstr($entry, '.pdf')) {
+                $zip->addFile(join(DIRECTORY_SEPARATOR, array($pdf_dir,$entry)),$entry);
+            }
+        }
+        closedir($handle);
+    }
+        
+    $zip->close();
+    
+    $env = $app->environment();
+    $env["pdf.zip.path"] = $sys_file_name;
+    $env["pdf.zip.file"] = $base_file_name;
+    
 })->conditions(array('datasource' => 'forecast|census|estimate', 'year' => '(\d){2,4}'));
 
 $app->map('/:datasource/:year/:geotype/:zones+/export/pdf', function($datasource, $year, $geoType, $zones) use ($app)
