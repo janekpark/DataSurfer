@@ -86,17 +86,17 @@ function loadYear(){
 					var str_location;
 						
                     var str_location='<div class="cb-selection pck_location">';
-					if (arrTemp.length <= 20)
-					{
+					//if (arrTemp.length <= 20)
+					//{
 					    str_location += '<input class="cb-check" id="cb-location-all" name="all" type="checkbox" />';
                         str_location +='<label for="cb-location-all">select/unselect all</label>';
-					} else
-					{
-					    if ($( window ).width() < 568)
-					      $('#h4_data_section_header').append('<br/>(Max Limit: 20)');
-						else
-						  $('#h4_data_section_header').append('&nbsp;&nbsp;&nbsp;(Max Limit: 20)');
-					}
+					//} else
+					//{
+					//    if ($( window ).width() < 568)
+					//      $('#h4_data_section_header').append('<br/>(Max Limit: 20)');
+					//	else
+					//	  $('#h4_data_section_header').append('&nbsp;&nbsp;&nbsp;(Max Limit: 20)');
+					//}
                     
                     str_location +='</div>';
                     var id=1;

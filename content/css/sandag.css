@@ -422,6 +422,13 @@ h1, h2, h3, h4, h5, h6
 .cb-selection input[type=checkbox]:checked + label
 {
   background-image:url(../images/ui/cb-selection-checked.png);
+  opacity: 1.0;
+}
+
+.cb-selection input[type=checkbox][disabled]:checked + label
+{
+    background-image:url(../images/ui/cb-selection-checked.png);
+    opacity: 0.4;
 }
 
 .left-nav

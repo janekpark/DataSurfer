@@ -262,9 +262,13 @@ $(document).ready(function()
 			cbCheck = $(this).prop('checked');
 		if(cbName == "all"){ 
 			if(cbCheck){
-				$(this).parents(".data-content").find(".cb-check").prop('checked', true);
+				$(this).parents(".data-content").find("[name='ch_location']").prop('checked', true);
+                $(this).parents(".data-content").find("[name='ch_location']").attr('disabled', true);
+                mlt_location = '/all';
 			}else{
-				$(this).parents(".data-content").find(".cb-check").prop('checked', false);
+				$(this).parents(".data-content").find("[name='ch_location']").prop('checked', false);
+                $(this).parents(".data-content").find("[name='ch_location']").removeAttr('disabled');
+                mlt_location = '';
 			}
             var source_type = $('#pck_source_type').val();
             var year = $('#pck_year').val();
@@ -273,16 +277,16 @@ $(document).ready(function()
 			var api_url = $('#api_url').val();
 			
             var static_url = api_url+"/"+source_type+"/"+year+"/"+geography_type.replace(' ','%20');
-            mlt_location = '';
-            $('[name="ch_location"]').each(function(){
-                if($(this).is(':checked')){
-                    var str = $(this).val();
-                    while(str.indexOf(' ')>-1){
-                        str=str.replace(' ','%20');
-                    }
-                    mlt_location+="/"+str;
-                }
-            })
+            //mlt_location = '';
+            //$('[name="ch_location"]').each(function(){
+            //    if($(this).is(':checked')){
+            //        var str = $(this).val();
+            //        while(str.indexOf(' ')>-1){
+            //            str=str.replace(' ','%20');
+            //        }
+            //        mlt_location+="/"+str;
+            //    }
+            //})
             var download_pdf = static_url+mlt_location+"/export/pdf";
             var download_xlsx = static_url+mlt_location+"/export/xlsx";
             if(isMobile.any()){
