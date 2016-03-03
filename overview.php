@@ -334,7 +334,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												<header class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-10 col-md-offset-2 col-md-8">
 													<hr class="visible-xs" />
 													<h4>Add and Compare Data</h4>
-													<p>Your current data search is<br class="visible-xs" /> pre-selected below. To add additional<br class="visible-xs" /> locations to your report, check the<br class="visible-xs" /> applicable boxes below.</p>
+													<p>Your current data search is<br class="visible-xs" /> pre-selected below. To add locations<br class="visible-xs" /> to your report, check the applicable<br class="visible-xs" /> boxes below. Selection of locations<br class="visible-xs" /> is limited to all locations or up<br class="visible-xs" /> to 20 locations.</p>
 												</header>
 											</div>
 											<fieldset class="data-fieldset">

@@ -133,7 +133,11 @@ function loadYear(){
                                     }
                                     mlt_location+="/"+str_location.replace(' ','%20');
                                 } else {
-								    this.disabled = count_check >= 20;
+                                    if (count_check >= 20)
+                                        $(this).attr('disabled', true);
+                                    else
+                                        $(this).removeAttr('disabled');
+								    //this.disabled = count_check >= 20;
 								}
                             })
                             var download_pdf = static_url+mlt_location+"/export/pdf";
