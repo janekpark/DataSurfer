@@ -72,6 +72,7 @@ $server = $_SERVER['HTTP_HOST'];
 				links below.
 				<br/>Examples: 
 				<br/>&nbsp;&nbsp;&nbsp;&nbsp;Census =&gt; <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/census'><?php echo $_SERVER['HTTP_HOST']; ?>/api/census</a>
+				<br/>&nbsp;&nbsp;&nbsp;&nbsp;Census =&gt; <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs'><?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs</a>
 				<br/>&nbsp;&nbsp;&nbsp;&nbsp;Estimate =&gt; <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/estimate'><?php echo $_SERVER['HTTP_HOST']; ?>/api/estimate</a>
 				<br/>&nbsp;&nbsp;&nbsp;&nbsp;Forecast =&gt; <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/forecast'><?php echo $_SERVER['HTTP_HOST']; ?>/api/forecast</a>
 				<li>geograpahy</li>
@@ -108,9 +109,17 @@ $server = $_SERVER['HTTP_HOST'];
 			  <li>Single Excel Export</li>
 			  Returns XLSX<br/>
 			  <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/forecast/13/zip/92101/export/xlsx'>http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/forecast/13/zip/92101/export/xlsx</a>
-			  <li>Multiple Excel Export (max. 10)</li>
+			  <br/>
+			  <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/jurisdiction/Carlsbad/export/xlsx'>http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/jurisdiction/Carlsbad/export/xlsx</a>
+			  <br/>  
+			<a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/elementary/Fallbrook/export/xlsx'>http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/elementary/Fallbrook/export/xlsx</a>
+			  <br/> 
+			<li>Multiple Excel Export (max. 10)</li>
 			  Returns XLSX<br/>
 			  <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/estimate/2012/jurisdiction/carlsbad/oceanside/vista/export/xlsx'>http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/estimate/2012/jurisdiction/carlsbad/oceanside/vista/export/xlsx</a>
+			  <br/>
+			  <a href='http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/jurisdiction/Carlsbad/Poway/export/xlsx'>http://<?php echo $_SERVER['HTTP_HOST']; ?>/api/censusacs/2010/jurisdiction/Carlsbad/Poway/export/xlsx</a>
+			  <br/>
 			</ul>
 			<h1>Area Map Images</h1>
 			<p>In case you need a context map image for your application, the API provides static map images of all geography zones included in the API.</p>

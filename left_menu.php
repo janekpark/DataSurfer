@@ -16,6 +16,7 @@
 								<select name="slt_source_type" id="slt_source_type" class="selectpicker">
 									<option value="" style="display: none;">SOURCE TYPE</option>
 									<option value="census">CENSUS</option>
+									<option value="censusacs">CENSUS-ACS</option>
 									<option value="estimate">ESTIMATE</option>
 									<option value="forecast">FORECAST</option>
 								</select>
@@ -44,6 +45,7 @@
 								<select class="select-input" id="txtType" name="txtType">
 									<option value="">SOURCE TYPE</option>
 									<option value="census">CENSUS</option>
+									<option value="censusacs">CENSUS ACS</option>
 									<option value="estimate">ESTIMATE</option>
 									<option value="forecast">FORECAST</option>
 								</select>

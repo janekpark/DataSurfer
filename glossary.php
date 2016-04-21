@@ -176,6 +176,12 @@ include("head.php");
 									<div class="row">						
 										<div class="col-xs-offset-1 col-xs-10 col-sm-8 col-md-6 col-left">
 											<div class="phargagh-section">
+												<h4>Census ACS</h4>
+												<p>The American Community Survey (ACS) is the U.S. Census Bureau’s program for collecting and disseminating demographic, socioeconomic, and housing data through an annual nationwide survey of a sample of households. 
+												Estimates representative of the entire population are reported based on the data collected from the sample. SANDAG applies these figures to our population estimates to derive data for local geographic areas every 
+												five years starting with 2010.</p>
+											</div>
+											<div class="phargagh-section">
 												<h4>Group Quarters Population</h4>
 												<p>All persons not living in households. Includes both institutional (e.g., nursing homes, hospitals, and prisons) and noninstitutional (e.g., college dormitories, military barracks, and workers' dormitories) settings.</p>
 											</div>
