@@ -33,9 +33,18 @@ class Query {
     
     public function getDatasourceId($datasource, $year)
     {
-        $columns = ["forecast" => "series", "census"=>"yr", "estimate"=>"yr"];
-        $sql = "SELECT datasource_id FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND {$columns[$datasource]} = $2 AND is_active";
-        
+        $columns = ["forecast" => "series", "census"=>"yr", "censusacs"=>"yr", "estimate"=>"yr"];
+		
+		if($datasource == "censusacs"){
+			$datasource = "census";
+			$sql = "SELECT datasource_id FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND {$columns[$datasource]} = $2 AND is_active";			
+			
+			//$sql = "SELECT datasource_id FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND {$columns[$datasource]} = $2 AND name like '%ACS%'";			
+		}
+		else{
+			$sql = "SELECT datasource_id FROM dim.datasource ds INNER JOIN dim.datasource_type dsType ON ds.datasource_type_id = dsType.datasource_type_id WHERE lower(datasource_type) = lower($1) AND {$columns[$datasource]} = $2 AND is_active";
+		}
+		
         $db = pg_connect("dbname={$this->database} host={$this->db_server} user={$this->uid} password={$this->pwd}");
         
         $result = pg_query_params($db, $sql, array($datasource, $year));
