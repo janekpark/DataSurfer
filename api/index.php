@@ -1004,7 +1004,7 @@ $app->get('/censusacs/:year/:geotype/:zones+/export/xlsx', function ( $year, $ge
 				if (is_array($travelTimetoWorkAverageZoneArray)){
 					
 					foreach($travelTimetoWorkAverageZoneArray as $arr)
-						$travelTimetoWorkArray[$travelTimetoWorkIterator++] = [$arr[$geoType], $arr['yearnumber'], $arr['averagetimetowork'], $arr['avg_travel_time']];
+						$travelTimetoWorkArray[$travelTimetoWorkIterator++] = [$arr[$geoType], $arr['yearnumber'], $arr['averagetimetowork'], $arr['acs_avg_travel_time_to_work']];
 				}
 				//******* 21 Employment Status ***************************************
 				$employmentStatus_file_name = strtolower(join("_", array('employmentStatus', "censusacs", $year, $geoType, $zone)).".json");
