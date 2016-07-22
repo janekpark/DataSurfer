@@ -47,6 +47,11 @@ $url_housing = $url . "/housing";
 $url_income = $url . "/income";
 $url_jobs = $url . "/jobs";
 $url_map = $url . "/map";
+$url_education = $url . "/education";
+$url_employmentstatus = $url . "/employmentstatus";
+$url_transportation = $url . "/transportation";
+$url_language = $url . "/language";
+
 $urlFolder = DIR_DOWNLOAD.'sandag_'.$source_type.'_'.$year.'_'.str_replace(' ', '-', $geography_type).'_'.str_replace(' ', '-', $location).'.pdf';
 downloadFileFromApi($urlFolder, $url.'/export/pdf');
 
@@ -54,17 +59,17 @@ $urlDownloadPdf = $url.'/export/pdf';
 $urlDownloadElx = $url.'/export/xlsx';
 // $urlDownloadCsv = $url.'/export/csvx';
 $chart_label = "";
-if($source_type!=='forecast'){
-    if($chart_type==1){
-        $chart_label = "Race and Ethnicity";
-    }elseif($chart_type==2){
-        $chart_label = "Housing Types";
-    }elseif($chart_type==4){
-        $chart_label = "Age By Gender";
-    }elseif($chart_type==5){
-        $chart_label = "Household Income";
-    }
-}else{
+if($source_type == 'census'){
+	if($chart_type==1){
+		$chart_label = "Educational Attainment";
+	}elseif($chart_type==2){
+		$chart_label = "Employment Status";
+	}elseif($chart_type==4){
+		$chart_label = "Means of Transportation to work";
+	}elseif($chart_type==5){
+		$chart_label = "Language Spoken at home";
+	}
+}elseif($source_type == 'forecast'){
     if($chart_type==1){
         $chart_label = "Race and Ethnicity";
     }elseif($chart_type==2){
@@ -74,6 +79,16 @@ if($source_type!=='forecast'){
     }elseif($chart_type==5){
         $chart_label = "Household Income";
     }
+}else{
+	if($chart_type==1){
+		$chart_label = "Race and Ethnicity";
+	}elseif($chart_type==2){
+		$chart_label = "Housing Types";
+	}elseif($chart_type==4){
+		$chart_label = "Age By Gender";
+	}elseif($chart_type==5){
+		$chart_label = "Household Income";
+	}
 }
 $page_title="SANDAG Data Surfer | Data Overview | Detail View"; 
 ?>
@@ -164,6 +179,27 @@ $page_title="SANDAG Data Surfer | Data Overview | Detail View";
 								<div id="over_view" class="chart-list">
 								
 									<div class="row">
+									<?php if($source_type==	'census') { ?>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div class="chart-item">
+												<h4>educational attainment</h4>
+												<div class="chart-map">
+													<div id="chart-1" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="#site-top" id="link_education" data-ajax="false"></a>
+												</div>
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div class="chart-item">
+												<h4>employment status</h4>
+												<div class="chart-map">
+													<div id="chart-2" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="#site-top" id="link_employmentstatus" data-ajax="false"></a>
+												</div>
+												
+											</div>
+										</div>
+										<?php } else{ ?>
 										<div class="col-xs-12 col-sm-6 col-md-4">
 											<div class="chart-item">
 												<h4>race &amp; ethnicity</h4>
@@ -183,6 +219,7 @@ $page_title="SANDAG Data Surfer | Data Overview | Detail View";
 												
 											</div>
 										</div>
+										<?php }  ?>
 										<div class="col-xs-12 col-sm-6 col-md-4">
 											<div class="chart-item">
 												<h4>area map</h4>
@@ -210,7 +247,25 @@ $page_title="SANDAG Data Surfer | Data Overview | Detail View";
 												</div>
 											</div>
 										</div>
-										
+										<?php } elseif ($source_type == 'census'){ ?>
+										<div class="col-xs-12 col-sm-6">
+											<div class="chart-item">
+												<h4>means of transportation to work</h4>
+												<div class="chart-map">
+													<div id="chart-4" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="#site-top" id="link_transportation" data-ajax="false"></a>
+												</div>
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-6">
+											<div class="chart-item">
+												<h4>language spoken at home</h4>
+												<div class="chart-map">                                        	
+													<div id="chart-5" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="#site-top" id="link_language" data-ajax="false"></a>
+												</div>
+											</div>
+										</div> 
 										<?php } else { ?>
 										<div class="col-xs-12 col-sm-6">
 											<div class="chart-item">
@@ -446,6 +501,11 @@ $page_title="SANDAG Data Surfer | Data Overview | Detail View";
     <input type="hidden" id="url_san_income" value="<?php echo $url_san_income;?>"/>
     <input type="hidden" id="url_map" value="<?php echo $url_map;?>"/>
     
+	<input type="hidden" id="url_education" value="<?php echo $url_education;?>"/> 
+	<input type="hidden" id="url_employmentstatus" value="<?php echo $url_employmentstatus;?>"/>
+	<input type="hidden" id="url_transportation" value="<?php echo $url_transportation;?>"/> 
+	<input type="hidden" id="url_language" value="<?php echo $url_language;?>"/> 
+    
     <input type="hidden" id="pck_source_type" value="<?php echo $source_type;?>"/>
     <input type="hidden" id="pck_geography_type" value="<?php echo $geography_type;?>"/>
     <input type="hidden" id="pck_year" value="<?php echo $year;?>"/>
@@ -503,8 +563,12 @@ $page_title="SANDAG Data Surfer | Data Overview | Detail View";
     <?php
     }
     ?>
+	<!-- adding census chart script  jpa 5/27/16
     <script type="text/javascript" src="/scripts//<?php echo ($source_type == 'forecast') ? 'para-forecast-' :'para-';?>chart.js"></script>
     <script type="text/javascript" src="/scripts/<?php echo ($source_type == 'forecast') ? 'forecast-' :'';?>chart.js"></script>
+	-->
+	<script type="text/javascript" src="/scripts//<?php echo ($source_type != 'estimate') ? 'para-'.$source_type.'-' : 'para-';?>chart.js"></script>
+    <script type="text/javascript" src="/scripts/<?php echo ($source_type != 'estimate') ? $source_type.'-' :'';?>chart.js"></script>
 	<script>
 		var list = ".nav-sub";
         $(document).ready(function(){

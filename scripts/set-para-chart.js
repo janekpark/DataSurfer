@@ -774,6 +774,547 @@ function loadMiniSize(){
     chart_size_housing='37%';
     pie_distance = 8;
 }
+function reChartCensus1() {
+    if (sum_key_education > 0) {
+        para_over_education.series[0].data = dataArrayEducation;
+        para_over_education.series[0].startAngle = sAgEducation;
+        para_over_education.series[0].size = chart_size_education;
+        para_over_education.series[0].innerSize = chart_size_inner_education;
+        para_over_education.plotOptions.pie.dataLabels.style.fontSize = pie_chart_data;
+        para_over_education.chart.marginTop = margin_top_education;
+        para_over_education.chart.marginBottom = margin_bottom_education;
+
+        var chart_education = new Highcharts.Chart(para_over_education, function (objChart) { });
+
+        var width = $("#chart-detail").width();
+        para_detail_education.series[0].data = dataDetailArrayEducation;
+        para_detail_education.series[0].startAngle = sAgEducation;
+        para_detail_education.series[0].size = chart_size_education;
+        para_detail_education.series[0].innerSize = chart_size_inner_education;
+        para_detail_education.chart.width = width;
+        para_detail_education.plotOptions.pie.dataLabels.style.fontSize = detail_pie_chart_data;
+        para_detail_education.plotOptions.pie.dataLabels.distance = pie_distance;
+        var chart_detail_education = new Highcharts.Chart(para_detail_education, function (objChart) { });
+        createMenu('detail')
+    } else {
+        $('#chart-1').highcharts({
+            chart: {
+                style: {
+                    color: color,
+                },
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: '',
+                style: {
+                    color: color,
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Random data',
+                data: []
+            }],
+            lang: {
+                noData: "Data not available."
+            },
+            noData: {
+                style: {
+                    fontWeight: 'normal',
+                    fontSize: '12pt',
+                    fontFamily: chart_fontFamily,
+                    color: color
+                }
+            },
+            exporting: {
+                enabled: false
+            }
+        });
+    }
+}
+function reDetailChartCensus1() {
+    var width = $("#chart-detail").width();
+    para_detail_education.series[0].data = dataDetailArrayEducation;
+    para_detail_education.series[0].startAngle = sAgEducation;
+    para_detail_education.series[0].size = chart_size_education;
+    para_detail_education.series[0].innerSize = chart_size_inner_education;
+    para_detail_education.chart.width = width;
+    para_detail_education.plotOptions.pie.dataLabels.style.fontSize = detail_pie_chart_data;
+    para_detail_education.plotOptions.pie.dataLabels.distance = pie_distance;
+    var chart_detail_education = new Highcharts.Chart(para_detail_education, function (objChart) { });
+    createMenu('detail')
+}
+function reChartCensus2() {
+    $('#chart-2').html('');
+    if ($('#set_location_popuplate').val() > 0) {
+        para_over_employmentstatus.series = arrDataemploymentstatus;
+        para_over_employmentstatus.xAxis.categories = categories_over_employmentstatus;
+        para_over_employmentstatus.yAxis.max = max_over_employmentstatus;
+
+        para_over_employmentstatus.legend.itemStyle.fontSize = overview_Legend;
+        para_over_employmentstatus.legend.layout = layout_legend_employmentstatus;
+        para_over_employmentstatus.legend.align = align_legend_employmentstatus;
+        para_over_employmentstatus.legend.verticalAlign = vertical_align_legend_employmentstatus;
+        para_over_employmentstatus.legend.y = y_legend_employmentstatus;
+        para_over_employmentstatus.legend.x = x_legend_employmentstatus;
+        para_over_employmentstatus.legend.itemMarginBottom = 5;
+
+        para_over_employmentstatus.chart.style.fontFamily = chart_fontFamily;
+        para_over_employmentstatus.chart.style.fontSize = chart_fontSize;
+        para_over_employmentstatus.chart.style.fontWeight = chart_fontWeight;
+        para_over_employmentstatus.chart.spacingLeft = spacing_left_employmentstatus;
+        para_over_employmentstatus.chart.spacingBottom = spacing_bottom_employmentstatus;
+        para_over_employmentstatus.chart.marginLeft = margin_left_employmentstatus;
+        para_over_employmentstatus.chart.marginRight = margin_right_employmentstatus;
+        para_over_employmentstatus.chart.marginBottom = margin_bottom_employmentstatus;
+        para_over_employmentstatus.chart.marginTop = margin_top_employmentstatus;
+
+        para_over_employmentstatus.xAxis.title.offset = offset_x_title_employmentstatus;
+        para_over_employmentstatus.xAxis.title.style.fontSize = overview_axisLable;
+        para_over_employmentstatus.xAxis.labels.style.fontSize = overview_axisData;
+
+        para_over_employmentstatus.yAxis.title.offset = offset_y_title_employmentstatus;
+        para_over_employmentstatus.yAxis.offset = -8;
+        para_over_employmentstatus.yAxis.labels.style.fontSize = overview_axisData;
+        para_over_employmentstatus.yAxis.title.style.fontSize = overview_axisLable;
+        var chart_over_employmentstatus = new Highcharts.Chart(para_over_employmentstatus, function (objChart) { });
+
+        var width = $("#chart-detail_2").width();
+        para_detail_employmentstatus.series = arrDataemploymentstatus;
+        para_detail_employmentstatus.plotOptions.series.pointWidth = point_width_employmentstatus;
+        para_detail_employmentstatus.xAxis.categories = categories_over_employmentstatus;
+        para_detail_employmentstatus.xAxis.labels.y = y_label_detail_employmentstatus;
+        //try this may comment out later 
+        //para_detail_employmentstatus.yAxis.offset = -48;
+        //
+        para_detail_employmentstatus.yAxis.max = max_over_employmentstatus;
+        para_detail_employmentstatus.chart.width = width;
+
+        para_detail_employmentstatus.legend.itemStyle.fontSize = detail_legend;
+        para_detail_employmentstatus.legend.layout = layout_legend;
+        para_detail_employmentstatus.legend.align = align_legend;
+        para_detail_employmentstatus.legend.verticalAlign = vertical_align_legend;
+        para_detail_employmentstatus.legend.y = y_legend_detail_employmentstatus;
+        para_detail_employmentstatus.legend.x = x_legend_detail_employmentstatus;
+        para_detail_employmentstatus.legend.itemMarginBottom = 0;
+        para_detail_employmentstatus.legend.itemMarginTop = 10;
+        para_detail_employmentstatus.legend.symbolPadding = 6;
+
+        para_detail_employmentstatus.chart.style.fontFamily = chart_fontFamily;
+        para_detail_employmentstatus.chart.style.fontSize = chart_fontSize;
+        para_detail_employmentstatus.chart.style.fontWeight = chart_fontWeight;
+        para_detail_employmentstatus.chart.spacingLeft = spacing_left_detail_employmentstatus;
+        para_detail_employmentstatus.chart.spacingBottom = spacing_bottom_detail_employmentstatus;
+        para_detail_employmentstatus.chart.marginLeft = margin_left_detail_employmentstatus;
+        para_detail_employmentstatus.chart.marginRight = margin_right_detail_employmentstatus;
+        para_detail_employmentstatus.chart.marginBottom = margin_bottom_detail_employmentstatus;
+        para_detail_employmentstatus.chart.marginTop = margin_top_detail_employmentstatus;
+
+        para_detail_employmentstatus.xAxis.title.offset = offset_x_title_detail_employmentstatus;
+        para_detail_employmentstatus.xAxis.title.margin = margin_title;
+        para_detail_employmentstatus.xAxis.labels.style.fontSize = detail_axisData;
+        para_detail_employmentstatus.xAxis.title.style.fontSize = detail_axisLable;
+        para_detail_employmentstatus.yAxis.title.offset = offset_y_title_detail_employmentstatus;
+        para_detail_employmentstatus.yAxis.labels.style.fontSize = detail_axisData;
+        para_detail_employmentstatus.yAxis.title.style.fontSize = detail_axisLable;
+        var chart_detail_employmentstatus = new Highcharts.Chart(para_detail_employmentstatus, function (objChart) { });
+        createMenu('detail_2')
+    } else {
+        $('#chart-2').highcharts({
+            chart: {
+                style: {
+                    color: color,
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: '',
+                style: {
+                    color: color,
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Random data',
+                data: []
+            }],
+            lang: {
+                noData: "Data not available."
+            },
+            noData: {
+                style: {
+                    fontWeight: 'normal',
+                    fontSize: '12pt',
+                    fontFamily: chart_fontFamily,
+                    color: color
+                }
+            },
+            exporting: {
+                enabled: false
+            }
+        });
+    }
+}
+/* end of function reChartCensus2() */
+function reDetailChartCensus2() {
+    var width = $("#chart-detail_2").width();
+    para_detail_employmentstatus.series = arrDataemploymentstatus;
+    para_detail_employmentstatus.plotOptions.series.pointWidth = point_width_employmentstatus;
+    para_detail_employmentstatus.xAxis.categories = categories_over_employmentstatus;
+    para_detail_employmentstatus.yAxis.max = max_over_employmentstatus;
+    para_detail_employmentstatus.chart.width = width;
+
+    para_detail_employmentstatus.legend.itemStyle.fontSize = detail_legend;
+    para_detail_employmentstatus.legend.layout = layout_legend;
+    para_detail_employmentstatus.legend.align = align_legend;
+    para_detail_employmentstatus.legend.verticalAlign = vertical_align_legend;
+    para_detail_employmentstatus.legend.y = y_legend_detail_employmentstatus;
+    para_detail_employmentstatus.legend.x = x_legend_detail_employmentstatus;
+    para_detail_employmentstatus.legend.itemMarginBottom = 0;
+    para_detail_employmentstatus.legend.itemMarginTop = 10;
+    para_detail_employmentstatus.legend.symbolPadding = 6;
+
+    para_detail_employmentstatus.chart.style.fontFamily = chart_fontFamily;
+    para_detail_employmentstatus.chart.style.fontSize = chart_fontSize;
+    para_detail_employmentstatus.chart.style.fontWeight = chart_fontWeight;
+    para_detail_employmentstatus.chart.spacingLeft = spacing_left_detail_employmentstatus;
+    para_detail_employmentstatus.chart.spacingBottom = spacing_bottom_detail_employmentstatus;
+    para_detail_employmentstatus.chart.marginLeft = margin_left_detail_employmentstatus;
+    para_detail_employmentstatus.chart.marginRight = margin_right_detail_employmentstatus;
+    para_detail_employmentstatus.chart.marginBottom = margin_bottom_detail_employmentstatus;
+    para_detail_employmentstatus.chart.marginTop = margin_top_detail_employmentstatus;
+
+    para_detail_employmentstatus.xAxis.title.offset = offset_x_title_detail_employmentstatus;
+    para_detail_employmentstatus.xAxis.title.margin = margin_title;
+    para_detail_employmentstatus.xAxis.labels.style.fontSize = detail_axisData;
+    para_detail_employmentstatus.xAxis.title.style.fontSize = detail_axisLable;
+    para_detail_employmentstatus.yAxis.title.offset = offset_y_title_detail_employmentstatus;
+    para_detail_employmentstatus.yAxis.labels.style.fontSize = detail_axisData;
+    para_detail_employmentstatus.yAxis.title.style.fontSize = detail_axisLable;
+    var chart_detail_employmentstatus = new Highcharts.Chart(para_detail_employmentstatus, function (objChart) { });
+    createMenu('detail_2')
+}
+/* end of reDetailChartCensus2 */
+/* reChartCensus4 -- mode of transportation to work chart */
+function reChartCensus4() {
+    if ($('#set_location_popuplate').val() > 0) {
+        //alert('set-para-chart.js in reChartCensus4() ');
+        para_over_transportation.series = arrDataTransportation;
+        para_over_transportation.xAxis.categories = categories_over_transportation;
+        para_over_transportation.yAxis.max = max_over_transportation;
+
+        para_over_transportation.legend.itemStyle.fontSize = overview_Legend;
+        para_over_transportation.legend.layout = layout_legend;
+        para_over_transportation.legend.align = align_legend;
+        para_over_transportation.legend.verticalAlign = vertical_align_legend;
+        para_over_transportation.legend.y = y_legend_transportation;
+        para_over_transportation.legend.x = x_legend_transportation;
+        para_over_transportation.legend.itemMarginBottom = 5;
+
+        para_over_transportation.chart.style.fontFamily = chart_fontFamily;
+        para_over_transportation.chart.style.fontSize = chart_fontSize;
+        para_over_transportation.chart.style.fontWeight = chart_fontWeight;
+        para_over_transportation.chart.spacingLeft = spacing_left_transportation;
+        para_over_transportation.chart.spacingBottom = spacing_bottom_transportation;
+        para_over_transportation.chart.marginLeft = margin_left_transportation;
+        para_over_transportation.chart.marginRight = margin_right_transportation;
+        para_over_transportation.chart.marginBottom = margin_bottom_transportation;
+        para_over_transportation.chart.marginTop = margin_top_transportation;
+
+        para_over_transportation.xAxis.title.offset = offset_x_title_transportation;
+        para_over_transportation.xAxis.title.style.fontSize = overview_axisLable;
+        para_over_transportation.xAxis.labels.style.fontSize = overview_axisData;
+
+        para_over_transportation.yAxis.title.offset = offset_y_title_transportation;
+        para_over_transportation.yAxis.offset = -8;
+        para_over_transportation.yAxis.labels.style.fontSize = overview_axisData;
+        para_over_transportation.yAxis.title.style.fontSize = overview_axisLable;
+        var chart_over_transportation = new Highcharts.Chart(para_over_transportation, function (objChart) { });
+
+        var width = $("#chart-detail_3").width();
+        para_detail_transportation.series = arrDataTransportation;
+        para_detail_transportation.plotOptions.series.pointWidth = point_width_transportation;
+        para_detail_transportation.xAxis.categories = categories_over_transportation;
+        para_detail_transportation.xAxis.labels.y = y_label_detail_transportation;
+        para_detail_transportation.yAxis.max = max_over_transportation;
+        para_detail_transportation.chart.width = width;
+
+        para_detail_transportation.legend.itemStyle.fontSize = detail_legend;
+        para_detail_transportation.legend.layout = layout_legend;
+        para_detail_transportation.legend.align = align_legend;
+        para_detail_transportation.legend.verticalAlign = vertical_align_legend;
+        para_detail_transportation.legend.y = y_legend_detail_transportation;
+        para_detail_transportation.legend.x = x_legend_detail_transportation;
+        para_detail_transportation.legend.itemMarginBottom = 0;
+        para_detail_transportation.legend.itemMarginTop = 10;
+        para_detail_transportation.legend.symbolPadding = 6;
+
+        para_detail_transportation.chart.style.fontFamily = chart_fontFamily;
+        para_detail_transportation.chart.style.fontSize = chart_fontSize;
+        para_detail_transportation.chart.style.fontWeight = chart_fontWeight;
+        para_detail_transportation.chart.spacingLeft = spacing_left_detail_transportation;
+        para_detail_transportation.chart.spacingBottom = spacing_bottom_detail_transportation;
+        para_detail_transportation.chart.marginLeft = margin_left_detail_transportation;
+        para_detail_transportation.chart.marginRight = margin_right_detail_transportation;
+        para_detail_transportation.chart.marginBottom = margin_bottom_detail_transportation;
+        para_detail_transportation.chart.marginTop = margin_top_detail_transportation;
+
+        para_detail_transportation.xAxis.title.offset = offset_x_title_detail_transportation;
+        para_detail_transportation.xAxis.title.margin = margin_title;
+        para_detail_transportation.xAxis.labels.style.fontSize = detail_axisData;
+        para_detail_transportation.xAxis.title.style.fontSize = detail_axisLable;
+        para_detail_transportation.yAxis.title.offset = offset_y_title_detail_transportation;
+        para_detail_transportation.yAxis.labels.style.fontSize = detail_axisData;
+        para_detail_transportation.yAxis.title.style.fontSize = detail_axisLable;
+        var chart_detail_transportation = new Highcharts.Chart(para_detail_transportation, function (objChart) { });
+        createMenu('detail_3')
+    } else {
+        $('#chart-4').highcharts({
+            chart: {
+                style: {
+                    color: color,
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: '',
+                style: {
+                    color: color,
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Random data',
+                data: []
+            }],
+            lang: {
+                noData: "Data not available."
+            },
+            noData: {
+                style: {
+                    fontWeight: 'normal',
+                    fontSize: '12pt',
+                    fontFamily: chart_fontFamily,
+                    color: color
+                }
+            },
+            exporting: {
+                enabled: false
+            }
+        });
+    }
+}
+function reDetailChartCensus4() {
+    var width = $("#chart-detail_3").width();
+    para_detail_transportation.series = arrDataTransportation;
+    para_detail_transportation.plotOptions.series.pointWidth = point_width_transportation;
+    para_detail_transportation.xAxis.categories = categories_over_transportation;
+    para_detail_transportation.yAxis.max = max_over_transportation;
+    para_detail_transportation.chart.width = width;
+
+    para_detail_transportation.legend.itemStyle.fontSize = detail_legend;
+    para_detail_transportation.legend.layout = layout_legend;
+    para_detail_transportation.legend.align = align_legend;
+    para_detail_transportation.legend.verticalAlign = vertical_align_legend;
+    para_detail_transportation.legend.y = y_legend_detail_transportation;
+    para_detail_transportation.legend.x = x_legend_detail_transportation;
+    para_detail_transportation.legend.itemMarginBottom = 0;
+    para_detail_transportation.legend.itemMarginTop = 10;
+    para_detail_transportation.legend.symbolPadding = 6;
+
+    para_detail_transportation.chart.style.fontFamily = chart_fontFamily;
+    para_detail_transportation.chart.style.fontSize = chart_fontSize;
+    para_detail_transportation.chart.style.fontWeight = chart_fontWeight;
+    para_detail_transportation.chart.spacingLeft = spacing_left_detail_transportation;
+    para_detail_transportation.chart.spacingBottom = spacing_bottom_detail_transportation;
+    para_detail_transportation.chart.marginLeft = margin_left_detail_transportation;
+    para_detail_transportation.chart.marginRight = margin_right_detail_transportation;
+    para_detail_transportation.chart.marginBottom = margin_bottom_detail_transportation;
+    para_detail_transportation.chart.marginTop = margin_top_detail_transportation;
+
+    para_detail_transportation.xAxis.title.offset = offset_x_title_detail_transportation;
+    para_detail_transportation.xAxis.title.margin = margin_title;
+    para_detail_transportation.xAxis.labels.style.fontSize = detail_axisData;
+    para_detail_transportation.xAxis.title.style.fontSize = detail_axisLable;
+    para_detail_transportation.yAxis.title.offset = offset_y_title_detail_transportation;
+    para_detail_transportation.yAxis.labels.style.fontSize = detail_axisData;
+    para_detail_transportation.yAxis.title.style.fontSize = detail_axisLable;
+    var chart_detail_transportation = new Highcharts.Chart(para_detail_transportation, function (objChart) { });
+    createMenu('detail_3')
+}
+/* end of reDetailChartCensus4 -- mode of transportation to work chart */
+
+/* reChartCensus5 -- language spoken at home chart */
+function reChartCensus5() {
+    var window_width = $(window).width();
+    para_over_language.series = arrDataLanguage;
+    para_over_language.xAxis.categories = categories_over_language;
+    para_over_language.yAxis.max = max_over_language;
+
+    para_over_language.legend.itemStyle.fontSize = overview_Legend;
+    para_over_language.legend.layout = layout_legend;
+    para_over_language.legend.align = align_legend;
+    para_over_language.legend.verticalAlign = vertical_align_legend;
+    para_over_language.legend.y = y_legend_language;
+    para_over_language.legend.x = x_legend_language;
+    para_over_language.legend.itemMarginBottom = 5;
+
+    para_over_language.chart.style.fontFamily = chart_fontFamily;
+    para_over_language.chart.style.fontSize = chart_fontSize;
+    para_over_language.chart.style.fontWeight = chart_fontWeight;
+
+    para_over_language.chart.spacingLeft = spacing_left_language;
+    para_over_language.chart.spacingBottom = spacing_bottom_language;
+    para_over_language.chart.marginLeft = margin_left_language;
+    para_over_language.chart.marginRight = margin_right_language;
+    para_over_language.chart.marginBottom = margin_bottom_language;
+    para_over_language.chart.marginTop = margin_top_language;
+
+    para_over_language.xAxis.title.offset = offset_x_title_language;
+    para_over_language.xAxis.title.style.fontSize = overview_axisLable;
+    para_over_language.xAxis.labels.style.fontSize = overview_axisData;
+    para_over_language.yAxis.title.offset = offset_y_title_language;
+    para_over_language.yAxis.title.y = y_title_language;
+    para_over_language.yAxis.offset = -8;
+    para_over_language.yAxis.labels.style.fontSize = overview_axisData;
+    para_over_language.yAxis.title.style.fontSize = overview_axisLable;
+    if (checkInternetExplorer()) {
+        var keyToDelete = "lineHeight";
+        delete para_over_language.legend.itemStyle[keyToDelete];
+    } else {
+        para_over_language.legend.itemStyle.lineHeight = '11%';
+    }
+    if (window_width < 1024) {
+        para_over_language.legend.itemWidth = (width / 2 - 10);
+    } else {
+        para_over_language.legend.itemWidth = 80;
+    }
+    var chart_over_language = new Highcharts.Chart(para_over_language, function (objChart) { });
+    var width = $("#chart-detail_4").width();
+    if (window_width < 1024) {
+        if (window_width >= 768) {
+            para_detail_language.legend.itemWidth = 230;
+        }
+    } else {
+        para_detail_language.legend.itemWidth = 197;
+    }
+    if (window_width >= 1024) {
+        para_detail_language.plotOptions.series.pointWidth = point_width_detail_language;
+        para_detail_language.xAxis.labels.rotation = 0;
+    } else {
+        var keyToDelete = "pointWidth";
+        delete para_detail_language.plotOptions.series[keyToDelete];
+        keyToDelete = "rotation";
+        delete para_detail_language.xAxis.labels[keyToDelete];
+    }
+    //para_detail_language.plotOptions.series.pointWidth= point_width_detail_language;
+    para_detail_language.series = arrDataLanguage;
+    para_detail_language.xAxis.categories = categories_over_language;
+    para_detail_language.chart.width = width;
+
+    para_detail_language.legend.itemStyle.fontSize = detail_legend;
+    para_detail_language.legend.layout = layout_legend;
+    para_detail_language.legend.align = align_legend;
+    para_detail_language.legend.verticalAlign = vertical_align_legend;
+    para_detail_language.legend.y = y_legend_detail_language;
+    para_detail_language.legend.x = x_legend_detail_language;
+    para_detail_language.legend.itemMarginBottom = 0;
+    para_detail_language.legend.itemMarginTop = 10;
+    para_detail_language.legend.symbolPadding = 6;
+
+    para_detail_language.chart.style.fontFamily = chart_fontFamily;
+    para_detail_language.chart.style.fontSize = chart_fontSize;
+    para_detail_language.chart.style.fontWeight = chart_fontWeight;
+    para_detail_language.chart.spacingLeft = spacing_left_detail_language;
+    para_detail_language.chart.spacingBottom = spacing_bottom_detail_language;
+    para_detail_language.chart.marginLeft = margin_left_detail_language;
+    para_detail_language.chart.marginRight = margin_right_detail_language;
+    para_detail_language.chart.marginBottom = margin_bottom_detail_language;
+    para_detail_language.chart.marginTop = margin_top_detail_language;
+
+    para_detail_language.xAxis.title.offset = offset_x_title_detail_language;
+    para_detail_language.xAxis.labels.style.fontSize = detail_axisData;
+    para_detail_language.xAxis.labels.y = y_label_detail_language;
+    para_detail_language.xAxis.title.margin = margin_title;
+    para_detail_language.xAxis.title.style.fontSize = detail_axisLable;
+    para_detail_language.yAxis.title.offset = offset_y_title_detail_language;
+    para_detail_language.yAxis.labels.style.fontSize = detail_axisData;
+    para_detail_language.yAxis.title.style.fontSize = detail_axisLable;
+    var chart_detail_language = new Highcharts.Chart(para_detail_language, function (objChart) { });
+    createMenu('detail_4');
+}
+/* end of reChartCensus5 -- language spoken at home chart */
+
+/* reDetailChartCensus5 -- language spoken at home chart */
+function reDetailChartCensus5() {
+    var width = $("#chart-detail_4").width();
+    var window_width = $(window).width();
+    if (window_width < 1024) {
+        if (window_width >= 768) {
+            para_detail_language.legend.itemWidth = 230;
+        } else {
+            var str = $('#pck_location').val();
+            var str_width = 45 + 7 * (str.length);
+            para_detail_language.legend.itemWidth = str_width;
+            para_detail_language.legend.padding = 0;
+        }
+    } else {
+        para_detail_language.legend.itemWidth = 197;
+    }
+    if (window_width >= 1024) {
+        para_detail_language.plotOptions.series.pointWidth = point_width_detail_language;
+        para_detail_language.xAxis.labels.rotation = 0;
+    } else {
+        var keyToDelete = "pointWidth";
+        delete para_detail_language.plotOptions.series[keyToDelete];
+        keyToDelete = "rotation";
+        delete para_detail_language.xAxis.labels[keyToDelete];
+    }
+    //para_detail_language.plotOptions.series.pointWidth= point_width_detail_language;
+    para_detail_language.series = arrDataLanguage;
+    para_detail_language.xAxis.categories = categories_over_language;
+    para_detail_language.chart.width = width;
+
+    para_detail_language.legend.itemStyle.fontSize = detail_legend;
+    para_detail_language.legend.layout = layout_legend;
+    para_detail_language.legend.align = align_legend;
+    para_detail_language.legend.verticalAlign = vertical_align_legend;
+    para_detail_language.legend.y = y_legend_detail_language;
+    para_detail_language.legend.x = x_legend_detail_language;
+    para_detail_language.legend.itemMarginBottom = 0;
+    para_detail_language.legend.itemMarginTop = 10;
+    para_detail_language.legend.symbolPadding = 6;
+
+    para_detail_language.chart.style.fontFamily = chart_fontFamily;
+    para_detail_language.chart.style.fontSize = chart_fontSize;
+    para_detail_language.chart.style.fontWeight = chart_fontWeight;
+    para_detail_language.chart.spacingLeft = spacing_left_detail_language;
+    para_detail_language.chart.spacingBottom = spacing_bottom_detail_language;
+    para_detail_language.chart.marginLeft = margin_left_detail_language;
+    para_detail_language.chart.marginRight = margin_right_detail_language;
+    para_detail_language.chart.marginBottom = margin_bottom_detail_language;
+    para_detail_language.chart.marginTop = margin_top_detail_language;
+
+    para_detail_language.xAxis.title.offset = offset_x_title_detail_language;
+    para_detail_language.xAxis.labels.style.fontSize = detail_axisData;
+    para_detail_language.xAxis.labels.y = y_label_detail_language;
+    para_detail_language.xAxis.title.margin = margin_title;
+    para_detail_language.xAxis.title.style.fontSize = detail_axisLable;
+    para_detail_language.yAxis.title.offset = offset_y_title_detail_language;
+    para_detail_language.yAxis.labels.style.fontSize = detail_axisData;
+    para_detail_language.yAxis.title.style.fontSize = detail_axisLable;
+    var chart_detail_language = new Highcharts.Chart(para_detail_language, function (objChart) { });
+    createMenu('detail_4');
+}
+
+/* end of reDetailChartCensus5 -- language spoken at home chart */
+
 function reChart1(){
     if(sum_key_ethnicity > 0){
         para_over_ethnicity.series[0].data = dataArrayEthnicity;
@@ -1880,7 +2421,13 @@ function loadDetailChartOne(){
     $('#chart-detail_2').addClass('hide');
     $('#chart-detail_3').addClass('hide');
     $('#chart-detail_4').addClass('hide');
+    //$('#chart_label').html('RACE & ETHNICITY');
+    // modified for census type jpa 6/6/16
+    if (pck_source_type == "census") {
+        $('#chart_label').html('EDUCATIONAL ATTAINMENT');
+    } else {
     $('#chart_label').html('RACE & ETHNICITY');
+    }
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
     $('#chart-detail').removeClass('hide');
@@ -2000,6 +2547,112 @@ function loadDetailChartOne(){
                 }    
             }
         });
+    } else if (pck_source_type == "census") {
+        $.ajax({
+            url: api_url,
+            type: "POST",
+            dataType: "json",
+            data: {type_chart: "education", url_des: $('#url_education').val()},
+            success: function(res) {
+                if (res.length > 0) {
+                    var categories = [];
+                    var keys = [];
+                    var sum_key = 0;
+                    var arr_tmp=[];
+                    var colors = [];
+
+                    var arrEducation = [];
+                    var dataDetailArray = [];
+
+                    for (var i = 0; i < res.length; i++) {
+                        var obj = res[i]; // console.log(obj[key]);
+                        if (obj.level != 'Total Population age 25 and older')
+                            sum_key += obj.population;
+                        if (obj.level == "Total Population age 25 and older") {
+                            $('#txt_total_population').html('Age 25 and older');
+                            $('#total_population').html(Highcharts.numberFormat(obj.population, 0, '.', ','));
+                        }
+                    }
+					
+                    var i_counter = 0;
+
+                    for (var i = 0; i < res.length; i++) {
+                        var obj = res[i];
+                        if (obj.level != 'Total Population age 25 and older')
+                        {
+                            categories.push(obj.level);
+                            var cKey = obj.level.replace(/ /g, "").toLowerCase();
+                           
+                            colors.push(colorEducationCensus[cKey][0]);
+                            //console.log(obj.ethnicity + ": " + obj.population);
+                            
+                            keys.push(obj.population);
+                            datalen = keys[i_counter].length;
+                            var brightness = 0.2 - (i_counter) / res.length;
+                            arrEducation.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 0),
+                                color: colors[i_counter],
+                                fy:precise_round((keys[i_counter] / sum_key) * 100, 1),
+                            });
+                            dataDetailArray.push({
+                                name: categories[i_counter],
+                                y: precise_round((keys[i_counter] / sum_key) * 100, 1),
+                                color: colors[i_counter]
+                            });
+                            i_counter += 1;
+                        }
+                    }
+
+                    arrEducation.sort(function(a,b){
+                        return b.y - a.y;
+                    })
+                    for(var i=0;i<arrEducation.length;i++){
+                        arr_tmp.push(arrEducation[i].y);
+                    }
+                    arr_tmp_education=arr_tmp;
+                    dataDetailArray.sort(function(a,b){
+                        return b.y - a.y;
+                    })
+                    var temp=arrEducation[1];
+                    arrEducation[1] = arrEducation[4];
+                    arrEducation[4] = temp;
+
+                    var temp=dataDetailArray[1];
+                    dataDetailArray[1]=dataDetailArray[4];
+                    dataDetailArray[4]=temp;
+                    var sAg = -arrEducation[0].y * 9 / 5;
+
+                    if(sum_key > 0){
+                        sum_key_education=sum_key;
+                        dataArrayEducation = arrEducation
+                        dataDetailArrayEducation = dataDetailArray;
+                        sAgEducation = sAg;
+                        $('#loading-section').addClass("hide");
+                        
+                        reDetailChartCensus1();
+                        if(isMobile.any()){
+                            $('#txtEmailReport').selectmenu('enable');
+                            $('#txtEmailReport').selectmenu('refresh');
+                            $('#txtDownloadReport').selectmenu('enable');
+                            $('#txtDownloadReport').selectmenu('refresh');
+                        }else{
+                            $('#email_report').prop('disabled',false);
+                            $('#email_report').selectpicker('refresh');
+                            $('#download_report').prop('disabled',false);
+                            $('#download_report').selectpicker('refresh');
+                        }
+                        $('#header_label').html('<p>Select a section of the chart to interact with the data.<br class="hidden-xs" /> Use the chart icon to download the chart image only.</p>');
+                    }
+                }
+                return 1;
+            },
+            error: function(request, status, error) {
+                console.log($('#url_education').val());
+                console.log(request.responseText);
+            }
+        });
+    
     }else{
         $.ajax({
             url: api_url,
@@ -2120,7 +2773,7 @@ function loadDetailChartTwo(){
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
     
-    if(pck_source_type!=="forecast"){
+    if(pck_source_type!=="forecast" && pck_source_type != "census"){
         $('#chart-detail').addClass("chart-frame-248");
         $('#chart-detail_2').addClass("chart-frame-248");
         $('#chart-detail_3').addClass("chart-frame-380");
@@ -2243,6 +2896,104 @@ function loadDetailChartTwo(){
        
         $('#txt_total_population').html('Total Housing Units');
         $('#header_label').html('<p>Select a section of the chart to interact with the data.<br class="hidden-xs" /> Use the chart icon to download the chart image only.</p>');
+    } else if (pck_source_type == "census") {
+        $('#chart-detail').addClass("chart-frame-402");
+        $('#chart-detail_2').addClass("chart-frame-380");
+        $('#chart-detail_3').addClass("chart-frame-402");
+        $('#chart-detail_4').addClass("chart-frame-423");
+        $.ajax({
+            url: api_url,
+            type: "POST",
+            dataType: "json",
+            data: { type_chart: "employmentstatus", url_des: $('#url_employmentstatus').val() },
+            success: function (res) {
+                if (res.length > 0) {
+                    var categories = [];
+                    var arrFemale = [];
+                    var arrMale = [];
+                    //var arrOMale = [];
+                    //var arrOFemale = [];
+                    var arrData = [];
+                    var max_female = 0;
+                    var max_male = 0;
+                    var max = 0;
+                  
+                   
+                    for (var i = 0; i < res.length; i++) {
+                        var obj = res[i];
+                        
+                        if (obj.status != 'Population age 16 and older') {
+                            categories.push(obj.status);
+                            var cKey = obj.status.replace(/ /g, "").toLowerCase();
+                    //        alert(' in    loadDetailChartTwo ' + obj.status + 'male: ' + obj.male + ' female: ' + obj.female);
+                            arrFemale.push(obj.female * -1);
+                            arrMale.push(obj.male);
+
+                            if (obj.female > max_female) {
+                                max_female = obj.female;
+                            }
+                            if (obj.male > max_male) {
+                                max_male = obj.male;
+                            }
+                            
+                        }
+                        if (obj.status == "Population age 16 and older"){
+                            $('#set_location_popuplate').val(obj.male + obj.female);
+                            $('#txt_total_population').html('Age 16 and older');
+                            $('#total_population').html(Highcharts.numberFormat((obj.male + obj.female), 0, '.', ','));
+                  //          alert('$(#set_location_popuplate).val() : ' + $('#set_location_popuplate').val());
+                        }
+                       
+                    }
+                    arrData = [
+                        {
+                            name: 'Women',
+                            data: arrFemale,
+                            color: fontAgeCensus['women'][0]
+                        },
+                        {
+                            name: 'Men',
+                            data: arrMale,
+                            color: fontAgeCensus['men'][0]
+                        }];
+                    arrData.sort(function (a, b) {
+                        return a.name - b.name;
+                    })
+                    max = max_female + max_male;
+                    // test this ==delete later jpa
+                    max = max_male;
+                    if (max_female > max_male) {
+                        max = max_female;
+                    }
+
+                    if ($('#set_location_popuplate').val() > 0) {
+                        arrDataemploymentstatus = arrData;
+                        categories_over_employmentstatus = categories;
+                        max_over_employmentstatus = max;
+                        reDetailChartCensus2();
+                        if (isMobile.any()) {
+                            $('#txtEmailReport').selectmenu('enable');
+                            $('#txtEmailReport').selectmenu('refresh');
+                            $('#txtDownloadReport').selectmenu('enable');
+                            $('#txtDownloadReport').selectmenu('refresh');
+                        } else {
+                            $('#email_report').prop('disabled', false);
+                            $('#email_report').selectpicker('refresh');
+                            $('#download_report').prop('disabled', false);
+                            $('#download_report').selectpicker('refresh');
+                        }
+                    }
+                }
+                return 1;
+            },
+            error: function (request, status, error) {
+                console.log($('#url_employmentstatus').val());
+                console.log(request.responseText);
+            }
+        });
+
+        $('#chart_label').html('EMPLOYMENT STATUS');
+        $('#header_label').html('<p>Select a section of the chart or a gender to show or hide data. <br class="hidden-xs" />Use the chart icon to download the chart image only.</p>');
     }else{
         $('#chart-detail').addClass("chart-frame-402");
         $('#chart-detail_2').addClass("chart-frame-380");
@@ -2336,7 +3087,7 @@ function loadDetailChartFour(){
     $('#overview-body').removeClass("visibility");
     
     var url = api_url;
-    if(pck_source_type!=="forecast"){
+    if (pck_source_type !== "forecast" && pck_source_type != "census") {
         $('#chart-detail').addClass("chart-frame-248");
         $('#chart-detail_2').addClass("chart-frame-248");
         $('#chart-detail_3').addClass("chart-frame-380");
@@ -2486,6 +3237,113 @@ function loadDetailChartFour(){
         
         $('#chart_label').html('AGE BY GENDER');
         $('#header_label').html('<p>Select a section of the chart or a gender to show or hide data. <br class="hidden-xs" />Use the chart icon to download the chart image only.</p>');
+
+    } else if (pck_source_type == "census") {
+        //alert(' in set-para-chart.js loaddetailchartfour() ');
+            $('#chart-detail').addClass("chart-frame-248");
+            $('#chart-detail_2').addClass("chart-frame-248");
+            $('#chart-detail_3').addClass("chart-frame-380");
+            $('#chart-detail_4').addClass("chart-frame-402");
+            $.ajax({
+                url: api_url,
+                type: "POST",
+                dataType: "json",
+                data: {type_chart: "transportation", url_des: $('#url_transportation').val()},
+                success: function(res) {
+                    if (res.length > 0) {
+                        var categories = [];
+                        var arrMeans = [];
+                        var arrMeansPercent = [];
+                        var arrFemale = [];
+                        var arrMale = [];
+                        //var arrOMale = [];
+                        //var arrOFemale = [];
+                        var arrData = [];
+                        var max_female=0;
+                        var max_male=0;
+                        var max = 0;
+                        //var colors = [];
+                        var sum_key = 0;
+
+                        // get total
+                        for (var i = 0; i < res.length; i++) {
+                            var obj = res[i];
+                            var cKey = obj.means_of_trans.toLowerCase();
+                            if (cKey.indexOf("public transportation") >= 0)
+                                cKey = "transit";
+                            categories.push(cKey);
+                           // var cKey = obj.means_of_trans.replace(/ /g, "").toLowerCase();
+                            //colors.push(fontTransportationCensus[cKey][0]);
+
+                            arrMeans.push(obj.number);
+                           // alert('chartCensus4 : ' + cKey + '  :   ' + ' numbers: ' + obj.number + 'colors: ' + fontTransportationCensus['means'][0]);
+                            //if (obj.number > max) {
+                            //    max = obj.number;
+                            //}
+
+                            sum_key += obj.number;
+
+                           
+                        }
+
+                      
+                        $('#set_location_popuplate').val(sum_key);
+                        $('#txt_total_population').html('Workers age 16 and older');
+                        $('#total_population').html(Highcharts.numberFormat(sum_key, 0, '.', ','));
+                        var meansPercent = 0;
+
+                        for (var i = 0; i < arrMeans.length; i++) {
+                            if (sum_key > 0) {
+                                meansPercent = precise_round((arrMeans[i] / sum_key) * 100, 1);
+                                arrMeansPercent.push(meansPercent);
+                                if (meansPercent > max)
+                                    max = meansPercent;
+                            }
+                            else {
+                                arrMeansPercent.push(0);
+                            }
+
+                        }
+                        arrData = [
+                            {
+                                name: 'means',
+                                data: arrMeansPercent,
+                                data_value: arrMeans,
+                                color: fontTransportationCensus['means'][0]
+                            }];
+                        //arrData.sort(function(a,b){
+                        //    return a.name - b.name;
+                        //}) 
+                       // max = max_female + max_male;
+
+                        if ($('#set_location_popuplate').val() > 0) {
+                            arrDataTransportation = arrData;
+                            categories_over_transportation = categories;
+                            max_over_transportation = max;
+                            reDetailChartCensus4();
+                            if(isMobile.any()){
+                                $('#txtEmailReport').selectmenu('enable');
+                                $('#txtEmailReport').selectmenu('refresh');
+                                $('#txtDownloadReport').selectmenu('enable');
+                                $('#txtDownloadReport').selectmenu('refresh');
+                            }else{
+                                $('#email_report').prop('disabled',false);
+                                $('#email_report').selectpicker('refresh');
+                                $('#download_report').prop('disabled',false);
+                                $('#download_report').selectpicker('refresh');
+                            }
+                        }
+                    }
+                    return 1;
+                },
+                error: function(request, status, error) {
+                    console.log($('#url_transportation').val());
+                    console.log(request.responseText);
+                }
+            });
+        
+            $('#chart_label').html('MEANS OF TRANSPORTATION TO WORK');
+            $('#header_label').html('<p>Select a section of the chart or a gender to show or hide data. <br class="hidden-xs" />Use the chart icon to download the chart image only.</p>');
     }else{
         $('#chart-detail').addClass("chart-frame-402");
         $('#chart-detail_2').addClass("chart-frame-380");
@@ -2650,7 +3508,7 @@ function loadDetailChartFive(){
     $('.site-header').css({"z-index":''});
     $('#overview-body').removeClass("visibility");
     
-    if(pck_source_type!=="forecast"){
+    if(pck_source_type!=="forecast" && pck_source_type != "census" ){
         $('#chart-detail').addClass("chart-frame-248");
         $('#chart-detail_2').addClass("chart-frame-248");
         $('#chart-detail_3').addClass("chart-frame-380");
@@ -2845,6 +3703,157 @@ function loadDetailChartFive(){
         });
         $('#header_label').html('<p>Select a section of the chart or a location to show or hide data. <br class="hidden-xs" />Select the chart icon to download the chart image only. </p>');
         $('#chart_label').html('HOUSEHOLD INCOME');
+        
+    }else if( pck_source_type == "census" ){
+        $('#chart-detail').addClass("chart-frame-248");
+        $('#chart-detail_2').addClass("chart-frame-248");
+        $('#chart-detail_3').addClass("chart-frame-380");
+        $('#chart-detail_4').addClass("chart-frame-402");
+        $.ajax({
+            url: api_url,
+            type: "POST",
+            dataType: "json",
+            data: {type_chart: "language", url_des: $('#url_language').val()},
+            success: function(res) {
+                var tmp_san = [];
+                var data_san = [];
+                var sum_total = 0;
+                var categories = [];
+                var arrEnglishProficient = [];
+                var arrEnglishLimited = [];
+                var max = 0;
+
+                if (res.length > 0) {
+                    for (var i = 0; i < res.length; i++) {
+                        var obj = res[i];
+                        var str = obj.population;
+                        if (obj.population != "") {
+                            if (str.indexOf("Speaks only English") >= 0) {
+                                if (!isInArray("English only", categories)) {
+                                    categories.push("English only");
+                                }
+                                arrEnglishProficient.push(obj.total);
+                                arrEnglishLimited.push(0);
+                                //if (obj.total > max)
+                                //    max = obj.total;
+                            }
+                            if (str.indexOf("Speaks Spanish") >= 0) {
+                                if (str.indexOf("English well") > 0)
+                                    arrEnglishProficient.push(obj.total);
+                                else if (str.indexOf("limited English") > 0) {
+                                    arrEnglishLimited.push(obj.total);
+                                }
+                                if (!isInArray("Spanish", categories)) {
+                                    categories.push("Spanish");
+                                }
+                                //if (obj.total > max)
+                                //    max = obj.total;
+                            }
+                            if (str.indexOf("Speaks Asian") >= 0) {
+                                if (str.indexOf("English well") > 0)
+                                    arrEnglishProficient.push(obj.total);
+                                else if (str.indexOf("limited English") > 0) {
+                                    arrEnglishLimited.push(obj.total);
+                                }
+                                if (!isInArray("Asian/Pacific Islander", categories)) {
+                                    categories.push("Asian/Pacific Islander");
+                                }
+                                //if (obj.total > max)
+                                //    max = obj.total;
+                            }
+                            if (str.indexOf("Other language") >= 0) {
+                                if (str.indexOf("English well") > 0)
+                                    arrEnglishProficient.push(obj.total);
+                                else if (str.indexOf("limited English")> 0 ) {
+                                    arrEnglishLimited.push(obj.total);
+                                }
+                                if (!isInArray("Other language", categories)) {
+                                    categories.push("Other language");
+                                }
+                                //if (obj.total > max)
+                                //    max = obj.total;
+                            }
+
+                            if (str.indexOf("Total age 5 and older") >= 0) {
+                                $('#set_location_popuplate').val(obj.total);
+                                $('#total_population').html(Highcharts.numberFormat(obj.total, 0, '.', ','));
+                                sum_total = obj.total;
+                            }
+                        }
+                       
+                    }
+                 //   alert('set-para-chart.js   chartCensus5:  English Proficient ' + arrEnglishProficient.length + ' and Limited : ' + arrEnglishLimited.length);
+                    var data_proficient = [];
+                    var data_limited = [];
+                    var limited = 0;
+                    var proficient = 0;
+
+                    for (var i = 0; i < categories.length; i++) {
+                        if (sum_total > 0) {
+                            limited = precise_round((arrEnglishLimited[i] / sum_total) * 100, 1);
+                            proficient = precise_round((arrEnglishProficient[i] / sum_total) * 100, 1);
+
+                            data_limited.push(limited);
+                            data_proficient.push(proficient);
+
+                            if (limited > max)
+                                max = limited;
+                            else if (proficient > max)
+                                max = proficient;
+                        }
+                        else {
+                            data_limited.push(0);
+                            data_proficient.push(0);
+                        }
+                    }
+                    arrData = [
+                    {
+                        name: 'EnglishProficient',
+                        data: data_proficient,
+                        color: fontLanguageCensus['englishproficient'][0],
+                        data_value: arrEnglishProficient
+                    },
+                    {
+                        name: 'EnglishLimited',
+                        data: data_limited,
+                        color: fontLanguageCensus['englishlimited'][0],
+                        data_value: arrEnglishLimited
+                    }];
+                    arrData.sort(function (a, b) {
+                        return a.name - b.name;
+                    })
+                    var window_width = $(window).width();
+                    arrDataLanguage = arrData;
+
+                    max_over_language = max;
+                    categories_over_language = categories;
+
+                    reDetailChartCensus5();
+                    if(isMobile.any()){
+                        $('#txtEmailReport').selectmenu('enable');
+                        $('#txtEmailReport').selectmenu('refresh');
+                        $('#txtDownloadReport').selectmenu('enable');
+                        $('#txtDownloadReport').selectmenu('refresh');
+                    }else{
+                        $('#email_report').prop('disabled',false);
+                        $('#email_report').selectpicker('refresh');
+                        $('#download_report').prop('disabled',false);
+                        $('#download_report').selectpicker('refresh');
+                    }
+                
+                   
+                    return 1;
+                }
+            },
+            error: function(request, status, error) {
+                console.log($('#url_language').val());
+                console.log(request.responseText);
+            }
+        });
+        $('#txt_total_population').html('Age 5 and over');
+       
+        $('#header_label').html('<p>Select a section of the chart or a location to show or hide data. <br class="hidden-xs" />Select the chart icon to download the chart image only. </p>');
+        $('#chart_label').html('LANGUAGE SPOKEN AT HOME');
         
     }else{
         $('#chart-detail').addClass("chart-frame-402");

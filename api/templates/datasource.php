@@ -8,8 +8,6 @@
 		$headerStmt = "Select Forecast Series:";
 	elseif($datasource == 'census')
 		$headerStmt = "Select Census Year:";
-	elseif($datasource == 'censusacs')
-		$headerStmt = "Select Census ACS Year:";
 	elseif($datasource == 'estimate')
 		$headerStmt = "Select Estimate Year:";
 	  
