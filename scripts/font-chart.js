@@ -10,6 +10,60 @@ var align_legend = 'right';
 var vertical_align_legend = 'middle';
 var layout_legend = 'vertical';
 
+/* overview census education */
+var margin_top_education = 27;
+var margin_bottom_education = 27;
+
+var chart_size_education = '62%';
+var chart_size_inner_education = '0%';
+/* end overview census education */
+
+/* overview census employmentstatus*/
+var margin_top_employmentstatus = 27;
+//var margin_bottom_employmentstatus = 82;
+var margin_bottom_employmentstatus = 50;
+//var margin_left_employmentstatus = 70;
+var margin_left_employmentstatus = 90;
+
+//var margin_right_employmentstatus = 100;
+var margin_right_employmentstatus = 25;
+var spacing_left_employmentstatus = 28;;
+var spacing_bottom_employmentstatus = 23;
+//var layout_legend_employmentstatus = 'vertical';
+var layout_legend_employmentstatus = 'horizontal';
+var item_distance_legend_employmentstatus = 7;
+var align_legend_employmentstatus = 'left';
+//var align_legend_employmentstatus = align_legend;
+
+var offset_y_title_employmentstatus = 40;
+var offset_x_title_employmentstatus = 40;
+var offset_x_label_employmentstatus = 15;
+var y_legend_employmentstatus = 15;
+var x_legend_employmentstatus = 0;
+var vertical_align_legend_employmentstatus = 'bottom';
+/* end overview census employmentstatus */
+
+/* overview census transportation*/
+var margin_top_transportation = 27;
+//var margin_bottom_transportation = 82;
+//var margin_left_transportation = 50;
+var margin_bottom_transportation = 52;
+var margin_left_transportation = 100;
+
+var margin_right_transportation = 50;
+//var spacing_left_transportation = 28;
+var spacing_left_transportation = 15;
+var spacing_bottom_transportation = 23;
+
+var offset_y_title_transportation = 40;
+var offset_x_title_transportation = 60;
+//var offset_x_label_transportation = 15;
+var offset_x_label_transportation = 15;
+var y_legend_transportation = 15;
+//var x_legend_transportation = 0;
+x_legend_transportation = 15;
+/* end overview census transportation */
+
 var chart_size_ethnicity='62%';
 var chart_size_inner_ethnicity='60%';
 var chart_size_housing='62%';
@@ -47,6 +101,24 @@ var y_legend_income = 0;
 var y_title_income=0;
 var group_padding_income = 0.17;
 /* end overview */
+
+/* overview language*/
+var margin_top_language = 27;
+var margin_bottom_language = 82;
+var margin_left_language = 69;
+
+var margin_right_language = 90;
+var spacing_left_language = 28;
+var spacing_bottom_language = 23;
+
+var offset_y_title_language = 45; // 40 (Thuan Apr 1)
+var offset_x_title_language = 60;//45
+var offset_x_label_language = 15;
+var x_legend_language = 0;
+var y_legend_language = 0;
+var y_title_language = 0;
+var group_padding_language = 0.17;
+/* end overview language*/
 
 /* overview forcast ethnicity*/
 var margin_top_forcast_ethnicity = 22;
@@ -113,6 +185,37 @@ var y_legend_forcast_job = 0;
 var x_legend_forcast_job = 0;
 /* end overview */
 
+/* detail census employmentstatus */
+var spacing_left_detail_employmentstatus = 60;
+var spacing_bottom_detail_employmentstatus = 120;
+//var margin_left_detail_employmentstatus = 102; -- commented jpa
+var margin_left_detail_employmentstatus = 150;
+var margin_top_detail_employmentstatus = 70;
+var margin_right_detail_employmentstatus = 245;
+var margin_bottom_detail_employmentstatus = 95;
+var offset_x_title_detail_employmentstatus = 53;
+var offset_y_title_detail_employmentstatus = 60;
+var y_legend_detail_employmentstatus = 40;
+var x_legend_detail_employmentstatus = -124;
+//var y_label_detail_employmentstatus = 28; -- commented jpa
+var y_label_detail_employmentstatus = 0;
+/*end detail census employmentstatus */
+
+/* detail census transportation */
+var spacing_left_detail_transportation = 60;
+var spacing_bottom_detail_transportation = 120;
+var margin_left_detail_transportation = 150;
+var margin_top_detail_transportation = 70;
+var margin_right_detail_transportation = 145;
+var margin_bottom_detail_transportation = 95;
+var offset_x_title_detail_transportation = 53;
+var offset_y_title_detail_transportation = 60;
+var y_legend_detail_transportation = 40;
+var x_legend_detail_transportation = -124;
+//var y_label_detail_transportation = 28;
+var y_label_detail_transportation = 8;
+/* end detail census employmentstatus */
+
 /* detail age */
 var spacing_left_detail_age =60;
 var spacing_bottom_detail_age =120;
@@ -139,6 +242,21 @@ var y_legend_detail_income =40;
 var x_legend_detail_income =-60;
 var y_label_detail_income = 28;
 //end detail income
+
+/* detail language */
+var spacing_left_detail_language = 60;
+var spacing_bottom_detail_language = 120;
+var margin_left_detail_language = 102;
+var margin_top_detail_language = 70;
+var margin_right_detail_language = 245;
+var margin_bottom_detail_language = 105;
+var offset_x_title_detail_language = 68;
+var offset_y_title_detail_language = 60;
+var y_legend_detail_language = 40;
+//var x_legend_detail_language = -60;
+var x_legend_detail_language = 0;
+var y_label_detail_language = 28;
+//end detail language
 
 /* detail forcast ethnicity*/
 var spacing_left_detail_forcast_ethnicity =60;
@@ -218,10 +336,17 @@ var font_size_legend_income='11px';
 var font_size_label_income='12px';
 var point_width_income = 10;
 var point_width_detail_income = 18;
-var point_width_age = 40
+var point_width_language = 30;
+var point_width_detail_language = 40;
+var point_width_age = 40;
+var point_width_employmentstatus = 40;
+var point_width_transportation = 30;
 
 var item_margin_bottom_forcast_ethnicity = 3;
 var item_margin_bottom_detail_age = 10;
+var item_margin_bottom_detail_employmentstatus = 10;
+var item_margin_bottom_detail_transportation = 10;
+
 var item_margin_bottom_forcast_income = 3;
 
 var color = "#636363";
@@ -246,6 +371,19 @@ var detail_margin = [0, 0, 0, 0];
 var chart_detail_fontSize = '10pt';
 var chart_fontSize = '10pt';
 var chart_marginTop = 150;
+
+//color education
+colorEducationCensus = [];
+colorEducationCensus['lessthanhighschool'] = ["#b5469a", "#d79ec7"];
+//colorEducationCensus['highschoolgradincludingequivalency'] = ["#96908a", "#c3beb9"];
+colorEducationCensus['highschoolgradincludingequivalency'] = ["#FAB570", "#F8D5BF"];
+//colorEducationCensus['somecollegeorassociatedegree'] = ["#d2c2ac", "#e2d9cd"];
+colorEducationCensus['somecollegeorassociatedegree'] = ["#16bcbc", "#89dbdb"];
+//colorEducationCensus['bachelor&apos;sdegree'] = ["#087087", "#80b3bd"];
+colorEducationCensus['bachelorsdegree'] = ["#087087", "#80b3bd"];
+//colorEducationCensus['graduateorprofessionaldegree'] = ["#399344", "#92bd93"];
+colorEducationCensus['graduateorprofessionaldegree'] = ["#B8CB77", "#CDDAA4"];
+//end color education
 
 colorEthnicityCensus = [];
 colorEthnicityCensus['americanindian'] = ["#b5469a", "#d79ec7"];
@@ -283,6 +421,11 @@ colorHousingTypeForecast['multifamily'] = ["#087087", "#80b3bd"];
 colorHousingTypeForecast['singlefamilydetached'] = ["#16bcbc", "#89dbdb"];
 colorHousingTypeForecast['singlefamilymultiple'] = ["#16bcbc", "#89dbdb"];
 
+/* for census chart 2 */
+var fontEmploymentStatusCensus = [];
+fontEmploymentStatusCensus['men'] = ['#16bcbc', '#89dbdb'];
+fontEmploymentStatusCensus['women'] = ['#087087', '#80b3bd'];
+
 /* for chart 3 */
 var fontAgeCensus = [];
 fontAgeCensus['men'] = ['#16bcbc', '#89dbdb'];
@@ -316,6 +459,24 @@ fontJobForecast['educationhealth'] = ['#16bcbc', '#89dbdb'];
 fontJobForecast['government'] = ['#d2c2ac', '#e2d9cd'];
 fontJobForecast['leisurehospitality'] = ['#96908a', '#c3beb9'];
 fontJobForecast['other'] = ['#7dc249', '#abd489'];
+
+/*for chartcensus4 - means of transportation to work chart */
+var fontTransportationCensus = [];
+fontTransportationCensus['means'] = ['#16bcbc', '#89dbdb'];
+
+fontTransportationCensus['drovealone'] = ['#087087', '#80b3bd'];
+fontTransportationCensus['carpooled'] = ['#16bcbc', '#89dbdb'];
+fontTransportationCensus['publictransportation'] = ['#d2c2ac', '#e2d9cd'];
+fontTransportationCensus['motorcycle'] = ['#96908a', '#c3beb9'];
+fontTransportationCensus['bicycle'] = ['#7dc249', '#abd489'];
+fontTransportationCensus['walked'] = ['#087087', '#80b3bd'];
+fontTransportationCensus['othermeans'] = ['#16bcbc', '#89dbdb'];
+fontTransportationCensus['workedathome'] = ['#d2c2ac', '#e2d9cd'];
+
+/* for chartcensus5 - language spoken at home */
+var fontLanguageCensus = [];
+fontLanguageCensus['englishproficient'] = ['#087087', '#80b3bd'];
+fontLanguageCensus['englishlimited'] = ['#16bcbc', '#89dbdb'];
 
 function createMenu(id){
     var str1= '';
@@ -692,32 +853,42 @@ $(window).resize(function () {
     
     if(!isMobile.any()){
         if(objLast.className!="highcharts-container"){//!=highcharts-container
-            if(pck_source_type!=="forecast"){
-                reChart1();
-                reChart2();
-                reChart4();
-                reChart5();
-            }else{
+            if (pck_source_type == "forecast") {
                 reChartForecast1();
                 reChartForecast2();
                 reChartForecast4();
                 reChartForecast5();
+            } else if (pck_source_type == "census") {
+                reChartCensus1();
+                reChartCensus2();
+                reChartCensus4();
+                reChartCensus5();
+            }else{
+                reChart1();
+                reChart2();
+                reChart4();
+                reChart5();
             }
         }
     }else{
         if(init_width!=$(window).width()){
             init_width = $(window).width();
             window_width = $(window).width()
-            if(pck_source_type!=="forecast"){
-                reChart1();
-                reChart2();
-                reChart4();
-                reChart5();
-            }else{
+            if (pck_source_type == "forecast") {
                 reChartForecast1();
                 reChartForecast2();
                 reChartForecast4();
                 reChartForecast5();
+            } else if (pck_source_type == "census") {
+                reChartCensus1();
+                reChartCensus2();
+                reChartCensus4();
+                reChartCensus5();
+            }else{
+                reChart1();
+                reChart2();
+                reChart4();
+                reChart5();
             }
         }
     }

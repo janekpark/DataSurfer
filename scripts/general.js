@@ -210,15 +210,19 @@ function link_income(){
         beforeSend: function(){
             if(isMobile.any()){
                 var window_width = $(window).width();
-                if(window_width < 768){
-                    if(pck_source_type!=='forecast'){
-                        reChart1();
-                        reChart2();
-                        reChart4();
-                    }else{
+                if (window_width < 768) {
+                    if (pck_source_type == 'forecast') {
                         reChartForecast1();
                         reChartForecast2();
                         reChartForecast4();
+                    } else if (pck_source_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus2();
+                        reChartCensus4();
+                    } else {
+                        reChart1();
+                        reChart2();
+                        reChart4();
                     }
                 }
             }
@@ -248,14 +252,18 @@ function link_age(){
             if(isMobile.any()){
                 var window_width = $(window).width();
                 if(window_width < 768){
-                    if(pck_source_type!=='forecast'){
-                        reChart1();
-                        reChart2();
-                        reChart5();
-                    }else{
+                    if (pck_source_type == 'forecast') {
                         reChartForecast1();
                         reChartForecast2();
                         reChartForecast5();
+                    } else if (pck_geography_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus2();
+                        reChartCensus5();
+                    } else {
+                        reChart1();
+                        reChart2();
+                        reChart5();
                     }
                 }
             }
@@ -285,14 +293,18 @@ function link_housing(){
             if(isMobile.any()){
                 var window_width = $(window).width();
                 if(window_width < 768){
-                    if(pck_source_type!=='forecast'){
-                        reChart1();
-                        reChart4();
-                        reChart5();
-                    }else{
+                    if (pck_source_type == 'forecast') {
                         reChartForecast1();
                         reChartForecast4();
                         reChartForecast5();
+                    } else if (pck_geography_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus4();
+                        reChartCensus5();
+                    } else {
+                        reChart1();
+                        reChart4();
+                        reChart5();
                     }
                 }
             }
@@ -321,14 +333,18 @@ function link_ethnicity(){
             if(isMobile.any()){
                 var window_width = $(window).width();
                 if(window_width < 768){
-                    if(pck_source_type!=='forecast'){
-                        reChart2();
-                        reChart4();
-                        reChart5();
-                    }else{
+                    if (pck_source_type == 'forecast') {
                         reChartForecast2();
                         reChartForecast4();
                         reChartForecast5();
+                    } else if (pck_source_type == 'census') {
+                        reChartCensus2();
+                        reChartCensus4();
+                        reChartCensus5();
+                    } else {
+                        reChart2();
+                        reChart4();
+                        reChart5();
                     }
                 }
             }
@@ -343,6 +359,179 @@ function link_ethnicity(){
     });
 
 }
+
+
+// function link_educational_attainment
+function link_education() {
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url: "/deepdiver.php",
+        type: "POST",
+        data: { total_population: $('#total_population').text(), chart: "1", ajax_run: "1", source_type: pck_source_type, year: pck_year, geography_type: pck_geography_type, location: pck_location },
+        beforeSend: function () {
+            if (isMobile.any()) {
+                var window_width = $(window).width();
+                if (window_width < 768) {
+                    if (pck_source_type == 'forecast') {
+                        reChartForecast2();
+                        reChartForecast4();
+                        reChartForecast5();
+                    } else if (pck_source_type == 'census') {
+                        reChartCensus2();
+                        reChartCensus4();
+                        reChartCensus5();
+                    } else {
+                        reChart2();
+                        reChart4();
+                        reChart5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
+//function link_employmentstatus
+function link_employmentstatus() {
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url: "/deepdiver.php",
+        type: "POST",
+        data: { total_population: $('#total_population').text(), chart: "2", ajax_run: "1", source_type: pck_source_type, year: pck_year, geography_type: pck_geography_type, location: pck_location },
+        beforeSend: function () {
+            if (isMobile.any()) {
+                var window_width = $(window).width();
+                if (window_width < 768) {
+                    if (pck_source_type == 'forecast') {
+                        reChartForecast1();
+                        reChartForecast4();
+                        reChartForecast5();
+                    } else if (pck_geography_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus4();
+                        reChartCensus5();
+                    } else {
+                        reChart1();
+                        reChart4();
+                        reChart5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+}
+// link 'means of tramsportation to work' for census
+function link_transportation() {
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url: "/deepdiver.php",
+        type: "POST",
+        data: { total_population: $('#total_population').text(), chart: "4", ajax_run: "1", source_type: pck_source_type, year: pck_year, geography_type: pck_geography_type, location: pck_location },
+        beforeSend: function () {
+            if (isMobile.any()) {
+                var window_width = $(window).width();
+                if (window_width < 768) {
+                    if (pck_source_type == 'forecast') {
+                        reChartForecast1();
+                        reChartForecast2();
+                        reChartForecast5();
+                    } else if (pck_geography_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus2();
+                        reChartCensus5();
+                    } else {
+                        reChart1();
+                        reChart2();
+                        reChart5();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
+
+// end link 'menas of transportation to work' for census
+
+function link_language() {
+    var pck_source_type = $('#pck_source_type').val();
+    var pck_year = $('#pck_year').val();
+    var pck_geography_type = $('#pck_geography_type').val();
+    var pck_location = $('#pck_location').val();
+
+    var url = api_url;
+    $.ajax({
+        url: "/deepdiver.php",
+        type: "POST",
+        data: { total_population: $('#total_population').text(), chart: "5", ajax_run: "1", source_type: pck_source_type, year: pck_year, geography_type: pck_geography_type, location: pck_location },
+        beforeSend: function () {
+            if (isMobile.any()) {
+                var window_width = $(window).width();
+                if (window_width < 768) {
+                    if (pck_source_type == 'forecast') {
+                        reChartForecast1();
+                        reChartForecast2();
+                        reChartForecast4();
+                    } else if (pck_source_type == 'census') {
+                        reChartCensus1();
+                        reChartCensus2();
+                        reChartCensus4();
+                    } else {
+                        reChart1();
+                        reChart2();
+                        reChart4();
+                    }
+                }
+            }
+        },
+        success: function (res) {
+            var new_link = '/dataoverview/detailview';
+            window.location = new_link;
+        },
+        error: function (request, status, error) {
+            console.log('Error call api');
+        }
+    });
+
+}
+// end link 'language spoken at home' for census
+
 $(document).ready(function(){
     loadYear();
     $('#back_overview').click(function(){
