@@ -917,9 +917,11 @@ $app->get('/:datasource/:year/:geotype/:zone/transportation', function ($datasou
 					emp_mode_home
 					]) as Number
 					from app.acs_means_of_trans($1, $2, $3 );";
-		
+		if( $year == "2010"){
 		$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
-		
+		}elseif( $year == "2000" ){
+			$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}
 		echo $json;		
 		
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
@@ -976,7 +978,12 @@ $app->get('/:datasource/:year/:geotype/:zone/employmentstatus', function ($datas
 				not_in_labor_force_female])	
 				as female
 			from app.acs_employment_status_acs( $1, $2, $3);";
+		
+		if( $year == "2010"){
 		$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}elseif( $year == "2000" ){
+			$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}
 		echo $json;
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
 	
@@ -998,7 +1005,12 @@ $app->get('/:datasource/:year/:geotype/:zone/povertystatus', function ($datasour
 					]) as Number			
 				from app.acs_poverty_status($1, $2, $3 );";
 	
-		$json = Query::getInstance()->getResultAsJson( $povertyStatusSql, 5, $geotype, ucwords($zone));
+		
+		if( $year == "2010" ){
+			$json = Query::getInstance()->getResultAsJson( $povertyStatusSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}elseif( $year == "2000" ){
+			$json = Query::getInstance()->getResultAsJson( $povertyStatusSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}
 		echo $json;		
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
 //CensusACS / Estimate -Educational Attainment
@@ -1026,8 +1038,11 @@ $app->get('/:datasource/:year/:geotype/:zone/education', function ($datasource, 
 			]) as population
 			from app.acs_pop_by_educational_attainment( $1, $2, $3 );";
 		
-		
-		$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		if( $year == "2010" ){
+			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}elseif( $year == "2000" ){
+			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}
 		
 		echo $json;		
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
@@ -1061,8 +1076,12 @@ $app->get('/:datasource/:year/:geotype/:zone/language', function ($datasource, $
 				pop_5plus_other_no_english] ) as total
 			from app.acs_pop_by_language_spoken( $1, $2, $3);";
 		
+		if( $year == "2010"){
+			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
 		
-		$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 2, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}elseif( $year == "2000" ){
+			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+		}
 		echo $json;
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
 $app->get('/census/:year/:geotype/:zones+/export/xlsx', function ( $year, $geoType, $zones) use ($app)
@@ -1574,7 +1593,7 @@ $app->get('/census/:year/:geotype/:zones+/export/xlsx', function ( $year, $geoTy
 			//******* 24 Household Income **************
 			$objPHPExcel->writeSheet($householdIncomeArray, 'Household Income' );
 			//******* 25 Earnings and Income **************
-			$objPHPExcel->writeSheet($earningsAndIncomeArray, 'Poverty Status' );
+			$objPHPExcel->writeSheet($earningsAndIncomeArray, 'Earnings and Income' );
 			//******* 26 Ratio Income to Poverty Level **************
 			$objPHPExcel->writeSheet($ratioIncomePovertyLevelArray, 'Ratio Income to Poverty Level');
 			//******* 27 Poverty Status **************
