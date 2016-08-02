@@ -918,9 +918,9 @@ $app->get('/:datasource/:year/:geotype/:zone/transportation', function ($datasou
 					]) as Number
 					from app.acs_means_of_trans($1, $2, $3 );";
 		if( $year == "2010"){
-		$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 9, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}elseif( $year == "2000" ){
-			$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $transportationtoWorkSql, 12, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}
 		echo $json;		
 		
@@ -980,9 +980,9 @@ $app->get('/:datasource/:year/:geotype/:zone/employmentstatus', function ($datas
 			from app.acs_employment_status_acs( $1, $2, $3);";
 		
 		if( $year == "2010"){
-		$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 9, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}elseif( $year == "2000" ){
-			$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $employmentStatusSql, 12, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}
 		echo $json;
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
@@ -1039,9 +1039,9 @@ $app->get('/:datasource/:year/:geotype/:zone/education', function ($datasource, 
 			from app.acs_pop_by_educational_attainment( $1, $2, $3 );";
 		
 		if( $year == "2010" ){
-			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 9, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}elseif( $year == "2000" ){
-			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $educationalAttainmentSql, 12, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}
 		
 		echo $json;		
@@ -1077,10 +1077,10 @@ $app->get('/:datasource/:year/:geotype/:zone/language', function ($datasource, $
 			from app.acs_pop_by_language_spoken( $1, $2, $3);";
 		
 		if( $year == "2010"){
-			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 9, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 9, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		
 		}elseif( $year == "2000" ){
-			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 12, $geotype, mb_convert_case($zone, MB_CASE_TITLE, 'utf-8'));
+			$json = Query::getInstance()->getResultAsJson( $languageSpokenSql, 12, $geotype, str_replace( "32Nd", "32nd", mb_convert_case($zone, MB_CASE_TITLE, 'utf-8')));
 		}
 		echo $json;
 	})->conditions(array('datasource' => 'census', 'year' => '(\d){2,4}'));
