@@ -55,6 +55,11 @@ $url_housing = $url . "/housing";
 $url_income = $url . "/income";
 $url_jobs = $url . "/jobs";
 $url_map = $url . "/map";
+$url_education = $url . "/education";
+$url_employmentstatus = $url . "/employmentstatus";
+$url_transportation = $url . "/transportation";
+$url_language = $url . "/language";
+
 $urlFolder = DIR_DOWNLOAD.'sandag_'.$source_type.'_'.$year.'_'.str_replace(' ', '-', $geography_type).'_'.str_replace(' ', '-', $location).'.pdf';
 downloadFileFromApi($urlFolder, $url.'/export/pdf');
 
@@ -150,6 +155,26 @@ $page_title="SANDAG Data Surfer | Data Overview";
 								<div id="over_view" class="chart-list">
 								
 									<div class="row">
+									<?php if($source_type==	'census') { ?>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div class="chart-item">
+												<h4>educational attainment</h4>
+												<div class="chart-map">
+													<div id="chart-1" class="chart-frame"></div>
+													<a class="chart-icon isScroll" id="link_education" title="" href="javascript:void(0);" data-ajax="false"></a>
+												</div>
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div class="chart-item">
+												<h4>employment status</h4>
+												<div class="chart-map">
+													<div id="chart-2" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="javascript:void(0);" id="link_employmentstatus" data-ajax="false"></a>
+												</div>									
+											</div>
+										</div>
+										<?php } else{ ?>										
 										<div class="col-xs-12 col-sm-6 col-md-4">
 											<div class="chart-item">
 												<h4>race &amp; ethnicity</h4>
@@ -169,6 +194,7 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												
 											</div>
 										</div>
+										<?php }  ?>										
 										<div class="col-xs-12 col-sm-6 col-md-4">
 											<div class="chart-item">
 												<h4>area map</h4>
@@ -196,7 +222,25 @@ $page_title="SANDAG Data Surfer | Data Overview";
 												</div>
 											</div>
 										</div>
-										
+										<?php } elseif ($source_type == 'census'){ ?>
+										<div class="col-xs-12 col-sm-6">
+											<div class="chart-item">
+												<h4>means of transportation to work</h4>
+												<div class="chart-map">
+													<div id="chart-4" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="javascript:void(0)" id="link_transportation" data-ajax="false"></a>
+												</div>
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-6">
+											<div class="chart-item">
+												<h4>language spoken at home</h4>
+												<div class="chart-map">                                        	
+													<div id="chart-5" class="chart-frame"></div>
+													<a class="chart-icon isScroll" title="" href="javascript:void(0)" id="link_language" data-ajax="false"></a>
+												</div>
+											</div>
+										</div> 
 										<?php } else { ?>
 										<div class="col-xs-12 col-sm-6">
 											<div class="chart-item">
@@ -431,6 +475,10 @@ $page_title="SANDAG Data Surfer | Data Overview";
     <input type="hidden" id="url_jobs" value="<?php echo $url_jobs;?>"/>
     <input type="hidden" id="url_san_income" value="<?php echo $url_san_income;?>"/>
     <input type="hidden" id="url_map" value="<?php echo $url_map;?>"/>
+	<input type="hidden" id="url_education" value="<?php echo $url_education;?>"/> 
+	<input type="hidden" id="url_employmentstatus" value="<?php echo $url_employmentstatus;?>"/>
+	<input type="hidden" id="url_transportation" value="<?php echo $url_transportation;?>"/> 
+	<input type="hidden" id="url_language" value="<?php echo $url_language;?>"/> 
     
     <input type="hidden" id="pck_source_type" value="<?php echo $source_type;?>"/>
     <input type="hidden" id="pck_geography_type" value="<?php echo $geography_type;?>"/>
@@ -461,6 +509,10 @@ $page_title="SANDAG Data Surfer | Data Overview";
             $("#link_housing").unbind("click");
             $("#link_age").unbind("click");
             $("#link_income").unbind("click");
+			$("#link_education").unbind("click");
+			$("#link_employmentstatus").unbind("click");
+			$("#link_transportation").unbind("click");
+			$("#link_language").unbind("click");
             loadChart();
             
 			// view full report 
@@ -477,6 +529,11 @@ $page_title="SANDAG Data Surfer | Data Overview";
             $("#link_housing").bind("click",link_housing);
             $("#link_age").bind("click",link_age);
             $("#link_income").bind("click",link_income);
+			$("#link_education").bind("click",link_education);
+			$("#link_employmentstatus").bind("click",link_employmentstatus);
+			$("#link_transportation").bind("click",link_transportation);
+			$("#link_language").bind("click",link_language);
+			
         });
 	</script> 
 	<!-- InstanceEndEditable -->
@@ -489,8 +546,14 @@ $page_title="SANDAG Data Surfer | Data Overview";
     <?php
     }
     ?>
+	
+	<!-- adding census type chart script  jpa 5/27/16
     <script type="text/javascript" src="/scripts//<?php echo ($source_type == 'forecast') ? 'para-forecast-' :'para-';?>chart.js"></script>
     <script type="text/javascript" src="/scripts/<?php echo ($source_type == 'forecast') ? 'forecast-' :'';?>chart.js"></script>
+	-->
+	
+	<script type="text/javascript" src="/scripts//<?php echo ($source_type != 'estimate') ? 'para-'.$source_type.'-' : 'para-';?>chart.js"></script>
+    <script type="text/javascript" src="/scripts/<?php echo ($source_type != 'estimate') ? $source_type.'-' :'';?>chart.js"></script>
 	<script>
 		var list = ".nav-sub";
         $(document).ready(function(){
