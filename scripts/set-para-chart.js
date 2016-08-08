@@ -2798,6 +2798,7 @@ function loadDetailChartTwo(){
                         var obj = res[i];
                         if (obj['unit_type'] == 'Total Units') {
                             sum_key = obj["units"];
+                            $('#total_population').html(Highcharts.numberFormat(obj["units"], 0, '.', ','));
                             res.splice(i, 1);
                         }
 
