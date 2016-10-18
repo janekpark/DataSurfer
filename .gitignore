@@ -6,3 +6,8 @@ api/.settings/
 download/
 api/utilities/*.csv
 *.log
+*.json
+*.pdf
+*.zip
+*.xls
+*.bak
